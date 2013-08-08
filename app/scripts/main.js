@@ -1,6 +1,7 @@
 require.config({
     paths: {
         jquery: '../bower_components/jquery/jquery',
+        underscore: '../bower_components/underscore/underscore',
         THREE: '../bower_components/threejs/build/three',
         bootstrap: 'vendor/bootstrap'
     },
@@ -8,6 +9,9 @@ require.config({
         bootstrap: {
             deps: ['jquery'],
             exports: 'jquery'
+        },
+        underscore: {
+            exports: '_'
         },
         THREE: {
             exports: 'THREE'
