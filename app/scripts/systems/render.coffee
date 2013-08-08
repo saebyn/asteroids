@@ -1,21 +1,33 @@
 # render system
 define ['THREE'], (THREE) ->
-  meshes = {}
-  # TODO cache the geometries and materials for each model
-  # TODO find any loaded entities that aren't in the app anymore, and remove them
+  # TODO move asset fetching into an external service singleton
+  # Cache models fetched
+  models = {}
+
+  # Inst the model loader
   loader = new THREE.JSONLoader()
+
+  addModelToScene = (app, id, entity, model) ->
+    [geom, material] = models[model]
+    obj = new THREE.Mesh(geom, material)
+    obj.name = id
+    entity.renderable.mesh = obj
+    app.scene.add obj
 
   loadModel = (app, id, entity) ->
     model = entity.renderable.model
-    meshes[id] = null
-    loader.load '/resources/' + model + '.json', (geom, materials) ->
-      obj = new THREE.Mesh(geom, materials[0])
-      meshes[id] = obj
-      app.scene.add obj
+
+    if model not of models
+      entity.renderable.mesh = true
+      loader.load '/resources/' + model + '.json', (geom, materials) ->
+        models[model] = [geom, materials[0]]
+        addModelToScene app, id, entity, model
+    else
+      addModelToScene app, id, entity, model
 
   updatePosition = (id, entity) ->
-    mesh = meshes[id]
-    if mesh
+    mesh = entity.renderable.mesh
+    if mesh?.position
       mesh.position.x = entity.position.x
       mesh.position.y = entity.position.y
       mesh.rotation.x = entity.position.direction.x
@@ -23,6 +35,19 @@ define ['THREE'], (THREE) ->
       mesh.rotation.z = entity.position.direction.z
 
   (app, entities) ->
-    loadModel(app, id, components) for [id, components] in entities when id not of meshes
+    ids = (id for [id, components] in entities)
+
+    loadModel(app, id, components) for [id, components] in entities when not components.renderable.mesh?
+
     updatePosition(id, components) for [id, components] in entities when components?.position
+
+    # Remove any objects in the scene but not registered as an
+    # entity, if the object has a name.
+    stale = []
+    app.scene.traverse (obj) ->
+      if obj.name and obj.name not in ids
+        stale.push obj
+
+    app.scene.remove(obj) for obj in stale
+
     app.renderer.render app.scene, app.camera

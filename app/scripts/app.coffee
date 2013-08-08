@@ -1,4 +1,4 @@
-define(['systems/render', 'systems/controls', 'systems/weapons', 'systems/movement', 'systems/expire', 'THREE', 'jquery'], (render, controls, weapons, movement, expire, THREE, $) ->
+define(['systems', 'THREE', 'jquery'], (systems, THREE, $) ->
   class App
     gameWidth: 800
     gameHeight: 500
@@ -22,6 +22,16 @@ define(['systems/render', 'systems/controls', 'systems/weapons', 'systems/moveme
           renderable:
             model: 'laserbolt'
           expireTime: 2000
+      asteroid:
+        spawnable:
+          radius: 200.0
+          rate: 0.2
+          rateChange: 0.01
+          extraComponents:
+            generator:
+              type: 'asteroid1'
+            renderable:
+              model: 'playership'
 
     getNextEntityId: ->
       @lastEntityId += 1
@@ -86,12 +96,18 @@ define(['systems/render', 'systems/controls', 'systems/weapons', 'systems/moveme
       elapsed = time - @lastTime
       @lastTime = time
 
+
+      # TODO any entities more than some fixed distance off the screen should be
+      # destroyed
+
       # filter our entities and give them to the appropriate systems
-      controls this, @filterEntities('controllable'), elapsed
-      weapons this, @filterEntities('fireable'), elapsed
-      movement this, @filterEntities('moveable'), elapsed
-      render this, @filterEntities('renderable'), elapsed
-      expire this, @filterEntities('expirable'), elapsed
+      systems.spawners this, @filterEntities('spawnable'), elapsed
+
+      systems.controls this, @filterEntities('controllable'), elapsed
+      systems.weapons this, @filterEntities('fireable'), elapsed
+      systems.movement this, @filterEntities('moveable'), elapsed
+      systems.render this, @filterEntities('renderable'), elapsed
+      systems.expire this, @filterEntities('expirable'), elapsed
 
       window.requestAnimationFrame @gameloop
 )

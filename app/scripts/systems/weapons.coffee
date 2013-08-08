@@ -1,5 +1,5 @@
 # weapons system
-define ['underscore'], (_) ->
+define ['underscore', 'utils'], (_, utils) ->
   fireWeapon = (app, entity) ->
     speed = entity.fireable.speed or 1.0
     direction =
@@ -7,10 +7,7 @@ define ['underscore'], (_) ->
       y: Math.sin(app.entities.player.position.direction.z) * speed
 
     projectile = 
-      position:
-        x: app.entities.player.position.x
-        y: app.entities.player.position.y
-        direction: _.clone(app.entities.player.position.direction)
+      position: utils.clone app.entities.player.position
       moveable:
         direction: direction
       renderable: _.clone(entity.fireable.renderable)
