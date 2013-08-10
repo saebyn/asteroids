@@ -27,6 +27,7 @@ define ['underscore', 'utils', 'THREE'], (_, utils, THREE) ->
         direction: direction
       movement:
         direction: direction.multiplyScalar(speed / 1000.0)
+        spin: {x: 0, y: 0, z: 0}
       renderable: _.clone(entity.fireable.renderable)
 
     if entity.fireable.expireTime?

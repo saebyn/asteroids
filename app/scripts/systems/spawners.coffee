@@ -5,6 +5,17 @@ define ['underscore', 'utils', 'THREE'], (_, utils, THREE) ->
     rate > Math.random()
 
   addEntity = (app, id, entity) ->
+    count = _.chain(app.entities)
+      .values()
+      .pluck('_type')
+      .filter((x) -> x == id)
+      .size()
+      .value()
+    
+    if count >= entity.spawnable.max
+      console.log 'exceeded count'
+      return
+
     radius = entity.spawnable.radius
 
     # Spawn radius distance from the origin
@@ -25,6 +36,7 @@ define ['underscore', 'utils', 'THREE'], (_, utils, THREE) ->
     direction = new THREE.Vector2(-x, -y).normalize().multiplyScalar(speed)
 
     spawn =
+      _type: id
       position:
         x: x
         y: y

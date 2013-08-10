@@ -3,8 +3,8 @@ define(['systems', 'THREE', 'Physijs', 'jquery'], (systems, THREE, Physijs, $) -
     gameWidth: 800
     gameHeight: 500
 
-    maxDistance: 350
-    maxEntities: 100
+    maxDistance: 340
+    maxEntities: 50 
 
     viewAngle: 45.0
     aspect: ->
@@ -24,16 +24,17 @@ define(['systems', 'THREE', 'Physijs', 'jquery'], (systems, THREE, Physijs, $) -
           static: true
         controllable: {left: 'left', right: 'right'}
         fireable:
-          speed: 10
-          size: 30
+          speed: 30
+          size: 5
           renderable:
             model: 'laserbolt'
           expireTime: 2000
       asteroid:
         spawnable:
           radius: 200.0
-          rate: 0.25
-          rateChange: 0.008
+          max: 15
+          rate: 0.1
+          rateChange: 0.005
           extraComponents:
             generatable:
               type: 'asteroid1'
@@ -91,9 +92,9 @@ define(['systems', 'THREE', 'Physijs', 'jquery'], (systems, THREE, Physijs, $) -
       pointLight = new THREE.PointLight(0xffffff)
 
       # set its position
-      pointLight.position.x = 10
-      pointLight.position.y = 50
-      pointLight.position.z = 130
+      pointLight.position.x = 0
+      pointLight.position.y = 0
+      pointLight.position.z = 300
 
       # add to the scene
       scene.add pointLight

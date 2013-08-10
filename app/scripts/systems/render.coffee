@@ -7,6 +7,14 @@ define ['THREE', 'Physijs'], (THREE, Physijs) ->
   # Inst the model loader
   loader = new THREE.JSONLoader()
 
+  lock2d = (scene, mesh) ->
+    constraint = new Physijs.DOFConstraint(
+      mesh,
+      {x: 0, y: 0, z: 0})
+    scene.addConstraint constraint
+    constraint.setLinearLowerLimit({x: 1, y: 1, z: 0})
+    constraint.setLinearUpperLimit({x: 0, y: 0, z: 0})
+
   addModelToScene = (app, id, entity) ->
     if not entity.renderable.mesh?
       model = entity.renderable.model
@@ -17,7 +25,11 @@ define ['THREE', 'Physijs'], (THREE, Physijs) ->
 
       [geom, material] = models[model]
 
-      obj = new Physijs.BoxMesh(geom, material)
+      mass = undefined
+      if entity.renderable.mass?
+        mass = entity.renderable.mass
+
+      obj = new Physijs.BoxMesh(geom, material, mass)
       if entity.renderable.collideless?
         obj._physijs.type = 'sphere'
         obj._physijs.radius = 0
@@ -29,7 +41,9 @@ define ['THREE', 'Physijs'], (THREE, Physijs) ->
     obj.name = id
     entity.renderable.meshLoaded = true
     app.scene.add obj
-    updatePosition(id, entity)
+    lock2d(app.scene, obj)
+
+    updatePosition(app, id, entity)
 
   loadModel = (app, id, entity) ->
     model = entity.renderable.model
@@ -38,7 +52,7 @@ define ['THREE', 'Physijs'], (THREE, Physijs) ->
     loader.load '/resources/' + model + '.json', (geom, materials) ->
       models[model] = [geom, new Physijs.createMaterial(materials[0], 0.8, 0.4)]
 
-  updatePosition = (id, entity) ->
+  updatePosition = (app, id, entity) ->
     mesh = entity.renderable.mesh
     if mesh?.position
       mesh.position.x = entity.position.x
@@ -50,6 +64,11 @@ define ['THREE', 'Physijs'], (THREE, Physijs) ->
 
     if entity.renderable.static?
       mesh.setLinearFactor({x: 0, y: 0, z: 0})
+      app.scene.add new Physijs.HingeConstraint(
+        mesh,
+        new THREE.Vector3(0, 0, 0),
+        new THREE.Vector3(0, 0, 1)
+      )
 
 
   (app, entities) ->
