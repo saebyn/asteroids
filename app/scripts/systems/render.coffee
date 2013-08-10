@@ -1,5 +1,5 @@
 # render system
-define ['THREE'], (THREE) ->
+define ['THREE', 'Physijs'], (THREE, Physijs) ->
   # TODO move asset fetching into an external service singleton
   # Cache models fetched
   models = {}
@@ -7,23 +7,36 @@ define ['THREE'], (THREE) ->
   # Inst the model loader
   loader = new THREE.JSONLoader()
 
-  addModelToScene = (app, id, entity, model) ->
-    [geom, material] = models[model]
-    obj = new THREE.Mesh(geom, material)
+  addModelToScene = (app, id, entity) ->
+    if not entity.renderable.mesh?
+      model = entity.renderable.model
+
+      # Skip if model isn't loaded
+      if model not of models or models[model] == true
+        return
+
+      [geom, material] = models[model]
+
+      obj = new Physijs.BoxMesh(geom, material)
+      if entity.renderable.collideless?
+        obj._physijs.type = 'sphere'
+        obj._physijs.radius = 0
+
+      entity.renderable.mesh = obj
+    else
+      obj = entity.renderable.mesh
+
     obj.name = id
-    entity.renderable.mesh = obj
+    entity.renderable.meshLoaded = true
     app.scene.add obj
+    updatePosition(id, entity)
 
   loadModel = (app, id, entity) ->
     model = entity.renderable.model
 
-    if model not of models
-      entity.renderable.mesh = true
-      loader.load '/resources/' + model + '.json', (geom, materials) ->
-        models[model] = [geom, materials[0]]
-        addModelToScene app, id, entity, model
-    else
-      addModelToScene app, id, entity, model
+    models[model] = true
+    loader.load '/resources/' + model + '.json', (geom, materials) ->
+      models[model] = [geom, new Physijs.createMaterial(materials[0], 0.8, 0.4)]
 
   updatePosition = (id, entity) ->
     mesh = entity.renderable.mesh
@@ -33,21 +46,18 @@ define ['THREE'], (THREE) ->
       mesh.rotation.x = entity.position.direction.x
       mesh.rotation.y = entity.position.direction.y
       mesh.rotation.z = entity.position.direction.z
+      mesh.__dirtyPosition = true
+
+    if entity.renderable.static?
+      mesh.setLinearFactor({x: 0, y: 0, z: 0})
+
 
   (app, entities) ->
     ids = (id for [id, components] in entities)
 
-    loadModel(app, id, components) for [id, components] in entities when not components.renderable.mesh?
+    loadModel(app, id, components) for [id, components] in entities when components.renderable.model? and components.renderable.model not of models
 
-    updatePosition(id, components) for [id, components] in entities when components?.position
+    addModelToScene(app, id, components) for [id, components] in entities when not components.renderable.meshLoaded
 
-    # Remove any objects in the scene but not registered as an
-    # entity, if the object has a name.
-    stale = []
-    app.scene.traverse (obj) ->
-      if obj.name and obj.name not in ids
-        stale.push obj
-
-    app.scene.remove(obj) for obj in stale
-
+    app.scene.simulate()
     app.renderer.render app.scene, app.camera

@@ -1,7 +1,11 @@
-define(['systems', 'THREE', 'jquery'], (systems, THREE, $) ->
+define(['systems', 'THREE', 'Physijs', 'jquery'], (systems, THREE, Physijs, $) ->
   class App
     gameWidth: 800
     gameHeight: 500
+
+    maxDistance: 350
+    maxEntities: 100
+
     viewAngle: 45.0
     aspect: ->
       @gameWidth / @gameHeight
@@ -15,23 +19,24 @@ define(['systems', 'THREE', 'jquery'], (systems, THREE, $) ->
     entities:
       player:
         position: {x: 0, y: 0, direction: {x: 0, y: 0, z: 0}}
-        renderable: {model: 'playership'}
+        renderable:
+          model: 'playership'
+          static: true
         controllable: {left: 'left', right: 'right'}
         fireable:
-          speed: 0.1
+          speed: 10
+          size: 30
           renderable:
             model: 'laserbolt'
           expireTime: 2000
       asteroid:
         spawnable:
           radius: 200.0
-          rate: 0.2
-          rateChange: 0.01
+          rate: 0.25
+          rateChange: 0.008
           extraComponents:
-            generator:
+            generatable:
               type: 'asteroid1'
-            renderable:
-              model: 'playership'
 
     getNextEntityId: ->
       @lastEntityId += 1
@@ -41,7 +46,10 @@ define(['systems', 'THREE', 'jquery'], (systems, THREE, $) ->
       delete @entities[id]
 
     addEntity: (components) ->
-      @entities[@getNextEntityId()] = components
+      if _.keys(@entities).length < @maxEntities
+        @entities[@getNextEntityId()] = components
+      else
+        console.log 'way too many entities'
 
     controlDirection: false
     controlFiring: false
@@ -73,7 +81,8 @@ define(['systems', 'THREE', 'jquery'], (systems, THREE, $) ->
       @camera = new THREE.PerspectiveCamera(@viewAngle, @aspect(), @nearDistance, @farDistance)
       @camera.position.z = 300
 
-      @scene = new THREE.Scene()
+      @scene = new Physijs.Scene()
+      @scene.setGravity(new THREE.Vector3(0.0, 0.0, 0.0))
       @setupLighting @scene
       @scene.add(@camera)
       @renderer.setSize @gameWidth, @gameHeight
@@ -92,22 +101,41 @@ define(['systems', 'THREE', 'jquery'], (systems, THREE, $) ->
     filterEntities: (component) ->
       [entityId, components] for entityId, components of @entities when component of components
 
+    system: (name, componentName, elapsed) ->
+      entities = @filterEntities(componentName)
+      if entities.length > 0
+        systems[name](this, entities, elapsed)
+
     gameloop: (time=0) =>
       elapsed = time - @lastTime
       @lastTime = time
 
+      # Any entities more than some fixed distance off the screen should be
+      # destroyed.
+      stale = []
+      @scene.traverse (obj) =>
+        if obj.position.length() > @maxDistance and obj.name of @entities
+          @removeEntity(obj.name)
 
-      # TODO any entities more than some fixed distance off the screen should be
-      # destroyed
+          # Remove any objects in the scene but not registered as an
+          # entity, if the object has a name.
+          if obj.name and obj.name not of @entities
+            stale.push obj
+
+      @scene.remove(obj) for obj in stale
 
       # filter our entities and give them to the appropriate systems
-      systems.spawners this, @filterEntities('spawnable'), elapsed
+      @system('spawners', 'spawnable', elapsed)
+      @system('generator', 'generatable', elapsed)
 
-      systems.controls this, @filterEntities('controllable'), elapsed
-      systems.weapons this, @filterEntities('fireable'), elapsed
-      systems.movement this, @filterEntities('moveable'), elapsed
-      systems.render this, @filterEntities('renderable'), elapsed
-      systems.expire this, @filterEntities('expirable'), elapsed
+      @system('controls', 'controllable', elapsed)
+      @system('weapons', 'fireable', elapsed)
+      @system('render', 'renderable', elapsed)
+      @system('expire', 'expirable', elapsed)
+
+      # Note that movements need to be applied after the spawner and generator
+      # systems.
+      @system('movement', 'movement', elapsed)
 
       window.requestAnimationFrame @gameloop
 )

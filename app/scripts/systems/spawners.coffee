@@ -1,5 +1,5 @@
 # spawners system
-define ['underscore', 'utils'], (_, utils) ->
+define ['underscore', 'utils', 'THREE'], (_, utils, THREE) ->
   pickEntity = (id, entity, elapsedTime) ->
     rate = entity.spawnable.rate * elapsedTime / 1000.0
     rate > Math.random()
@@ -14,21 +14,31 @@ define ['underscore', 'utils'], (_, utils) ->
 
     speed = Math.random() * 0.05 + 0.01
 
+    rotationSpeed = Math.random() * 0.1
+
+    spin = new THREE.Vector3(
+      Math.random() - 0.5,
+      Math.random() - 0.5,
+      Math.random() - 0.5).normalize().multiplyScalar(rotationSpeed)
+
+    # TODO add some jitter to the direction?
     direction = new THREE.Vector2(-x, -y).normalize().multiplyScalar(speed)
 
     spawn =
       position:
         x: x
         y: y
-        z: null
+        z: 0
         direction:
-          x: 0
-          y: 0
-          z: Math.atan2(direction.y, direction.x)
-      moveable:
+          x: Math.random() * 2.0 * Math.PI
+          y: Math.random() * 2.0 * Math.PI
+          z: Math.random() * 2.0 * Math.PI
+      movement:
+        spin: spin
         direction:
           x: direction.x
           y: direction.y
+          z: 0
 
     app.addEntity(_.defaults(spawn, utils.clone(entity.spawnable.extraComponents)))
 

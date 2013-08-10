@@ -1,10 +1,22 @@
 # movement system
-define [], () ->
+define ['THREE'], (THREE) ->
   moveEntity = (entity, elapsedTime) ->
-    entity.position.x += entity.moveable.direction.x * elapsedTime
-    entity.position.y += entity.moveable.direction.y * elapsedTime
-    if entity.position.z? and entity.direction.z?
-      entity.position.z += entity.moveable.direction.z * elapsedTime
+    if entity?.renderable?.mesh?
+      mesh = entity.renderable.mesh
+
+      mesh.setLinearVelocity(
+        x: entity.movement.direction.x * 1000.0,
+        y: entity.movement.direction.y * 1000.0,
+        z: (entity.movement.direction.z or 0) * 1000.0)
+
+      if entity.movement.spin
+        mesh.setAngularVelocity(
+          new THREE.Vector3(
+            entity.movement.spin.x * 1000.0,
+            entity.movement.spin.y * 1000.0,
+            (entity.movement.spin.z or 0) * 1000.0))
+
+      delete entity.movement
 
   (app, entities, elapsedTime) ->
-    moveEntity(components, elapsedTime) for [id, components] in entities when components?.position
+    moveEntity(components, elapsedTime) for [id, components] in entities

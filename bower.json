@@ -8,5 +8,8 @@
     "jquery": "~1.9.1",
     "threejs": "*"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "resolutions": {
+    "threejs": "r58"
+  }
 }

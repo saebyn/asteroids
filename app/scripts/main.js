@@ -3,6 +3,7 @@ require.config({
         jquery: '../bower_components/jquery/jquery',
         underscore: '../bower_components/underscore/underscore',
         THREE: '../bower_components/threejs/build/three',
+        Physijs: '../bower_components/Physijs/physi',
         bootstrap: 'vendor/bootstrap'
     },
     shim: {
@@ -13,14 +14,22 @@ require.config({
         underscore: {
             exports: '_'
         },
+        Physijs: {
+            exports: 'Physijs',
+            deps: ['THREE']
+        },
         THREE: {
             exports: 'THREE'
         }
     }
 });
 
-require(['app', 'jquery', 'bootstrap', 'THREE'], function (App, $) {
+require(['app', 'jquery', 'Physijs', 'bootstrap', 'THREE'], function (App, $, Physijs) {
     'use strict';
+
+    Physijs.scripts.worker = '/bower_components/Physijs/physijs_worker.js';
+    Physijs.scripts.ammo = '/bower_components/ammo.js/builds/ammo.js';
+
     var app = new App();
     app.setup($('#game'))
     app.gameloop();

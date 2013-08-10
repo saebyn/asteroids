@@ -1,12 +1,22 @@
 # controls system
-define [], () ->
+define ['THREE'], (THREE) ->
+  sign = (x) ->
+    x / Math.abs(x)
+
+  maxRotation = 5
+  rotation = 0
+
   controlEntity = (direction, time, entity) ->
-    # TODO use an acceleration system for turning, so it's not so
-    # choppy.
     if direction == entity.controllable.left
-      entity.position.direction.z += 1.5 / time
+      rotation += 1.5 / time
     else if direction == entity.controllable.right
-      entity.position.direction.z -= 1.5 / time
+      rotation -= 1.5 / time
+
+    if entity.renderable.mesh?
+      if Math.abs(rotation) > maxRotation
+        rotation = maxRotation * sign(rotation)
+
+      entity.renderable.mesh.setAngularVelocity({x: 0, y: 0, z: rotation})
 
   (app, entities, elapsedTime) ->
     controlEntity(app.controlDirection, elapsedTime, components) for [id, components] in entities when components?.position
