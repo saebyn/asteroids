@@ -4,6 +4,8 @@ dist
 .sass-cache
 app/bower_components
 
+/assets/
+
 .bowerrc
 .editorconfig
 .gitattributes

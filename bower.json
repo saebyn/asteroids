@@ -6,10 +6,11 @@
     "requirejs": "~2.1.4",
     "modernizr": "~2.6.2",
     "jquery": "~1.9.1",
-    "threejs": "*"
+    "threejs": "*",
+    "Physijs": "saebyn/Physijs"
   },
   "devDependencies": {},
   "resolutions": {
-    "threejs": "r58"
+    "threejs": "r59"
   }
 }

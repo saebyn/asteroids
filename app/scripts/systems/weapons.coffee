@@ -24,7 +24,7 @@ define ['underscore', 'utils', 'THREE'], (_, utils, THREE) ->
         x: position.x
         y: position.y
         z: position.z
-        direction: direction
+        direction: {x: 0, y: 0, z: z}
       movement:
         direction: direction.multiplyScalar(speed / 1000.0)
         spin: {x: 0, y: 0, z: 0}

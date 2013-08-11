@@ -49,18 +49,20 @@ define ['THREE', 'Physijs'], (THREE, Physijs) ->
     model = entity.renderable.model
 
     models[model] = true
-    loader.load '/resources/' + model + '.json', (geom, materials) ->
+    loader.load '/resources/' + model + '.js', (geom, materials) ->
       models[model] = [geom, new Physijs.createMaterial(materials[0], 0.8, 0.4)]
 
   updatePosition = (app, id, entity) ->
     mesh = entity.renderable.mesh
-    if mesh?.position
+    if entity?.position
       mesh.position.x = entity.position.x
       mesh.position.y = entity.position.y
-      mesh.rotation.x = entity.position.direction.x
-      mesh.rotation.y = entity.position.direction.y
-      mesh.rotation.z = entity.position.direction.z
       mesh.__dirtyPosition = true
+      if entity.position.direction?
+        mesh.rotation.x = entity.position.direction.x
+        mesh.rotation.y = entity.position.direction.y
+        mesh.rotation.z = entity.position.direction.z
+        mesh.__dirtyRotation = true
 
     if entity.renderable.static?
       mesh.setLinearFactor({x: 0, y: 0, z: 0})
