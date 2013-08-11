@@ -8,12 +8,7 @@ define ['THREE', 'Physijs'], (THREE, Physijs) ->
   loader = new THREE.JSONLoader()
 
   lock2d = (scene, mesh) ->
-    constraint = new Physijs.DOFConstraint(
-      mesh,
-      {x: 0, y: 0, z: 0})
-    scene.addConstraint constraint
-    constraint.setLinearLowerLimit({x: 1, y: 1, z: 0})
-    constraint.setLinearUpperLimit({x: 0, y: 0, z: 0})
+    mesh.setLinearFactor(new THREE.Vector3(1, 1, 0))
 
   addModelToScene = (app, id, entity) ->
     if not entity.renderable.mesh?
