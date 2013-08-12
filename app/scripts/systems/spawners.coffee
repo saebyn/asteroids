@@ -1,5 +1,5 @@
 # spawners system
-define ['underscore', 'utils', 'THREE'], (_, utils, THREE) ->
+define ['systems/base', 'underscore', 'utils', 'THREE'], (System, _, utils, THREE) ->
   pickEntity = (id, entity, elapsedTime) ->
     rate = entity.spawnable.rate * elapsedTime / 1000.0
     rate > Math.random()
@@ -57,16 +57,17 @@ define ['underscore', 'utils', 'THREE'], (_, utils, THREE) ->
   updateRates = (entity, elapsedTime) ->
     entity.spawnable.rate += entity.spawnable.rateChange * entity.spawnable.rate * elapsedTime / 1000.0
 
-  (app, entities, elapsedTime) ->
-    # pick which ones we want to spawn
-    picks = _.filter(
-      entities,
-      ([id, components]) ->
-        pickEntity(id, components, elapsedTime)
-    )
+  class SpawnersSystem extends System
+    processOurEntities: (entities, elapsedTime) ->
+      # pick which ones we want to spawn
+      picks = _.filter(
+        entities,
+        ([id, components]) ->
+          pickEntity(id, components, elapsedTime)
+      )
 
-    # add entities for the selected spawned objects
-    addEntity(app, id, components) for [id, components] in picks
+      # add entities for the selected spawned objects
+      addEntity(@app, id, components) for [id, components] in picks
 
-    # update rates for all entities
-    updateRates(components, elapsedTime) for [id, components] in entities
+      # update rates for all entities
+      updateRates(components, elapsedTime) for [id, components] in entities

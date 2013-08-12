@@ -1,5 +1,5 @@
 # controls system
-define ['THREE'], (THREE) ->
+define ['systems/base', 'THREE'], (System, THREE) ->
   sign = (x) ->
     x / Math.abs(x)
 
@@ -18,5 +18,6 @@ define ['THREE'], (THREE) ->
 
       entity.renderable.mesh.setAngularVelocity({x: 0, y: 0, z: rotation})
 
-  (app, entities, elapsedTime) ->
-    controlEntity(app.controlDirection, elapsedTime, components) for [id, components] in entities when components?.position
+  class ControlSystem extends System
+    processOurEntities: (entities, elapsedTime) ->
+      controlEntity(@app.controlDirection, elapsedTime, components) for [id, components] in entities when components?.position

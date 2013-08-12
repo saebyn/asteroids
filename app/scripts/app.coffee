@@ -1,10 +1,14 @@
 define(['systems', 'THREE', 'Physijs', 'jquery'], (systems, THREE, Physijs, $) ->
+  FRAME_TIME_COUNTS = 50
+
   class App
     gameWidth: 800
     gameHeight: 500
 
     maxDistance: 340
-    maxEntities: 50 
+    maxEntities: 250
+
+    frameTimes: []
 
     viewAngle: 45.0
     aspect: ->
@@ -22,20 +26,30 @@ define(['systems', 'THREE', 'Physijs', 'jquery'], (systems, THREE, Physijs, $) -
         renderable:
           model: 'playership'
           static: true
+        damagable:
+          health: 30
         controllable: {left: 'left', right: 'right'}
         fireable:
           speed: 30
-          size: 5
-          renderable:
-            model: 'laserbolt'
-          expireTime: 2000
+          size: 15 
+          extraComponents:
+            damaging:
+              health: 1
+              destroysSelf: true
+            renderable:
+              model: 'laserbolt'
+            expireTime: 2000
       asteroid:
         spawnable:
           radius: 200.0
-          max: 15
+          max: 30
           rate: 0.1
           rateChange: 0.005
           extraComponents:
+            damagable:
+              health: 3
+            damaging:
+              health: 1
             generatable:
               type: 'asteroid1'
 
@@ -46,16 +60,25 @@ define(['systems', 'THREE', 'Physijs', 'jquery'], (systems, THREE, Physijs, $) -
     removeEntity: (id) ->
       delete @entities[id]
 
+    destroyEntity: (id) ->
+      console.log 'thing went boom', id
+      @removeEntity(id)
+
     addEntity: (components) ->
       if _.keys(@entities).length < @maxEntities
-        @entities[@getNextEntityId()] = components
+        entity = components
+        for systemName of @systems
+          entity = @systems[systemName].registerEntity(entity)
+
+        @entities[@getNextEntityId()] = entity
       else
         console.log 'way too many entities'
 
     controlDirection: false
     controlFiring: false
 
-    setup: (container) ->
+    constructor: (container) ->
+      @systems = systems.register(this)
       @setupThree()
       container.append @renderer.domElement
 
@@ -105,11 +128,19 @@ define(['systems', 'THREE', 'Physijs', 'jquery'], (systems, THREE, Physijs, $) -
     system: (name, componentName, elapsed) ->
       entities = @filterEntities(componentName)
       if entities.length > 0
-        systems[name](this, entities, elapsed)
+        @systems[name].processOurEntities(entities, elapsed)
 
-    gameloop: (time=0) =>
-      elapsed = time - @lastTime
-      @lastTime = time
+    fpsUpdate: (currentTime) ->
+      elapsed = currentTime - @lastTime
+      @frameTimes.push(elapsed)
+      if @frameTimes.length > FRAME_TIME_COUNTS
+        @frameTimes.splice(0, @frameTimes.length - FRAME_TIME_COUNTS)
+
+      @lastTime = currentTime
+      elapsed
+
+    gameloop: (currentTime=0) =>
+      elapsed = @fpsUpdate(currentTime)
 
       # Any entities more than some fixed distance off the screen should be
       # destroyed.
@@ -118,16 +149,18 @@ define(['systems', 'THREE', 'Physijs', 'jquery'], (systems, THREE, Physijs, $) -
         if obj.position.length() > @maxDistance and obj.name of @entities
           @removeEntity(obj.name)
 
-          # Remove any objects in the scene but not registered as an
-          # entity, if the object has a name.
-          if obj.name and obj.name not of @entities
-            stale.push obj
+        # Remove any objects in the scene but not registered as an
+        # entity, if the object has a name.
+        if obj.name and obj.name not of @entities
+          stale.push obj
 
       @scene.remove(obj) for obj in stale
 
       # filter our entities and give them to the appropriate systems
       @system('spawners', 'spawnable', elapsed)
       @system('generator', 'generatable', elapsed)
+
+      @system('damage', 'damagable', elapsed)
 
       @system('controls', 'controllable', elapsed)
       @system('weapons', 'fireable', elapsed)

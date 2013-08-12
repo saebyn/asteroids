@@ -24,13 +24,14 @@ require.config({
     }
 });
 
-require(['app', 'jquery', 'Physijs', 'bootstrap', 'THREE'], function (App, $, Physijs) {
+require(['app', 'devhud', 'jquery', 'Physijs', 'bootstrap', 'THREE'], function (App, DevHUD, $, Physijs) {
     'use strict';
 
     Physijs.scripts.worker = '/bower_components/Physijs/physijs_worker.js';
     Physijs.scripts.ammo = '/bower_components/ammo.js/builds/ammo.js';
 
-    var app = new App();
-    app.setup($('#game'))
+    var app = new App($('#game'));
     app.gameloop();
+
+    new DevHUD(app);
 });

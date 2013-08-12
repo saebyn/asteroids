@@ -1,5 +1,5 @@
 # movement system
-define ['THREE'], (THREE) ->
+define ['systems/base', 'THREE'], (System, THREE) ->
   moveEntity = (entity, elapsedTime) ->
     if entity?.renderable?.mesh?
       mesh = entity.renderable.mesh
@@ -18,5 +18,6 @@ define ['THREE'], (THREE) ->
 
       delete entity.movement
 
-  (app, entities, elapsedTime) ->
-    moveEntity(components, elapsedTime) for [id, components] in entities
+  class MovementSystem extends System
+    processOurEntities: (entities, elapsedTime) ->
+      moveEntity(components, elapsedTime) for [id, components] in entities

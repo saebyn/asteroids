@@ -1,5 +1,5 @@
 # weapons system
-define ['underscore', 'utils', 'THREE'], (_, utils, THREE) ->
+define ['systems/base', 'underscore', 'utils', 'THREE'], (System, _, utils, THREE) ->
   fireWeapon = (app, entity) ->
     speed = entity.fireable.speed or 1.0
     size = entity.fireable.size or 1.0
@@ -28,15 +28,14 @@ define ['underscore', 'utils', 'THREE'], (_, utils, THREE) ->
       movement:
         direction: direction.multiplyScalar(speed / 1000.0)
         spin: {x: 0, y: 0, z: 0}
-      renderable: _.clone(entity.fireable.renderable)
+    
+    app.addEntity(
+      _.defaults(projectile, utils.clone(entity.fireable.extraComponents)))
 
-    if entity.fireable.expireTime?
-      projectile.expirable =
-        time: entity.fireable.expireTime
+  class WeaponsSystem extends System
+    constructor: (@app) ->
+      @processOurEntities = _.throttle(@unthrottledProcess, 150, {trailing: false})
 
-    app.addEntity(projectile)
-
-  _.throttle((app, entities, elapsedTime) ->
-    if app.controlFiring
-      fireWeapon(app, components) for [id, components] in entities when components?.position
-  , 150, {trailing: false})
+    unthrottledProcess: (entities, elapsedTime) =>
+      if @app.controlFiring
+        fireWeapon(@app, components) for [id, components] in entities when components?.position
