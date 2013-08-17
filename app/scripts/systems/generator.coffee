@@ -12,6 +12,7 @@ define ['systems/base', 'THREE', 'Physijs', 'underscore'], (System, THREE, Physi
       # deform geometry randomly
       geom.vertices = _.map(geom.vertices, randomizeVertex(entity.position))
       geom.verticesNeedUpdate = true
+      geom.dynamic = false
 
       material = new Physijs.createMaterial(
         new THREE.MeshLambertMaterial(),

@@ -1,4 +1,4 @@
-define(['systems', 'THREE', 'THREEx', 'Physijs', 'jquery', 'underscore'], (systems, THREE, THREEx, Physijs, $, _) ->
+define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats', 'Physijs', 'jquery', 'underscore'], (systems, THREE, FullScreen, RendererStats, Stats, Physijs, $, _) ->
   FRAME_TIME_COUNTS = 50
 
   class App
@@ -67,6 +67,12 @@ define(['systems', 'THREE', 'THREEx', 'Physijs', 'jquery', 'underscore'], (syste
       @lastEntityId
 
     removeEntity: (id) ->
+      # Make sure to discard any unique geometries and textures, to prevent
+      # accumulation of junk in memory.
+      if @entities[id].renderable? and @entities[id].renderable.mesh? and not @entities[id].renderable.model?
+        @entities[id].renderable.mesh.geometry.dispose()
+        @entities[id].renderable.mesh.material.dispose()
+
       delete @entities[id]
 
     destroyEntity: (id) ->
@@ -111,6 +117,11 @@ define(['systems', 'THREE', 'THREEx', 'Physijs', 'jquery', 'underscore'], (syste
       )
       @renderer.setClearColor(0x000000, 1)
 
+      @stats = new Stats()
+      @stats.setMode(0)
+      @rendererStats = new RendererStats()
+      $('#stats-container').append(@stats.domElement).append(@rendererStats.domElement)
+
       @camera = new THREE.PerspectiveCamera(@viewAngle, @getAspect(), @nearDistance, @farDistance)
       @camera.position.z = 300
 
@@ -122,7 +133,7 @@ define(['systems', 'THREE', 'THREEx', 'Physijs', 'jquery', 'underscore'], (syste
 
       # On container size change, redo renderer.setSize
       $(window).on('resize', _.throttle(=>
-        @fullscreen = THREEx.FullScreen.activated()
+        @fullscreen = FullScreen.activated()
 
         if @fullscreen
           @container.addClass('fullscreen')
@@ -164,8 +175,14 @@ define(['systems', 'THREE', 'THREEx', 'Physijs', 'jquery', 'underscore'], (syste
       @lastTime = currentTime
       elapsedTime
 
+    render: ->
+      @scene.simulate()
+      @renderer.render @scene, @camera
+      @rendererStats.update(@renderer)
+
     gameloop: (currentTime=0) =>
       elapsedTime = @fpsUpdate(currentTime)
+      @stats.begin()
 
       # Any entities more than some fixed distance off the screen should be
       # destroyed.
@@ -195,6 +212,8 @@ define(['systems', 'THREE', 'THREEx', 'Physijs', 'jquery', 'underscore'], (syste
       # Note that movements need to be applied after the spawner and generator
       # systems.
       @system('movement', 'movement', elapsedTime)
+
+      @stats.end()
 
       window.requestAnimationFrame @gameloop
 )

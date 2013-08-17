@@ -21,3 +21,14 @@ canvas {
 #game.fullscreen {
     width: 100%;
 }
+
+#stats-container {
+    margin: 0;
+    position: fixed;
+    top: 1em;
+    right: 0;
+}
+
+#stats-container div {
+    width: 115px;
+}

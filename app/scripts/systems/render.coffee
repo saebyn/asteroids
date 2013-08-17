@@ -1,9 +1,10 @@
 # render system
 define ['systems/base', 'THREE', 'Physijs'], (System, THREE, Physijs) ->
   class RenderSystem extends System
-    constructor: (@app) ->
-      @models = {}
+    models: {}
+    maxCachedModels: 10
 
+    constructor: (@app) ->
       # Inst the model loader
       @loader = new THREE.JSONLoader()
 
@@ -12,19 +13,22 @@ define ['systems/base', 'THREE', 'Physijs'], (System, THREE, Physijs) ->
 
     addModelToScene: (id, entity) ->
       if not entity.renderable.mesh?
-        model = entity.renderable.model
+        modelName = entity.renderable.model
   
         # Skip if model isn't loaded
-        if model not of @models or @models[model] == true
+        if modelName not of @models or @models[modelName] == true
           return
   
-        [geom, material] = @models[model]
+        model = @models[modelName]
+        model.useCount += 1
   
         mass = undefined
         if entity.renderable.mass?
           mass = entity.renderable.mass
+ 
+        model.geom.dynamic = false
   
-        obj = new Physijs.BoxMesh(geom, material, mass)
+        obj = new Physijs.BoxMesh(model.geom, model.material, mass)
         if entity.renderable.collideless?
           obj._physijs.type = 'sphere'
           obj._physijs.radius = 0
@@ -39,13 +43,26 @@ define ['systems/base', 'THREE', 'Physijs'], (System, THREE, Physijs) ->
       @lock2d(obj)
   
       @updatePosition(id, entity)
+
+    trimModelsCache: ->
+      if _.keys(@models).length > @maxCachedModels
+        console.log 'extra models, trimming'
+        _.chain(@models)
+         .map((model, name) -> [name, model.useCount])
+         .sortBy((e) -> e.useCount)
+         .initial(@maxCachedModels)
+         .each((e) =>
+           model = @models[e.name])
   
     loadModel: (id, entity) ->
       model = entity.renderable.model
   
       @models[model] = true
       @loader.load '/resources/' + model + '.js', (geom, materials) =>
-        @models[model] = [geom, new Physijs.createMaterial(materials[0], 0.8, 0.4)]
+        @models[model] =
+          geom: geom
+          material: new Physijs.createMaterial(materials[0], 0.8, 0.4)
+          useCount: 0
   
     updatePosition: (id, entity) ->
       mesh = entity.renderable.mesh
@@ -74,6 +91,7 @@ define ['systems/base', 'THREE', 'Physijs'], (System, THREE, Physijs) ->
       @loadModel(id, components) for [id, components] in entities when components.renderable.model? and components.renderable.model not of @models
   
       @addModelToScene(id, components) for [id, components] in entities when not components.renderable.meshLoaded
-  
-      @app.scene.simulate()
-      @app.renderer.render @app.scene, @app.camera
+
+      @trimModelsCache()
+
+      @app.render()

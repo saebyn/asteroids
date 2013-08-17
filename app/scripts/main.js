@@ -3,9 +3,11 @@ require.config({
         jquery: '../bower_components/jquery/jquery',
         underscore: '../bower_components/underscore/underscore',
         THREE: '../bower_components/threejs/build/three',
+        Stats: '../bower_components/stats.js/src/Stats',
         Physijs: '../bower_components/Physijs/physi',
         bootstrap: 'vendor/bootstrap',
-        THREEx: 'vendor/THREEx.FullScreen'
+        'THREEx.FullScreen': 'vendor/THREEx.FullScreen',
+        'THREEx.RendererStats': 'vendor/THREEx.RendererStats'
     },
     shim: {
         bootstrap: {
@@ -22,14 +24,21 @@ require.config({
         THREE: {
             exports: 'THREE'
         },
-        THREEx: {
-            exports: 'THREEx',
+        Stats: {
+            exports: 'Stats',
+        },
+        'THREEx.FullScreen': {
+            exports: 'THREEx.FullScreen',
+            deps: ['THREE']
+        },
+        'THREEx.RendererStats': {
+            exports: 'THREEx.RendererStats',
             deps: ['THREE']
         }
     }
 });
 
-require(['app', 'devhud', 'jquery', 'Physijs', 'THREEx', 'bootstrap'], function (App, DevHUD, $, Physijs, THREEx) {
+require(['app', 'jquery', 'Physijs', 'THREEx.FullScreen', 'bootstrap'], function (App, $, Physijs, FullScreen) {
     'use strict';
 
     var gameContainer = $('#game');
@@ -37,14 +46,12 @@ require(['app', 'devhud', 'jquery', 'Physijs', 'THREEx', 'bootstrap'], function 
     Physijs.scripts.worker = '/bower_components/Physijs/physijs_worker.js';
     Physijs.scripts.ammo = '/bower_components/ammo.js/builds/ammo.js';
 
-    if ( THREEx.FullScreen.available() ) {
+    if ( FullScreen.available() ) {
       $('#go-fullscreen').removeClass('hide').on('click', function () {
-        THREEx.FullScreen.request(gameContainer[0]);
+        FullScreen.request(gameContainer[0]);
       });
     }
 
     var app = new App(gameContainer);
     app.gameloop();
-
-    new DevHUD(app);
 });
