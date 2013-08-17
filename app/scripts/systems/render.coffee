@@ -2,8 +2,6 @@
 define ['systems/base', 'THREE', 'Physijs'], (System, THREE, Physijs) ->
   class RenderSystem extends System
     constructor: (@app) ->
-      # TODO move asset fetching into an external service singleton
-      # Cache models fetched
       @models = {}
 
       # Inst the model loader

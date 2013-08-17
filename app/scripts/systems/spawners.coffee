@@ -25,12 +25,7 @@ define ['systems/base', 'underscore', 'utils', 'THREE'], (System, _, utils, THRE
 
     speed = Math.random() * 0.05 + 0.01
 
-    rotationSpeed = Math.random() * 0.1
-
-    spin = new THREE.Vector3(
-      Math.random() - 0.5,
-      Math.random() - 0.5,
-      Math.random() - 0.5).normalize().multiplyScalar(rotationSpeed)
+    rotationSpeed = Math.random() * 0.01
 
     # TODO add some jitter to the direction?
     direction = new THREE.Vector2(-x, -y).normalize().multiplyScalar(speed)
@@ -46,7 +41,10 @@ define ['systems/base', 'underscore', 'utils', 'THREE'], (System, _, utils, THRE
           y: Math.random() * 2.0 * Math.PI
           z: Math.random() * 2.0 * Math.PI
       movement:
-        spin: spin
+        spin: new THREE.Vector3(
+                Math.random() - 0.5,
+                Math.random() - 0.5,
+                Math.random() - 0.5).normalize().multiplyScalar(rotationSpeed)
         direction:
           x: direction.x
           y: direction.y

@@ -13,3 +13,11 @@ $iconWhiteSpritePath: "../images/glyphicons-halflings-white.png";
 canvas {
     background: black;
 }
+
+#game {
+    min-height: 500px;
+}
+
+#game.fullscreen {
+    width: 100%;
+}
