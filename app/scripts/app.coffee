@@ -9,6 +9,7 @@ define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats'
       static: true
     damagable:
       health: 30
+      maxHealth: 30
     controllable: {left: 'left', right: 'right'}
     fireable:
       speed: 30
@@ -230,6 +231,15 @@ define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats'
       @renderer.render @scene, @camera
       @rendererStats.update(@renderer)
 
+    updatePlayerStats: ->
+      # Update stats display
+      @playerStatsContainer.find('.deaths .value').text(@playerStats.deaths)
+      @playerStatsContainer.find('.kills .value').text(@playerStats.kills)
+      @playerStatsContainer.find('.time .value').text((@playerStats.time / 60.0) | 0)
+      @playerStatsContainer.find('.health .current .value').text(@entities.player?.damagable?.health or 0)
+      @playerStatsContainer.find('.health .max .value').text(@entities.player?.damagable?.maxHealth or 0)
+
+
     gameloop: (currentTime=0) =>
       @stats.begin()
       elapsedTime = @fpsUpdate(currentTime)
@@ -267,10 +277,8 @@ define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats'
         # systems.
         @system('movement', 'movement', elapsedTime)
 
-        # Update stats display
-        @playerStatsContainer.find('.deaths .value').text(@playerStats.deaths)
-        @playerStatsContainer.find('.kills .value').text(@playerStats.kills)
-        @playerStatsContainer.find('.time .value').text((@playerStats.time / 60.0) | 0)
+
+        @updatePlayerStats()
 
       @stats.end()
 
