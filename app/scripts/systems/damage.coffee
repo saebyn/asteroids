@@ -10,7 +10,7 @@ define ['systems/base'], (System) ->
             entity.damagable.health -= damager.damaging.health
 
           if damager.damaging?.destroysSelf?
-            @app.destroyEntity(damagerMesh.name)
+            @app.removeEntity(damagerMesh.name)
 
         if entity.damagable.health <= 0
           @app.destroyEntity(id)

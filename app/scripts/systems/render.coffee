@@ -8,9 +8,6 @@ define ['systems/base', 'THREE', 'Physijs'], (System, THREE, Physijs) ->
       # Inst the model loader
       @loader = new THREE.JSONLoader()
 
-    lock2d: (mesh) ->
-      mesh.setLinearFactor(new THREE.Vector3(1, 1, 0))
-
     addModelToScene: (id, entity) ->
       if not entity.renderable.mesh?
         modelName = entity.renderable.model
@@ -40,7 +37,10 @@ define ['systems/base', 'THREE', 'Physijs'], (System, THREE, Physijs) ->
       obj.name = id
       entity.renderable.meshLoaded = true
       @app.scene.add obj
-      @lock2d(obj)
+      
+      # Lock all objects on the game plane
+      if obj.setLinearFactor?
+        obj.setLinearFactor(new THREE.Vector3(1, 1, 0))
   
       @updatePosition(id, entity)
 
@@ -69,6 +69,8 @@ define ['systems/base', 'THREE', 'Physijs'], (System, THREE, Physijs) ->
       if entity?.position
         mesh.position.x = entity.position.x
         mesh.position.y = entity.position.y
+        if entity.position.z?
+          mesh.position.z = entity.position.z
         mesh.__dirtyPosition = true
         if entity.position.direction?
           mesh.rotation.x = entity.position.direction.x
@@ -77,7 +79,7 @@ define ['systems/base', 'THREE', 'Physijs'], (System, THREE, Physijs) ->
           mesh.__dirtyRotation = true
   
       if entity.renderable.static?
-        mesh.setLinearFactor({x: 0, y: 0, z: 0})
+        mesh.setLinearFactor(new THREE.Vector3(0, 0, 0))
         @app.scene.add new Physijs.HingeConstraint(
           mesh,
           new THREE.Vector3(0, 0, 0),
@@ -86,12 +88,14 @@ define ['systems/base', 'THREE', 'Physijs'], (System, THREE, Physijs) ->
   
   
     processOurEntities: (entities, elapsedTime) ->
-      ids = (id for [id, components] in entities)
-  
+      # if the entity has a model specified, but it's not loaded...
       @loadModel(id, components) for [id, components] in entities when components.renderable.model? and components.renderable.model not of @models
   
+      # if the entity has a loaded model, but it's not in the scene...
       @addModelToScene(id, components) for [id, components] in entities when not components.renderable.meshLoaded
 
+      # throw away old models, we can refetch them later if we need to
       @trimModelsCache()
 
+      # tell the app to render
       @app.render()

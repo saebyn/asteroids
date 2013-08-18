@@ -41,7 +41,8 @@ require.config({
 require(['app', 'jquery', 'Physijs', 'THREEx.FullScreen', 'bootstrap'], function (App, $, Physijs, FullScreen) {
     'use strict';
 
-    var gameContainer = $('#game');
+    var gameContainer = $('#game'),
+        playerStatsContainer = $('#player-stats');
 
     Physijs.scripts.worker = '/bower_components/Physijs/physijs_worker.js';
     Physijs.scripts.ammo = '/bower_components/ammo.js/builds/ammo.js';
@@ -52,6 +53,6 @@ require(['app', 'jquery', 'Physijs', 'THREEx.FullScreen', 'bootstrap'], function
       });
     }
 
-    var app = new App(gameContainer);
+    var app = new App(gameContainer, playerStatsContainer);
     app.gameloop();
 });

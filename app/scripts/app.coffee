@@ -1,8 +1,34 @@
-define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats', 'Physijs', 'jquery', 'underscore'], (systems, THREE, FullScreen, RendererStats, Stats, Physijs, $, _) ->
+define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats', 'Physijs', 'jquery', 'underscore', 'utils'], (systems, THREE, FullScreen, RendererStats, Stats, Physijs, $, _, utils) ->
   FRAME_TIME_COUNTS = 50
+  ASTEROID_SPAWN_RATE = 0.1
+
+  PLAYER =
+    position: {x: 0, y: 0, direction: {x: 0, y: 0, z: 0}}
+    renderable:
+      model: 'playership'
+      static: true
+    damagable:
+      health: 30
+    controllable: {left: 'left', right: 'right'}
+    fireable:
+      speed: 30
+      size: 21 
+      extraComponents:
+        damaging:
+          health: 1
+          destroysSelf: true
+        renderable:
+          model: 'laserbolt'
+        expireTime: 2000
 
   class App
     fullscreen: false
+
+    playerStats:
+      deaths: 0
+      kills: 0
+      time: 0
+
     getGameWidth: ->
       if @fullscreen
         $(document).width()
@@ -19,8 +45,6 @@ define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats'
     maxDistance: 340
     maxEntities: 250
 
-    frameTimes: []
-
     viewAngle: 45.0
     nearDistance: 0.1
     backgroundDistance: 10
@@ -30,29 +54,12 @@ define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats'
 
     lastEntityId: 0
     entities:
-      player:
-        position: {x: 0, y: 0, direction: {x: 0, y: 0, z: 0}}
-        renderable:
-          model: 'playership'
-          static: true
-        damagable:
-          health: 30
-        controllable: {left: 'left', right: 'right'}
-        fireable:
-          speed: 30
-          size: 21 
-          extraComponents:
-            damaging:
-              health: 1
-              destroysSelf: true
-            renderable:
-              model: 'laserbolt'
-            expireTime: 2000
+      player: utils.clone(PLAYER)
       asteroidSpawner:
         spawnable:
           radius: 200.0
           max: 30
-          rate: 0.1
+          rate: ASTEROID_SPAWN_RATE
           rateChange: 0.005
           extraComponents:
             damagable:
@@ -76,8 +83,48 @@ define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats'
       delete @entities[id]
 
     destroyEntity: (id) ->
-      console.log 'thing went boom', id
-      @removeEntity(id)
+      if @entities[id]
+        @addExplosionAtEntity(@entities[id])
+        @removeEntity(id)
+
+      if id == 'player'
+        @playerStats.deaths += 1
+        # Remove all asteroids, reset rate
+        @entities.asteroidSpawner.spawnable.rate = ASTEROID_SPAWN_RATE
+        @removeEntity(id) for id of @entities when @entities[id]._type == 'asteroid1'
+
+        # TODO show some death message
+
+        setTimeout(=>
+          @playerStats.time = 0
+          @entities.player = utils.clone(PLAYER)
+        , 5000)
+      else
+        @playerStats.kills += 1
+
+    addExplosionAtEntity: (entity) ->
+      position = false
+      if entity.renderable?.mesh?
+        position = entity.renderable.mesh.position
+      else if entity.position?
+        position = entity.position
+      
+      if position?
+        @addEntity(
+          renderable: {}
+          position:
+            x: position.x
+            y: position.y
+            z: position.z
+            direction: {x: 0, y: 0, z:0}
+          explosion:
+            startRadius: 5.0
+            speed: 2.2
+          expirable:
+            time: 5000
+        )
+      else
+        console.log 'Tried to explode something that did not have a position:', entity
 
     addEntity: (components) ->
       if _.keys(@entities).length < @maxEntities
@@ -92,7 +139,7 @@ define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats'
     controlDirection: false
     controlFiring: false
 
-    constructor: (@container) ->
+    constructor: (@container, @playerStatsContainer) ->
       @systems = systems.register(this)
       @setupThree()
       @container.append @renderer.domElement
@@ -168,10 +215,6 @@ define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats'
 
     fpsUpdate: (currentTime) ->
       elapsedTime = currentTime - @lastTime
-      @frameTimes.push(elapsedTime)
-      if @frameTimes.length > FRAME_TIME_COUNTS
-        @frameTimes.splice(0, @frameTimes.length - FRAME_TIME_COUNTS)
-
       @lastTime = currentTime
       elapsedTime
 
@@ -181,8 +224,9 @@ define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats'
       @rendererStats.update(@renderer)
 
     gameloop: (currentTime=0) =>
-      elapsedTime = @fpsUpdate(currentTime)
       @stats.begin()
+      elapsedTime = @fpsUpdate(currentTime)
+      @playerStats.time += elapsedTime
 
       # Any entities more than some fixed distance off the screen should be
       # destroyed.
@@ -206,12 +250,18 @@ define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats'
 
       @system('controls', 'controllable', elapsedTime)
       @system('weapons', 'fireable', elapsedTime)
+      @system('explosion', 'explosion', elapsedTime)
       @system('render', 'renderable', elapsedTime)
       @system('expire', 'expirable', elapsedTime)
 
       # Note that movements need to be applied after the spawner and generator
       # systems.
       @system('movement', 'movement', elapsedTime)
+
+      # Update stats display
+      @playerStatsContainer.find('.deaths .value').text(@playerStats.deaths)
+      @playerStatsContainer.find('.kills .value').text(@playerStats.kills)
+      @playerStatsContainer.find('.time .value').text((@playerStats.time / 60.0) | 0)
 
       @stats.end()
 

@@ -18,15 +18,17 @@
     <!-- endbuild -->
   </head>
   <body>
-    <div class="container" id="options">
-      <button id="go-fullscreen" class="btn hide"><i class="icon-fullscreen"></i> Fullscreen</button>
-    </div>
-
     <div class="container" id="game">
+      <div id="options">
+        <span id="player-stats">
+          <span class="deaths"><span class="badge badge-important value">0</span> deaths</span>
+          <span class="kills"><span class="badge badge-success value">0</span> kills</span>
+          <span class="time"><span class="badge badge-info value">0</span> seconds so far</span>
+        </span>
+        <button id="go-fullscreen" class="btn btn-inverse hide"><i class="icon-white icon-fullscreen"></i> Fullscreen</button>
+      </div>
 
-
-    <div id="stats-container">
-    </div>
+      <div id="stats-container"></div>
     </div>
 
     <!--[if lt IE 7]>
