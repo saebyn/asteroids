@@ -98,4 +98,4 @@ define ['systems/base', 'THREE', 'Physijs'], (System, THREE, Physijs) ->
       @trimModelsCache()
 
       # tell the app to render
-      @app.render()
+      @app.render(elapsedTime)

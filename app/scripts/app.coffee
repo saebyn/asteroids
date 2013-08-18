@@ -23,6 +23,7 @@ define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats'
 
   class App
     fullscreen: false
+    paused: false
 
     playerStats:
       deaths: 0
@@ -91,7 +92,8 @@ define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats'
         @playerStats.deaths += 1
         # Remove all asteroids, reset rate
         @entities.asteroidSpawner.spawnable.rate = ASTEROID_SPAWN_RATE
-        @removeEntity(id) for id of @entities when @entities[id]._type == 'asteroid1'
+        console.log @entities
+        @removeEntity(id) for id of @entities when @entities[id]._type == 'asteroidSpawner'
 
         # TODO show some death message
 
@@ -151,6 +153,11 @@ define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats'
           @controlDirection = 'right'
         else if event.which == 32
           @controlFiring = true
+        else if event.which == 79 # o
+          $('#go-fullscreen').click()
+        else if event.which == 80 # p
+          @paused = not @paused
+          $('#pause-continue').button('toggle')
       
       document.addEventListener 'keyup', (event) =>
         if event.which in [65, 68]
@@ -218,50 +225,52 @@ define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats'
       @lastTime = currentTime
       elapsedTime
 
-    render: ->
-      @scene.simulate()
+    render: (elapsedTime) ->
+      @scene.simulate(elapsedTime / 1000.0)
       @renderer.render @scene, @camera
       @rendererStats.update(@renderer)
 
     gameloop: (currentTime=0) =>
       @stats.begin()
       elapsedTime = @fpsUpdate(currentTime)
-      @playerStats.time += elapsedTime
 
-      # Any entities more than some fixed distance off the screen should be
-      # destroyed.
-      stale = []
-      @scene.traverse (obj) =>
-        if obj.position.length() > @maxDistance and obj.name of @entities
-          @removeEntity(obj.name)
+      if not @paused
+        @playerStats.time += elapsedTime
 
-        # Remove any objects in the scene but not registered as an
-        # entity, if the object has a name.
-        if obj.name and obj.name not of @entities
-          stale.push obj
+        # Any entities more than some fixed distance off the screen should be
+        # destroyed.
+        stale = []
+        @scene.traverse (obj) =>
+          if obj.position.length() > @maxDistance and obj.name of @entities
+            @removeEntity(obj.name)
 
-      @scene.remove(obj) for obj in stale
+          # Remove any objects in the scene but not registered as an
+          # entity, if the object has a name.
+          if obj.name and obj.name not of @entities
+            stale.push obj
 
-      # filter our entities and give them to the appropriate systems
-      @system('spawners', 'spawnable', elapsedTime)
-      @system('generator', 'generatable', elapsedTime)
+        @scene.remove(obj) for obj in stale
 
-      @system('damage', 'damagable', elapsedTime)
+        # filter our entities and give them to the appropriate systems
+        @system('spawners', 'spawnable', elapsedTime)
+        @system('generator', 'generatable', elapsedTime)
 
-      @system('controls', 'controllable', elapsedTime)
-      @system('weapons', 'fireable', elapsedTime)
-      @system('explosion', 'explosion', elapsedTime)
-      @system('render', 'renderable', elapsedTime)
-      @system('expire', 'expirable', elapsedTime)
+        @system('damage', 'damagable', elapsedTime)
 
-      # Note that movements need to be applied after the spawner and generator
-      # systems.
-      @system('movement', 'movement', elapsedTime)
+        @system('controls', 'controllable', elapsedTime)
+        @system('weapons', 'fireable', elapsedTime)
+        @system('explosion', 'explosion', elapsedTime)
+        @system('render', 'renderable', elapsedTime)
+        @system('expire', 'expirable', elapsedTime)
 
-      # Update stats display
-      @playerStatsContainer.find('.deaths .value').text(@playerStats.deaths)
-      @playerStatsContainer.find('.kills .value').text(@playerStats.kills)
-      @playerStatsContainer.find('.time .value').text((@playerStats.time / 60.0) | 0)
+        # Note that movements need to be applied after the spawner and generator
+        # systems.
+        @system('movement', 'movement', elapsedTime)
+
+        # Update stats display
+        @playerStatsContainer.find('.deaths .value').text(@playerStats.deaths)
+        @playerStatsContainer.find('.kills .value').text(@playerStats.kills)
+        @playerStatsContainer.find('.time .value').text((@playerStats.time / 60.0) | 0)
 
       @stats.end()
 

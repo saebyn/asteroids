@@ -47,12 +47,18 @@ require(['app', 'jquery', 'Physijs', 'THREEx.FullScreen', 'bootstrap'], function
     Physijs.scripts.worker = '/bower_components/Physijs/physijs_worker.js';
     Physijs.scripts.ammo = '/bower_components/ammo.js/builds/ammo.js';
 
+    var app = new App(gameContainer, playerStatsContainer);
+
     if ( FullScreen.available() ) {
       $('#go-fullscreen').removeClass('hide').on('click', function () {
-        FullScreen.request(gameContainer[0]);
+        $('#go-fullscreen').button('toggle');
+        if ( app.fullscreen ) {
+          FullScreen.cancel();
+        } else {
+          FullScreen.request(gameContainer[0]);
+        }
       });
     }
 
-    var app = new App(gameContainer, playerStatsContainer);
     app.gameloop();
 });

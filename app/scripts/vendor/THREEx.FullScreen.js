@@ -64,7 +64,9 @@ THREEx.FullScreen.request	= function(element)
 */
 THREEx.FullScreen.cancel	= function()
 {
-	if( this._hasWebkitFullScreen ){
+  if ( document.documentElement.cancelFullscreen ) {
+    document.documentElement.cancelFullscreen();
+  }else if( this._hasWebkitFullScreen ){
 		document.webkitCancelFullScreen();
 	}else if( this._hasMozFullScreen ){
 		document.mozCancelFullScreen();
