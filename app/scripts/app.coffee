@@ -27,6 +27,9 @@ define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats'
     fullscreen: false
     paused: false
 
+    # Where we keep track of our camera entities for easy rendering
+    cameras: {}
+
     playerStats:
       deaths: 0
       kills: 0
@@ -42,22 +45,53 @@ define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats'
         $(document).height()
       else
         @container.height()
-    getAspect: ->
-      @getGameWidth() / @getGameHeight()
 
-    maxDistance: 340
+    maxDistance: 3400
     maxEntities: 250
 
-    viewAngle: 45.0
-    nearDistance: 0.1
     backgroundDistance: 10
-    farDistance: 10000
 
     lastTime: 0
 
     lastEntityId: 0
     entities:
       player: utils.clone(PLAYER)
+      camera:
+        camera:
+          type: 'perspective'
+          viewAngle: 45.0
+          aspect: 1.0
+          nearDistance: 0.1
+          farDistance: 10000
+          position:
+            x: 0
+            y: 0
+            z: 500
+          view:
+            left: 0
+            bottom: 0
+            width: 1
+            height: 1
+          order: 1
+      altcamera:
+        camera:
+          type: 'perspective'
+          viewAngle: 45.0
+          aspect: 1.0
+          nearDistance: 0.1
+          farDistance: 10000
+          position:
+            x: 0
+            y: 0
+            z: 1500
+          view:
+            left: 0.75
+            bottom: 0.75
+            width: 0.15
+            height: 0.15
+            background: '#aaaaaa'
+          order: 2
+          
       asteroidSpawner:
         spawnable:
           radius: 200.0
@@ -166,6 +200,11 @@ define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats'
         else if event.which == 32
           @controlFiring = false
 
+    registerCamera: (id, camera, order) ->
+      @scene.add camera
+      camera.name = id
+      @cameras[id] = {camera: camera, order: order}
+
     setupThree: ->
       @renderer = new THREE.WebGLRenderer(
         antialias: true
@@ -177,13 +216,9 @@ define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats'
       @rendererStats = new RendererStats()
       $('#stats-container').append(@stats.domElement).append(@rendererStats.domElement)
 
-      @camera = new THREE.PerspectiveCamera(@viewAngle, @getAspect(), @nearDistance, @farDistance)
-      @camera.position.z = 300
-
       @scene = new Physijs.Scene()
       @scene.setGravity(new THREE.Vector3(0.0, 0.0, 0.0))
       @setupLighting @scene
-      @scene.add(@camera)
       @renderer.setSize @getGameWidth(), @getGameHeight()
 
       # On container size change, redo renderer.setSize
@@ -226,9 +261,37 @@ define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats'
       @lastTime = currentTime
       elapsedTime
 
+    renderCamera: (cameraId) ->
+      # Load viewport info from camera entity
+      cameraDef = @entities[cameraId].camera
+      windowWidth = @getGameWidth()
+      windowHeight = @getGameHeight()
+      # From http://mrdoob.github.io/three.js/examples/webgl_multiple_views.html
+      if cameraDef.view?
+        left = Math.floor(windowWidth * cameraDef.view.left)
+        bottom = Math.floor(windowHeight * cameraDef.view.bottom)
+        width = Math.floor(windowWidth * cameraDef.view.width)
+        height = Math.floor(windowHeight * cameraDef.view.height)
+      else
+        left = 0
+        bottom = 0
+        width = windowWidth
+        height = windowHeight
+
+      @renderer.setViewport(left, bottom, width, height)
+      @renderer.setScissor(left, bottom, width, height)
+      @renderer.enableScissorTest(true)
+      @renderer.setClearColor(cameraDef.view?.background or '#000000')
+      @renderer.render(@scene, @cameras[cameraId].camera)
+
     render: (elapsedTime) ->
       @scene.simulate(elapsedTime / 1000.0)
-      @renderer.render @scene, @camera
+      # iterate over cameras, rendering to each
+      orderedCameras = _.chain(@cameras)
+                        .keys().sortBy(
+                          (x) -> @cameras[x].order
+                        , this).value()
+      @renderCamera(cameraId) for cameraId in orderedCameras
       @rendererStats.update(@renderer)
 
     updatePlayerStats: ->
@@ -265,6 +328,8 @@ define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats'
         @scene.remove(obj) for obj in stale
 
         # filter our entities and give them to the appropriate systems
+        @system('camera', 'camera', elapsedTime)
+
         @system('spawners', 'spawnable', elapsedTime)
         @system('generator', 'generatable', elapsedTime)
 
