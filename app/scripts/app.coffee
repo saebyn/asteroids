@@ -94,7 +94,6 @@ define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats'
         @playerStats.deaths += 1
         # Remove all asteroids, reset rate
         @entities.asteroidSpawner.spawnable.rate = ASTEROID_SPAWN_RATE
-        console.log @entities
         @removeEntity(id) for id of @entities when @entities[id]._type == 'asteroidSpawner'
 
         # TODO show some death message
