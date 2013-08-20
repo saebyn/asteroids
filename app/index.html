@@ -20,21 +20,30 @@
   <body>
     <div class="container" id="game">
       <div id="options">
-        <span id="player-stats">
-          <span class="health">
-            <span class="badge badge-inverse">
-              <span class="current"><span class="value">0</span></span>/<span class="max"><span class="value">0</span></span>
-            </span> health
-          </span>
-          <span class="deaths"><span class="badge badge-important value">0</span> deaths</span>
-          <span class="kills"><span class="badge badge-success value">0</span> kills</span>
-          <span class="time"><span class="badge badge-info value">0</span> seconds so far</span>
-        </span>
-
         <span class="btn-group pull-right">
           <button id="go-fullscreen" class="btn btn-inverse hide"><i class="icon-white icon-fullscreen"></i> Fullscreen (o)</button>
           <button id="pause-continue" class="btn btn-inverse"><i class="icon-white icon-pause"></i> Pause (p)</button>
         </span>
+
+        <div id="player-stats">
+          <div class="health" title="Ship Health Remaining (HP)">
+            <div class="progress">
+              <span class="bar bar-danger"></span>
+            </div>
+            <div class="stat">
+              <span class="current">
+                <span class="value">0</span>
+              </span>
+              /
+              <span class="max">
+                <span class="value">0</span>
+              </span>
+            </div>
+          </div>
+          <span class="deaths"><span class="badge badge-important value">0</span> deaths</span>
+          <span class="kills"><span class="badge badge-success value">0</span> kills</span>
+          <span class="time"><span class="badge badge-info value">0</span> seconds so far</span>
+        </div>
 
         <span class="clearfix"></span>
       </div>

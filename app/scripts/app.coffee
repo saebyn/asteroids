@@ -20,6 +20,7 @@ define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats'
           destroysSelf: true
         renderable:
           model: 'laserbolt'
+          mass: 0.001
         expireTime: 2000
 
   class App
@@ -236,8 +237,11 @@ define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats'
       @playerStatsContainer.find('.deaths .value').text(@playerStats.deaths)
       @playerStatsContainer.find('.kills .value').text(@playerStats.kills)
       @playerStatsContainer.find('.time .value').text((@playerStats.time / 60.0) | 0)
-      @playerStatsContainer.find('.health .current .value').text(@entities.player?.damagable?.health or 0)
-      @playerStatsContainer.find('.health .max .value').text(@entities.player?.damagable?.maxHealth or 0)
+      health = @entities.player?.damagable?.health or 0
+      max = @entities.player?.damagable?.maxHealth or Math.Infinity
+      @playerStatsContainer.find('.health .current .value').text(health)
+      @playerStatsContainer.find('.health .max .value').text(max)
+      @playerStatsContainer.find('.health .progress .bar').css({width: (100.0 * health / max) + '%'})
 
 
     gameloop: (currentTime=0) =>
