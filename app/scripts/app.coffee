@@ -1,4 +1,4 @@
-define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats', 'Physijs', 'jquery', 'underscore', 'utils'], (systems, THREE, FullScreen, RendererStats, Stats, Physijs, $, _, utils) ->
+define(['systems', 'assetmanager', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats', 'Physijs', 'jquery', 'underscore', 'utils'], (systems, AssetManager, THREE, FullScreen, RendererStats, Stats, Physijs, $, _, utils) ->
   FRAME_TIME_COUNTS = 50
   ASTEROID_SPAWN_RATE = 0.1
 
@@ -36,21 +36,13 @@ define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats'
       kills: 0
       time: 0
 
-    getGameWidth: ->
-      if @fullscreen
-        $(document).width()
-      else
-        @container.width()
-    getGameHeight: ->
-      if @fullscreen
-        $(document).height()
-      else
-        @container.height()
-
     maxDistance: 3400
     maxEntities: 250
 
     lastTime: 0
+
+    controlDirection: false
+    controlFiring: false
 
     lastEntityId: 0
     entities:
@@ -105,6 +97,31 @@ define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats'
             generatable:
               type: 'asteroid1'
               texture: '/images/asteroid1.png'
+
+    constructor: (@container, @playerStatsContainer) ->
+      @assetManager = new AssetManager()
+      @systems = systems.register(this)
+      @setupThree()
+      @container.append @renderer.domElement
+
+      document.addEventListener 'keydown', (event) =>
+        if event.which == 65
+          @controlDirection = 'left'
+        else if event.which == 68
+          @controlDirection = 'right'
+        else if event.which == 32
+          @controlFiring = true
+        else if event.which == 79 # o
+          $('#go-fullscreen').click()
+        else if event.which == 80 # p
+          @paused = not @paused
+          $('#pause-continue').button('toggle')
+      
+      document.addEventListener 'keyup', (event) =>
+        if event.which in [65, 68]
+          @controlDirection = false
+        else if event.which == 32
+          @controlFiring = false
 
     getNextEntityId: ->
       @lastEntityId += 1
@@ -173,32 +190,16 @@ define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats'
       else
         console.log 'way too many entities'
 
-    controlDirection: false
-    controlFiring: false
-
-    constructor: (@container, @playerStatsContainer) ->
-      @systems = systems.register(this)
-      @setupThree()
-      @container.append @renderer.domElement
-
-      document.addEventListener 'keydown', (event) =>
-        if event.which == 65
-          @controlDirection = 'left'
-        else if event.which == 68
-          @controlDirection = 'right'
-        else if event.which == 32
-          @controlFiring = true
-        else if event.which == 79 # o
-          $('#go-fullscreen').click()
-        else if event.which == 80 # p
-          @paused = not @paused
-          $('#pause-continue').button('toggle')
-      
-      document.addEventListener 'keyup', (event) =>
-        if event.which in [65, 68]
-          @controlDirection = false
-        else if event.which == 32
-          @controlFiring = false
+    getGameWidth: ->
+      if @fullscreen
+        $(document).width()
+      else
+        @container.width()
+    getGameHeight: ->
+      if @fullscreen
+        $(document).height()
+      else
+        @container.height()
 
     registerCamera: (id, camera, order) ->
       @scene.add camera
@@ -345,6 +346,7 @@ define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats'
 
 
         @updatePlayerStats()
+        @assetManager.maintain()
 
       @stats.end()
 

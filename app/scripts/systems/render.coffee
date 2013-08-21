@@ -1,28 +1,23 @@
 # render system
 define ['systems/base', 'THREE', 'Physijs'], (System, THREE, Physijs) ->
   class RenderSystem extends System
-    models: {}
-    maxCachedModels: 10
-
-    constructor: (@app) ->
-      # Inst the model loader
-      @loader = new THREE.JSONLoader()
-
     addModelToScene: (id, entity) ->
       if not entity.renderable.mesh?
         modelName = entity.renderable.model
-  
-        # Skip if model isn't loaded
-        if modelName not of @models or @models[modelName] == true
+
+        # If we need to load the model mesh, but it's not loaded yet,
+        # quit for now, and we'll try again in the next game loop.
+        if not @app.assetManager.isModelLoaded(modelName)
           return
-  
-        model = @models[modelName]
-        model.useCount += 1
+
+        model = @app.assetManager.getModel(modelName)
   
         mass = undefined
         if entity.renderable.mass?
           mass = entity.renderable.mass
  
+        # Note that since this model geometry might be reused, this setting
+        # affects any uses of this model.
         model.geom.dynamic = false
 
         meshType = Physijs.BoxMesh
@@ -46,26 +41,6 @@ define ['systems/base', 'THREE', 'Physijs'], (System, THREE, Physijs) ->
   
       @updatePosition(id, entity)
 
-    trimModelsCache: ->
-      if _.keys(@models).length > @maxCachedModels
-        console.log 'extra models, trimming'
-        _.chain(@models)
-         .map((model, name) -> [name, model.useCount])
-         .sortBy((e) -> e.useCount)
-         .initial(@maxCachedModels)
-         .each((e) =>
-           model = @models[e.name])
-  
-    loadModel: (id, entity) ->
-      model = entity.renderable.model
-  
-      @models[model] = true
-      @loader.load '/resources/' + model + '.js', (geom, materials) =>
-        @models[model] =
-          geom: geom
-          material: new Physijs.createMaterial(materials[0], 0.8, 0.4)
-          useCount: 0
-  
     updatePosition: (id, entity) ->
       mesh = entity.renderable.mesh
       if entity?.position
@@ -90,14 +65,12 @@ define ['systems/base', 'THREE', 'Physijs'], (System, THREE, Physijs) ->
   
   
     processOurEntities: (entities, elapsedTime) ->
+      # TODO refactor to simplify
       # if the entity has a model specified, but it's not loaded...
-      @loadModel(id, components) for [id, components] in entities when components.renderable.model? and components.renderable.model not of @models
+      @app.assetManager.loadModel(components.renderable.model) for [id, components] in entities when components.renderable.model? and not @app.assetManager.isModelLoadStarted(components.renderable.model)
   
       # if the entity has a loaded model, but it's not in the scene...
       @addModelToScene(id, components) for [id, components] in entities when not components.renderable.meshLoaded
-
-      # throw away old models, we can refetch them later if we need to
-      @trimModelsCache()
 
       # tell the app to render
       @app.render(elapsedTime)

@@ -32,7 +32,7 @@ define ['systems/base', 'THREE', 'Physijs', 'SimplexNoise', 'underscore'], (Syst
       materialOptions = {}
 
       if entity.generatable.texture
-        materialOptions.map = new THREE.ImageUtils.loadTexture(entity.generatable.texture)
+        materialOptions.map = @app.assetManager.getTexture(entity.generatable.texture)
 
       material = new Physijs.createMaterial(
         new THREE.MeshLambertMaterial(materialOptions),
