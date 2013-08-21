@@ -18,7 +18,15 @@
     <!-- endbuild -->
   </head>
   <body>
-    <div class="container" id="game">
+    <div class="fade in" id="preloader">
+      <div class="progress progress-striped active">
+        <div class="bar">
+        </div>
+      </div>
+
+      <h1>Loading assets...</h1>
+    </div>
+    <div class="container fade hide" id="game">
       <div id="options">
         <span class="btn-group pull-right">
           <button id="go-fullscreen" class="btn btn-inverse hide"><i class="icon-white icon-fullscreen"></i> Fullscreen (o)</button>

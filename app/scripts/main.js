@@ -61,5 +61,14 @@ require(['app', 'jquery', 'Physijs', 'THREEx.FullScreen', 'bootstrap'], function
       });
     }
 
+    app.assetManager.preload(
+      ['playership', 'laserbolt'],
+      ['/images/asteroid1.png'],
+      function () {
+        $('#preloader').removeClass('in').addClass('hide');
+        $('#game').removeClass('hide').addClass('in');
+      }
+    );
+
     app.gameloop();
 });

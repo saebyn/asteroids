@@ -8,7 +8,25 @@ define ['THREE', 'Physijs'], (THREE, Physijs) ->
       # Inst the model loader
       @loader = new THREE.JSONLoader()
 
-    loadModel: (modelName) ->
+    preload: (models, textures, success) ->
+      # load models and textures
+      # when all are complete, call success with no args
+      # always call success, even if no assets or they are
+      # already loaded
+      totalAssets = models.length + textures.length
+      loadedAssets = 0
+      callback = ->
+        loadedAssets += 1
+        if loadedAssets == totalAssets
+          success()
+
+      if totalAssets == 0
+        success()
+      else
+        @loadModel(name, callback) for name in models
+        @getTexture(path, callback) for path in textures
+
+    loadModel: (modelName, callback) ->
       if modelName not of @models
         @models[modelName] = true
         @loader.load '/resources/' + modelName + '.js', (geom, materials) =>
@@ -16,6 +34,9 @@ define ['THREE', 'Physijs'], (THREE, Physijs) ->
             geom: geom
             material: new Physijs.createMaterial(materials[0], 0.8, 0.4)
             useCount: 0
+
+          if callback
+            callback()
 
     # Has the model finished loading?
     isModelLoaded: (modelName) ->
@@ -33,9 +54,9 @@ define ['THREE', 'Physijs'], (THREE, Physijs) ->
     releaseModel: (modelName) ->
       @models[modelName].useCount -= 1
 
-    getTexture: (path) ->
+    getTexture: (path, callback) ->
       if path not of @textures
-        @textures[path] = new THREE.ImageUtils.loadTexture(path)
+        @textures[path] = new THREE.ImageUtils.loadTexture(path, undefined, callback)
 
       @textures[path]
 
