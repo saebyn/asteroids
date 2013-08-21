@@ -49,8 +49,6 @@ define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats'
     maxDistance: 3400
     maxEntities: 250
 
-    backgroundDistance: 10
-
     lastTime: 0
 
     lastEntityId: 0
@@ -89,12 +87,12 @@ define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats'
             bottom: 0.75
             width: 0.15
             height: 0.15
-            background: '#aaaaaa'
+            background: '#444'
           order: 2
           
       asteroidSpawner:
         spawnable:
-          radius: 200.0
+          radius: 1500.0
           max: 30
           rate: ASTEROID_SPAWN_RATE
           rateChange: 0.005
@@ -105,6 +103,7 @@ define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats'
               health: 1
             generatable:
               type: 'asteroid1'
+              texture: '/images/asteroid1.png'
 
     getNextEntityId: ->
       @lastEntityId += 1
@@ -238,12 +237,10 @@ define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats'
       , 500))
 
     setupLighting: (scene) ->
-      pointLight = new THREE.PointLight(0xffffff)
+      pointLight = new THREE.PointLight(0xffffff, 1.0, @maxDistance * 50.0)
 
       # set its position
-      pointLight.position.x = 0
-      pointLight.position.y = 0
-      pointLight.position.z = 300
+      pointLight.position.set(0, 0, 5000)
 
       # add to the scene
       scene.add pointLight

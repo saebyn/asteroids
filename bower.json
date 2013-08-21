@@ -8,7 +8,8 @@
     "jquery": "~1.9.1",
     "threejs": "*",
     "Physijs": "saebyn/Physijs",
-    "stats.js": "*"
+    "stats.js": "*",
+    "simplex-noise.js": "jwagner/simplex-noise.js"
   },
   "devDependencies": {},
   "resolutions": {

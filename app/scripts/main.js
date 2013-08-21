@@ -7,7 +7,8 @@ require.config({
         Physijs: '../bower_components/Physijs/physi',
         bootstrap: 'vendor/bootstrap',
         'THREEx.FullScreen': 'vendor/THREEx.FullScreen',
-        'THREEx.RendererStats': 'vendor/THREEx.RendererStats'
+        'THREEx.RendererStats': 'vendor/THREEx.RendererStats',
+        SimplexNoise: '../bower_components/simplex-noise.js/simplex-noise'
     },
     shim: {
         bootstrap: {
