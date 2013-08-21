@@ -24,11 +24,13 @@ define ['systems/base', 'THREE', 'Physijs'], (System, THREE, Physijs) ->
           mass = entity.renderable.mass
  
         model.geom.dynamic = false
+
+        meshType = Physijs.BoxMesh
+
+        if entity.renderable.convexCollision?
+          meshType = Physijs.ConvexMesh
   
-        obj = new Physijs.BoxMesh(model.geom, model.material, mass)
-        if entity.renderable.collideless?
-          obj._physijs.type = 'sphere'
-          obj._physijs.radius = 0
+        obj = new meshType(model.geom, model.material, mass)
   
         entity.renderable.mesh = obj
       else

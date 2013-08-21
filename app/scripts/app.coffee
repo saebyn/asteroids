@@ -7,6 +7,7 @@ define(['systems', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats'
     renderable:
       model: 'playership'
       static: true
+      convexCollision: true
     damagable:
       health: 30
       maxHealth: 30
