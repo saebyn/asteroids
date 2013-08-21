@@ -17,7 +17,7 @@ define(['systems', 'assetmanager', 'THREE', 'THREEx.FullScreen', 'THREEx.Rendere
       size: 21 
       extraComponents:
         damaging:
-          health: 1
+          health: 10
           destroysSelf: true
         renderable:
           model: 'laserbolt'
@@ -80,23 +80,32 @@ define(['systems', 'assetmanager', 'THREE', 'THREEx.FullScreen', 'THREEx.Rendere
             bottom: 0.75
             width: 0.15
             height: 0.15
-            background: '#444'
+            background: '#fff'
           order: 2
           
       asteroidSpawner:
         spawnable:
-          radius: 1500.0
+          radius: 1000.0
           max: 30
           rate: ASTEROID_SPAWN_RATE
           rateChange: 0.005
           extraComponents:
             damagable:
-              health: 3
+              health: 20
+              fracture:
+                chance: 0.3
+                generatable:
+                  type: 'asteroid1'
+                  texture: '/images/asteroid1.png'
+                  bumpMap: '/images/asteroid1_bump.png'
+                  bumpScale: 1.0
             damaging:
-              health: 1
+              health: 5
             generatable:
               type: 'asteroid1'
               texture: '/images/asteroid1.png'
+              bumpMap: '/images/asteroid1_bump.png'
+              bumpScale: 1.0
 
     constructor: (@container, @playerStatsContainer) ->
       @assetManager = new AssetManager()
@@ -297,7 +306,7 @@ define(['systems', 'assetmanager', 'THREE', 'THREEx.FullScreen', 'THREEx.Rendere
       # Update stats display
       @playerStatsContainer.find('.deaths .value').text(@playerStats.deaths)
       @playerStatsContainer.find('.kills .value').text(@playerStats.kills)
-      @playerStatsContainer.find('.time .value').text((@playerStats.time / 60.0) | 0)
+      @playerStatsContainer.find('.time .value').text((@playerStats.time / 1000.0) | 0)
       health = @entities.player?.damagable?.health or 0
       max = @entities.player?.damagable?.maxHealth or Math.Infinity
       @playerStatsContainer.find('.health .current .value').text(health)

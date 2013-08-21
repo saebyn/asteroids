@@ -16,6 +16,7 @@ define ['systems/base', 'THREE'], (System, THREE) ->
             entity.movement.spin.y * 1000.0,
             (entity.movement.spin.z or 0) * 1000.0))
 
+      entity._movement = entity.movement
       delete entity.movement
 
   class MovementSystem extends System

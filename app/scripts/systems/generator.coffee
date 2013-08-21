@@ -22,20 +22,25 @@ define ['systems/base', 'THREE', 'Physijs', 'SimplexNoise', 'underscore'], (Syst
 
   class GeneratorSystem extends System
     generateModel: (entity) ->
-      radius = Math.random() * 10.0 + 5.0
+      radius = entity.generatable.radius or (Math.random() * 10.0 + 5.0)
       geom = new THREE.IcosahedronGeometry(radius, 4)
       # deform geometry randomly
       geom.vertices = _.map(geom.vertices, randomizeVertex(entity.position, radius))
       geom.verticesNeedUpdate = true
       geom.dynamic = false
 
-      materialOptions = {}
+      materialOptions = 
+        shininess: 0
 
       if entity.generatable.texture
         materialOptions.map = @app.assetManager.getTexture(entity.generatable.texture)
 
+      if entity.generatable.bumpMap
+        materialOptions.bumpMap = @app.assetManager.getTexture(entity.generatable.bumpMap)
+        materialOptions.bumpScale = entity.generatable.bumpScale
+
       material = new Physijs.createMaterial(
-        new THREE.MeshLambertMaterial(materialOptions),
+        new THREE.MeshPhongMaterial(materialOptions),
         0.6,
         0.4)
       mesh = new Physijs.SphereMesh(geom, material)

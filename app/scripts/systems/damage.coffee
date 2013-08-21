@@ -1,5 +1,35 @@
 # damage system
-define ['systems/base'], (System) ->
+define ['systems/base', 'THREE', 'utils'], (System, THREE, utils) ->
+  randomDirection = (v) ->
+    # Locking on XY plane
+    new THREE.Vector3(Math.random() * v, Math.random() * v, 0).normalize()
+
+  distant = (points, radius) ->
+    _.all(points, (p) ->
+      _.all(points, (q) ->
+        p.distanceTo(q) > radius or p is q
+      )
+    )
+
+  # Pick `number` points that are all at least 2*radius
+  # distance from all other picked points.
+  pickRandomPointsDistant = (radius, origin, number) ->
+    angle = 2.0 * Math.PI / number
+    spacing = 5.0
+    spacingRadius = (radius + spacing) / (2.0 * Math.sin(angle / 2.0))
+    
+    gen = (i) ->
+      point:
+        x: origin.x + Math.cos(angle * i) * spacingRadius
+        y: origin.y + Math.sin(angle * i) * spacingRadius
+        z: 0
+      dir:
+        x: Math.cos(angle * i)
+        y: Math.sin(angle * i)
+        z: 0
+        
+    gen(i) for i in [0...number]
+
   class DamageSystem extends System
     registerCollisions: (id, entity) ->
       # listen for collisions on this mesh
@@ -14,6 +44,49 @@ define ['systems/base'], (System) ->
 
         if entity.damagable.health <= 0
           @app.destroyEntity(id)
+
+          # If there's a chance this object will fracture rather than
+          # simply being atomized...
+          if entity.damagable.fracture?.chance?
+            count = (Math.random() * 4 + 2) | 0
+            if Math.random() < entity.damagable.fracture.chance
+              generatable = utils.clone(entity.damagable.fracture.generatable)
+              if not entity.renderable?.mesh?
+                return
+
+              generatable.radius = entity.renderable.mesh.geometry.boundingSphere.radius / count
+
+              origin = new THREE.Vector3(entity.position.x,
+                                         entity.position.y,
+                                         entity.position.z)
+              positions = pickRandomPointsDistant(2.0 * generatable.radius,
+                                                  origin,
+                                                  count)
+              movement = entity._movement or entity.movement
+              originalDirection = new THREE.Vector3(movement.direction.x,
+                                                    movement.direction.y,
+                                                    movement.direction.z)
+              speed = originalDirection.length()
+              getMoveDirection = (v) ->
+                d = new THREE.Vector3(v.x, v.y, v.z).normalize().multiplyScalar(speed)
+                {x: d.x, y: d.y, z: d.z}
+
+              @app.addEntity(
+                _type: entity._type
+                position:
+                  x: positions[x].point.x
+                  y: positions[x].point.y
+                  z: positions[x].point.z
+                  direction: utils.clone(entity.position.direction)
+                movement:
+                  direction: getMoveDirection(positions[x].dir)
+                  spin: movement.spin.clone()
+                damagable:
+                  health: (Math.random() * 3 + 1) | 0
+                damaging:
+                  health: entity.damaging.health
+                generatable: generatable
+              ) for x in [0...count]
       )
       entity.damagable._registered = true
 
