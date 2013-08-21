@@ -6,18 +6,8 @@ define ['systems/base', 'THREE'], (System, THREE) ->
   maxRotation = 5
 
   applyTilt = (tiltAmount, direction, lastDirection, obj) ->
-    if direction != lastDirection
-      if direction == 'left'
-        obj.rotateX(tiltAmount)
-      else if direction == 'right'
-        obj.rotateX(-tiltAmount)
-      else  # must be going neutral
-        if lastDirection == 'left'
-          obj.rotateX(-tiltAmount)
-        else if lastDirection == 'right'
-          obj.rotateX(tiltAmount)
-
-      obj.__dirtyRotation = true
+    obj.rotateX(tiltAmount * (lastDirection - direction))
+    obj.__dirtyRotation = true
 
 
   controlEntity = (direction, time, entity) ->
@@ -30,12 +20,12 @@ define ['systems/base', 'THREE'], (System, THREE) ->
 
     if direction == entity.controllable.left
       rotation += 1.5 / time
-      direction = 'left'
+      direction = -1
     else if direction == entity.controllable.right
       rotation -= 1.5 / time
-      direction = 'right'
+      direction = 1
     else
-      direction = 'none'
+      direction = 0
 
     # If we have a mesh/object to operate on...
     if entity.renderable.mesh?
