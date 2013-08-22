@@ -125,7 +125,8 @@ define(['systems', 'assetmanager', 'THREE', 'vendor/fullscreen', 'vendor/rendere
         else if event.which == 79 # o
           $('#go-fullscreen').click()
         else if event.which == 80 # p
-          @togglePause()
+          if @container.is(':visible')
+            @togglePause()
 
       document.addEventListener 'keyup', (event) =>
         if event.which in [65, 68]

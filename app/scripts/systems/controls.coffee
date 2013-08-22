@@ -25,6 +25,7 @@ define ['systems/base', 'THREE'], (System, THREE) ->
       rotation -= 1.5 / time
       direction = 1
     else
+      rotation += -rotation / 1.5 / time
       direction = 0
 
     # If we have a mesh/object to operate on...
