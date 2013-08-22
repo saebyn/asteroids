@@ -40,6 +40,7 @@ define ['systems/base', 'THREE', 'utils'], (System, THREE, utils) ->
             entity.damagable.health -= damager.damaging.health
 
           if damager.damaging?.destroysSelf?
+            @app.emit('hit')
             @app.removeEntity(damagerMesh.name)
 
         if entity.damagable.health <= 0
@@ -62,14 +63,18 @@ define ['systems/base', 'THREE', 'utils'], (System, THREE, utils) ->
               positions = pickRandomPointsDistant(2.0 * generatable.radius,
                                                   origin,
                                                   count)
+
               movement = entity._movement or entity.movement
-              originalDirection = new THREE.Vector3(movement.direction.x,
-                                                    movement.direction.y,
-                                                    movement.direction.z)
-              speed = originalDirection.length()
+
+              if entity.renderable.mesh?._physijs?.linearVelocity?
+                originalDirection = entity.renderable.mesh._physijs.linearVelocity
+              else
+                originalDirection = new THREE.Vector3(movement.direction.x,
+                                                      movement.direction.y,
+                                                      movement.direction.z)
+
               getMoveDirection = (v) ->
-                d = new THREE.Vector3(v.x, v.y, v.z).normalize().multiplyScalar(speed)
-                {x: d.x, y: d.y, z: d.z}
+                new THREE.Vector3(v.x, v.y, v.z).add(originalDirection).divideScalar(2.0)
 
               @app.addEntity(
                 _type: entity._type

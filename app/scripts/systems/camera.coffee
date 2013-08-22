@@ -16,9 +16,8 @@ define ['systems/base', 'THREE'], (System, THREE) ->
         camera.registered = true
 
     updateAspect: (camera) ->
-      if camera.aspect?
-        camera.aspect = @app.getGameWidth() / @app.getGameHeight()
-        camera.updateProjectionMatrix()
+      camera.camera.aspect = @app.getGameWidth() / @app.getGameHeight()
+      camera.camera.updateProjectionMatrix()
     
     processOurEntities: (entities, elapsed) ->
       @registerCamera(id, components.camera) for [id, components] in entities when not components.camera.registered?

@@ -56,6 +56,11 @@ define ['systems/base', 'underscore', 'utils', 'THREE'], (System, _, utils, THRE
     entity.spawnable.rate += entity.spawnable.rateChange * entity.spawnable.rate * elapsedTime / 1000.0
 
   class SpawnersSystem extends System
+    constructor: (@app) ->
+      @app.subscribe 'death', =>
+        # Remove all spawned entities
+        @app.removeEntity(id) for id of @entities when @entities[id]._type?
+
     processOurEntities: (entities, elapsedTime) ->
       # pick which ones we want to spawn
       picks = _.filter(

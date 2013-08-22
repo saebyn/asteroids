@@ -8,7 +8,10 @@ require.config({
         bootstrap: 'vendor/bootstrap',
         'THREEx.FullScreen': 'vendor/THREEx.FullScreen',
         'THREEx.RendererStats': 'vendor/THREEx.RendererStats',
-        SimplexNoise: '../bower_components/simplex-noise.js/simplex-noise'
+        SimplexNoise: '../bower_components/simplex-noise.js/simplex-noise',
+        audio: '../bower_components/jsfx/lib/audio',
+        jsfx: '../bower_components/jsfx/lib/jsfx',
+        jsfxlib: '../bower_components/jsfx/lib/jsfxlib'
     },
     shim: {
         bootstrap: {
@@ -39,7 +42,7 @@ require.config({
     }
 });
 
-require(['app', 'jquery', 'Physijs', 'THREEx.FullScreen', 'bootstrap'], function (App, $, Physijs, FullScreen) {
+require(['app', 'jquery', 'Physijs', 'THREEx.FullScreen', 'sounds', 'bootstrap'], function (App, $, Physijs, FullScreen, sounds) {
     'use strict';
 
     var gameContainer = $('#game'),
@@ -70,6 +73,11 @@ require(['app', 'jquery', 'Physijs', 'THREEx.FullScreen', 'bootstrap'], function
         $('#game').removeClass('hide').addClass('in');
       }
     );
+
+    app.subscribe('death', sounds.death);
+    app.subscribe('fire', sounds.fire);
+    app.subscribe('kill', sounds.kill);
+    app.subscribe('hit', sounds.hit);
 
     app.gameloop();
 });

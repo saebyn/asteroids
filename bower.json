@@ -9,7 +9,8 @@
     "threejs": "*",
     "Physijs": "saebyn/Physijs",
     "stats.js": "*",
-    "simplex-noise.js": "jwagner/simplex-noise.js"
+    "simplex-noise.js": "jwagner/simplex-noise.js",
+    "jsfx": "gordlea/jsfx"
   },
   "devDependencies": {},
   "resolutions": {

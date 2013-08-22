@@ -107,6 +107,8 @@ define(['systems', 'assetmanager', 'THREE', 'THREEx.FullScreen', 'THREEx.Rendere
               bumpMap: '/images/asteroid1_bump.png'
               bumpScale: 1.0
 
+    eventSubscribers: {}
+
     constructor: (@container, @playerStatsContainer) ->
       @assetManager = new AssetManager()
       @systems = systems.register(this)
@@ -132,6 +134,29 @@ define(['systems', 'assetmanager', 'THREE', 'THREEx.FullScreen', 'THREEx.Rendere
         else if event.which == 32
           @controlFiring = false
 
+      @subscribe 'death', =>
+        @playerStats.deaths += 1
+        # TODO show some death message
+        # Reset rate asteroid spawn rate
+        @entities.asteroidSpawner.spawnable.rate = ASTEROID_SPAWN_RATE
+        setTimeout(=>
+          @playerStats.time = 0
+          @entities.player = utils.clone(PLAYER)
+        , 5000)
+
+      @subscribe 'kill', =>
+        @playerStats.kills += 1
+
+    subscribe: (event, callback) ->
+      if event not of @eventSubscribers
+        @eventSubscribers[event] = []
+
+      @eventSubscribers[event].push(callback)
+
+    emit: (event, data...) ->
+      if event of @eventSubscribers
+        callback(event, data...) for callback in @eventSubscribers[event]
+
     getNextEntityId: ->
       @lastEntityId += 1
       @lastEntityId
@@ -151,19 +176,9 @@ define(['systems', 'assetmanager', 'THREE', 'THREEx.FullScreen', 'THREEx.Rendere
         @removeEntity(id)
 
       if id == 'player'
-        @playerStats.deaths += 1
-        # Remove all asteroids, reset rate
-        @entities.asteroidSpawner.spawnable.rate = ASTEROID_SPAWN_RATE
-        @removeEntity(id) for id of @entities when @entities[id]._type == 'asteroidSpawner'
-
-        # TODO show some death message
-
-        setTimeout(=>
-          @playerStats.time = 0
-          @entities.player = utils.clone(PLAYER)
-        , 5000)
+        @emit('death')
       else
-        @playerStats.kills += 1
+        @emit('kill')
 
     addExplosionAtEntity: (entity) ->
       position = false

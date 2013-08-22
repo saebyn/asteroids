@@ -7,6 +7,8 @@ define ['systems/base', 'underscore', 'utils', 'THREE'], (System, _, utils, THRE
     z = app.entities.player.renderable.mesh.rotation.z
     direction = new THREE.Vector3(Math.cos(z), Math.sin(z), 0)
 
+    app.emit('fire')
+
     # move the position so that the entire projectile is outside of
     #  the player mesh
 
