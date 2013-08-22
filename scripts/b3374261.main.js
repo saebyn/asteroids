@@ -55291,12 +55291,13 @@ return jsfxlib;
 define("bootstrap", ["jquery"], (function (global) {
     return function () {
         var ret, fn;
-        return ret || global.jquery;
+        return ret || global.$;
     };
 }(this)));
 
 (function() {
   require.config({
+    enforceDefine: true,
     paths: {
       jquery: '../bower_components/jquery/jquery',
       underscore: '../bower_components/underscore/underscore',
@@ -55312,7 +55313,7 @@ define("bootstrap", ["jquery"], (function (global) {
     shim: {
       bootstrap: {
         deps: ['jquery'],
-        exports: 'jquery'
+        exports: '$'
       },
       underscore: {
         exports: '_'
@@ -55330,7 +55331,7 @@ define("bootstrap", ["jquery"], (function (global) {
     }
   });
 
-  require(['app', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'bootstrap'], function(App, $, Physijs, FullScreen, sounds) {
+  define('main',['app', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'bootstrap'], function(App, $, Physijs, FullScreen, sounds) {
     var app, gameContainer, playerStatsContainer;
     gameContainer = $('#game');
     playerStatsContainer = $('#player-stats');
@@ -55360,6 +55361,4 @@ define("bootstrap", ["jquery"], (function (global) {
   });
 
 }).call(this);
-
-define("main", function(){});
 }());
