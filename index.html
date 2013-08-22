@@ -10,49 +10,87 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
-    <link rel="stylesheet" href="styles/8f229902.main.css">
+    <link rel="stylesheet" href="styles/5d31f5b9.main.css">
     <script src="scripts/vendor/f7f27360.modernizr.js"></script>
   </head>
   <body>
-    <div class="fade in" id="preloader">
-      <div class="progress progress-striped active">
-        <div class="bar">
-        </div>
-      </div>
-
-      <h1>Loading assets...</h1>
-    </div>
-    <div class="container fade hide" id="game">
-      <div id="options">
-        <span class="btn-group pull-right">
-          <button id="go-fullscreen" class="btn btn-inverse hide"><i class="icon-white icon-fullscreen"></i> Fullscreen (o)</button>
-          <button id="pause-continue" class="btn btn-inverse"><i class="icon-white icon-pause"></i> Pause (p)</button>
-        </span>
-
-        <div id="player-stats">
-          <div class="health" title="Ship Health Remaining (HP)">
-            <div class="progress">
-              <span class="bar bar-danger"></span>
-            </div>
-            <div class="stat">
-              <span class="current">
-                <span class="value">0</span>
-              </span>
-              /
-              <span class="max">
-                <span class="value">0</span>
-              </span>
-            </div>
+    <div class="container all">
+      <div class="fade in" id="preloader">
+        <div class="progress progress-striped active">
+          <div class="bar">
           </div>
-          <span class="deaths"><span class="badge badge-important value">0</span> deaths</span>
-          <span class="kills"><span class="badge badge-success value">0</span> kills</span>
-          <span class="time"><span class="badge badge-info value">0</span> seconds so far</span>
         </div>
 
-        <span class="clearfix"></span>
+        <h1>Loading assets...</h1>
       </div>
 
-      <div id="stats-container"></div>
+      <div class="container fade hide" id="menu">
+        <ol class="unstyled">
+          <li><button class="menu-btn btn btn-primary" data-action="game">Start Game</button></li>
+          <li><button class="menu-btn btn" data-action="keys"><i class="icon-help"></i> Keys</button></li>
+          <li><button class="menu-btn btn" disabled="disabled" data-action="stats">Stats <em>Coming Soon</em></button></li>
+          <li><button class="menu-btn btn" data-action="credits">Credits</button></li>
+        </ol>
+        <div class="aside">
+        </div>
+      </div>
+
+      <div class="container fade hide" id="keys">
+        a to turn left
+        d to turn right
+        space to fire weapon
+        p to pause and unpause
+        o to toggle full screen
+
+        <div class="form-actions">
+          <button class="menu-btn btn btn-primary" data-action="menu">Back</button>
+        </div>
+      </div>
+
+      <div class="container fade hide" id="stats">
+        <div class="form-actions">
+          <button class="menu-btn btn btn-primary" data-action="menu">Back</button>
+        </div>
+      </div>
+
+      <div class="container fade hide" id="credits">
+        <div class="form-actions">
+          <button class="menu-btn btn btn-primary" data-action="menu">Back</button>
+        </div>
+      </div>
+
+      <div class="fade hide" id="game">
+        <div id="options">
+          <span class="btn-group pull-right">
+            <button id="go-fullscreen" class="btn btn-inverse hide"><i class="icon-white icon-fullscreen"></i> Fullscreen (o)</button>
+            <button id="pause-continue" class="btn btn-inverse active"><i class="icon-white icon-pause"></i> Pause (p)</button>
+          </span>
+
+          <div id="player-stats">
+            <div class="health" title="Ship Health Remaining (HP)">
+              <div class="progress">
+                <span class="bar bar-danger"></span>
+              </div>
+              <div class="stat">
+                <span class="current">
+                  <span class="value">0</span>
+                </span>
+                /
+                <span class="max">
+                  <span class="value">0</span>
+                </span>
+              </div>
+            </div>
+            <span class="deaths"><span class="badge badge-important value">0</span> deaths</span>
+            <span class="kills"><span class="badge badge-success value">0</span> kills</span>
+            <span class="time"><span class="badge badge-info value">0</span> seconds so far</span>
+          </div>
+
+          <span class="clearfix"></span>
+        </div>
+
+        <div id="stats-container"></div>
+      </div>
     </div>
 
     <!--[if lt IE 7]>
@@ -73,6 +111,6 @@
       var Module = {TOTAL_MEMORY: 256 * 1024 * 1024};
     </script>
 
-    <script data-main="scripts/f37c614b.main" src="bower_components/requirejs/require.js"></script>
+    <script data-main="scripts/4691e6c3.main" src="bower_components/requirejs/require.js"></script>
   </body>
 </html>
