@@ -49,8 +49,8 @@ define ['systems/base', 'THREE', 'utils'], (System, THREE, utils) ->
           # If there's a chance this object will fracture rather than
           # simply being atomized...
           if entity.damagable.fracture?.chance?
-            count = (Math.random() * 4 + 2) | 0
             if Math.random() < entity.damagable.fracture.chance
+              count = (Math.random() * 4 + 2) | 0
               generatable = utils.clone(entity.damagable.fracture.generatable)
               if not entity.renderable?.mesh?
                 return
@@ -74,7 +74,11 @@ define ['systems/base', 'THREE', 'utils'], (System, THREE, utils) ->
                                                       movement.direction.z)
 
               getMoveDirection = (v) ->
-                new THREE.Vector3(v.x, v.y, v.z).add(originalDirection).divideScalar(2.0)
+                d = new THREE.Vector3(v.x, v.y, v.z)
+                d.add(originalDirection.divideScalar(2.0))
+                d.normalize()
+                d.multiplyScalar(originalDirection.length() / 1000)
+                {x: d.x, y: d.y, z: d.z}
 
               @app.addEntity(
                 _type: entity._type

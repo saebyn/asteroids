@@ -59,7 +59,7 @@ define ['systems/base', 'underscore', 'utils', 'THREE'], (System, _, utils, THRE
     constructor: (@app) ->
       @app.subscribe 'death', =>
         # Remove all spawned entities
-        @app.removeEntity(id) for id of @entities when @entities[id]._type?
+        @app.removeEntity(id) for id of @app.entities when @app.entities[id]._type?
 
     processOurEntities: (entities, elapsedTime) ->
       # pick which ones we want to spawn

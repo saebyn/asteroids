@@ -177,7 +177,7 @@ define(['systems', 'assetmanager', 'THREE', 'vendor/fullscreen', 'vendor/rendere
       delete @entities[id]
 
     destroyEntity: (id) ->
-      if @entities[id]
+      if id of @entities
         @addExplosionAtEntity(@entities[id])
         @removeEntity(id)
 
@@ -373,7 +373,6 @@ define(['systems', 'assetmanager', 'THREE', 'vendor/fullscreen', 'vendor/rendere
         # Note that movements need to be applied after the spawner and generator
         # systems.
         @system('movement', 'movement', elapsedTime)
-
 
         @updatePlayerStats()
         @assetManager.maintain()

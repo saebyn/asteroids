@@ -32,10 +32,15 @@ canvas {
 
 #game {
     min-height: 500px;
-    @include makeColumn(12)
+    @include makeColumn(12);
+    margin-left: 0;
 }
 
 .container.all.fullscreen {
+    width: 100%;
+}
+
+.fullscreen #game {
     width: 100%;
 }
 
