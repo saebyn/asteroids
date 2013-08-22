@@ -26,7 +26,7 @@ define(['systems', 'assetmanager', 'THREE', 'vendor/fullscreen', 'vendor/rendere
 
   class App
     fullscreen: false
-    paused: false
+    paused: true
 
     # Where we keep track of our camera entities for easy rendering
     cameras: {}
@@ -125,9 +125,8 @@ define(['systems', 'assetmanager', 'THREE', 'vendor/fullscreen', 'vendor/rendere
         else if event.which == 79 # o
           $('#go-fullscreen').click()
         else if event.which == 80 # p
-          @paused = not @paused
-          $('#pause-continue').button('toggle')
-      
+          @togglePause()
+
       document.addEventListener 'keyup', (event) =>
         if event.which in [65, 68]
           @controlDirection = false
@@ -146,6 +145,12 @@ define(['systems', 'assetmanager', 'THREE', 'vendor/fullscreen', 'vendor/rendere
 
       @subscribe 'kill', =>
         @playerStats.kills += 1
+
+    togglePause: ->
+      @paused = not @paused
+      $('#pause-continue').button('toggle')
+      if @paused
+        @emit('pause')
 
     subscribe: (event, callback) ->
       if event not of @eventSubscribers
@@ -251,9 +256,9 @@ define(['systems', 'assetmanager', 'THREE', 'vendor/fullscreen', 'vendor/rendere
         @fullscreen = FullScreen.activated()
 
         if @fullscreen
-          @container.addClass('fullscreen')
+          @container.parent().addClass('fullscreen')
         else
-          @container.removeClass('fullscreen')
+          @container.parent().removeClass('fullscreen')
 
         # Hide the canvas so that it doesn't add extra height from
         # its previous size.

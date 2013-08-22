@@ -14,11 +14,28 @@ canvas {
     background: black;
 }
 
-#game {
-    min-height: 500px;
+#menu ol {
+    @include makeColumn(4, 1);
 }
 
-#game.fullscreen {
+#menu .aside {
+    @include makeColumn(6, 1);
+}
+
+#menu ol li {
+    margin: 1em 0;
+}
+
+#menu .btn {
+    width: 100%;
+}
+
+#game {
+    min-height: 500px;
+    @include makeColumn(12)
+}
+
+.container.all.fullscreen {
     width: 100%;
 }
 
