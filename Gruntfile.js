@@ -367,8 +367,8 @@ module.exports = function (grunt) {
             options: {
                 exclude: ['modernizr']
             },
-            all: {
-                rjsConfig: '<%= yeoman.app %>/scripts/main.js'
+            target: {
+                rjsConfig: '.tmp/scripts/main.js'
             }
         }
     });
@@ -406,7 +406,8 @@ module.exports = function (grunt) {
         'requirejs',
         'concat',
         'cssmin',
-        'uglify',
+        'bower',
+        //'uglify',
         'copy:dist',
         'rev',
         'usemin'
