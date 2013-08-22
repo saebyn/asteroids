@@ -96,15 +96,15 @@ define(['systems', 'assetmanager', 'THREE', 'vendor/fullscreen', 'vendor/rendere
                 chance: 0.3
                 generatable:
                   type: 'asteroid1'
-                  texture: '/images/asteroid1.png'
-                  bumpMap: '/images/asteroid1_bump.png'
+                  texture: 'images/asteroid1.png'
+                  bumpMap: 'images/asteroid1_bump.png'
                   bumpScale: 1.0
             damaging:
               health: 5
             generatable:
               type: 'asteroid1'
-              texture: '/images/asteroid1.png'
-              bumpMap: '/images/asteroid1_bump.png'
+              texture: 'images/asteroid1.png'
+              bumpMap: 'images/asteroid1_bump.png'
               bumpScale: 1.0
 
     eventSubscribers: {}

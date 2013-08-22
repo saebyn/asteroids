@@ -29,7 +29,7 @@ define ['THREE', 'Physijs'], (THREE, Physijs) ->
     loadModel: (modelName, callback) ->
       if modelName not of @models
         @models[modelName] = true
-        @loader.load '/resources/' + modelName + '.js', (geom, materials) =>
+        @loader.load 'resources/' + modelName + '.js', (geom, materials) =>
           @models[modelName] =
             geom: geom
             material: new Physijs.createMaterial(materials[0], 0.8, 0.4)

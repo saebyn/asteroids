@@ -100,7 +100,7 @@ module.exports = function (grunt) {
         },
         open: {
             server: {
-                path: 'http://localhost:<%= connect.options.port %>'
+                path: 'http://localhost:<%= connect.options.port %>/'
             }
         },
         clean: {
@@ -222,7 +222,6 @@ module.exports = function (grunt) {
                     src: [
                         '<%= yeoman.dist %>/scripts/{,*/}*.js',
                         '<%= yeoman.dist %>/styles/{,*/}*.css',
-                        '<%= yeoman.dist %>/images/{,*/}*.{png,jpg,jpeg,gif,webp}',
                         '<%= yeoman.dist %>/styles/fonts/*'
                     ]
                 }
@@ -322,6 +321,26 @@ module.exports = function (grunt) {
                     ]
                 }]
             },
+            workerscripts: {
+                files: [{
+                    expand: true,
+                    dot: true,
+                    cwd: '<%= yeoman.app %>/bower_components/Physijs/',
+                    dest: '<%= yeoman.dist %>/bower_components/Physijs/',
+                    src: [
+                        'physijs_worker.js'
+                    ]
+                },
+                {
+                    expand: true,
+                    dot: true,
+                    cwd: '<%= yeoman.app %>/bower_components/ammo.js/builds/',
+                    dest: '<%= yeoman.dist %>/bower_components/ammo.js/builds/',
+                    src: [
+                        'ammo.js'
+                    ]
+                }]
+            },
             dist: {
                 files: [{
                     expand: true,
@@ -332,7 +351,8 @@ module.exports = function (grunt) {
                         '*.{ico,png,txt}',
                         '.htaccess',
                         'images/{,*/}*.{webp,gif}',
-                        'styles/fonts/*'
+                        'styles/fonts/*',
+                        'resources/*'
                     ]
                 }]
             },
@@ -402,12 +422,13 @@ module.exports = function (grunt) {
         'concurrent:dist',
         'copy:rjs', // bower components copied to .tmp BEFORE requirejs runs
         'copy:vendorrjs', //  components copied to .tmp BEFORE requirejs runs
+        'copy:workerscripts',
         'autoprefixer',
         'requirejs',
         'concat',
         'cssmin',
         'bower',
-        //'uglify',
+        'uglify',
         'copy:dist',
         'rev',
         'usemin'

@@ -20,7 +20,7 @@ define ['systems/base', 'THREE'], (System, THREE) ->
       pMaterial = new THREE.ParticleBasicMaterial(
         color: 0xFFFFFF
         size: 5
-        map: THREE.ImageUtils.loadTexture('/images/particle.png')
+        map: THREE.ImageUtils.loadTexture('images/particle.png')
         blending: THREE.AdditiveBlending
         transparent: true
       )

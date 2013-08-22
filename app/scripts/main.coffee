@@ -1,5 +1,4 @@
 require.config(
-    enforceDefine: true
     paths:
         jquery: '../bower_components/jquery/jquery'
         underscore: '../bower_components/underscore/underscore'
@@ -17,21 +16,14 @@ require.config(
             exports: '$'
         underscore:
             exports: '_'
-        Physijs:
-            exports: 'Physijs'
-            deps: ['THREE']
-        THREE:
-            exports: 'THREE'
-        Stats:
-            exports: 'Stats'
 )
 
-define ['app', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'bootstrap'], (App, $, Physijs, FullScreen, sounds) ->
+require ['app', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'bootstrap'], (App, $, Physijs, FullScreen, sounds) ->
     gameContainer = $('#game')
     playerStatsContainer = $('#player-stats')
 
-    Physijs.scripts.worker = '/bower_components/Physijs/physijs_worker.js'
-    Physijs.scripts.ammo = '/bower_components/ammo.js/builds/ammo.js'
+    Physijs.scripts.worker = 'bower_components/Physijs/physijs_worker.js'
+    Physijs.scripts.ammo = '../../bower_components/ammo.js/builds/ammo.js'
 
     app = new App(gameContainer, playerStatsContainer)
     window.app = app
@@ -46,7 +38,7 @@ define ['app', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'bootstrap'],
 
     app.assetManager.preload(
       ['playership', 'laserbolt'],
-      ['/images/asteroid1.png', '/images/asteroid1_bump.png', '/images/particle.png'],
+      ['images/asteroid1.png', 'images/asteroid1_bump.png', 'images/particle.png'],
       ->
         $('#preloader').removeClass('in').addClass('hide')
         $('#game').removeClass('hide').addClass('in')
