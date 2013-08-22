@@ -1,4 +1,5 @@
 require.config(
+    enforceDefine: true
     paths:
         jquery: '../bower_components/jquery/jquery'
         underscore: '../bower_components/underscore/underscore'
@@ -13,7 +14,7 @@ require.config(
     shim:
         bootstrap:
             deps: ['jquery']
-            exports: 'jquery'
+            exports: '$'
         underscore:
             exports: '_'
         Physijs:
@@ -25,7 +26,7 @@ require.config(
             exports: 'Stats'
 )
 
-require ['app', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'bootstrap'], (App, $, Physijs, FullScreen, sounds) ->
+define ['app', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'bootstrap'], (App, $, Physijs, FullScreen, sounds) ->
     gameContainer = $('#game')
     playerStatsContainer = $('#player-stats')
 
