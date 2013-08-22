@@ -16,6 +16,8 @@ module.exports = function (grunt) {
     // load all grunt tasks
     require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
 
+    grunt.loadNpmTasks('grunt-gh-pages');
+
     // configurable paths
     var yeomanConfig = {
         app: 'app',
@@ -23,6 +25,12 @@ module.exports = function (grunt) {
     };
 
     grunt.initConfig({
+        'gh-pages': {
+            options: {
+                base: 'dist'
+            },
+            src: ['**']
+        },
         yeoman: yeomanConfig,
         watch: {
             coffee: {
