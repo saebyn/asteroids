@@ -11,6 +11,8 @@
 
 //
 
+define([], function () {
+
 /** @namespace */
 var THREEx		= THREEx 		|| {};
 THREEx.FullScreen	= THREEx.FullScreen	|| {};
@@ -79,3 +81,5 @@ THREEx.FullScreen.cancel	= function()
 THREEx.FullScreen._hasWebkitFullScreen	= 'webkitCancelFullScreen' in document	? true : false;	
 THREEx.FullScreen._hasMozFullScreen	= 'mozCancelFullScreen' in document	? true : false;	
 
+  return THREEx.FullScreen;
+});

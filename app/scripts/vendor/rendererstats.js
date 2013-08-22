@@ -3,6 +3,7 @@
  * @author jetienne / http://jetienne.com/
  */
 /** @namespace */
+define(['THREE'], function (THREE) {
 var THREEx	= THREEx || {}
 
 /**
@@ -65,3 +66,6 @@ THREEx.RendererStats	= function (){
 		}
 	}	
 };
+
+  return THREEx.RendererStats;
+});

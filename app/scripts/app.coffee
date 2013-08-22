@@ -1,4 +1,4 @@
-define(['systems', 'assetmanager', 'THREE', 'THREEx.FullScreen', 'THREEx.RendererStats', 'Stats', 'Physijs', 'jquery', 'underscore', 'utils'], (systems, AssetManager, THREE, FullScreen, RendererStats, Stats, Physijs, $, _, utils) ->
+define(['systems', 'assetmanager', 'THREE', 'vendor/fullscreen', 'vendor/rendererstats', 'Stats', 'Physijs', 'jquery', 'underscore', 'utils'], (systems, AssetManager, THREE, FullScreen, RendererStats, Stats, Physijs, $, _, utils) ->
   FRAME_TIME_COUNTS = 50
   ASTEROID_SPAWN_RATE = 0.1
 

@@ -6,8 +6,6 @@ require.config(
         Stats: '../bower_components/stats.js/src/Stats'
         Physijs: '../bower_components/Physijs/physi'
         bootstrap: 'vendor/bootstrap'
-        'THREEx.FullScreen': 'vendor/THREEx.FullScreen'
-        'THREEx.RendererStats': 'vendor/THREEx.RendererStats'
         SimplexNoise: '../bower_components/simplex-noise.js/simplex-noise'
         audio: '../bower_components/jsfx/lib/audio'
         jsfx: '../bower_components/jsfx/lib/jsfx'
@@ -25,15 +23,9 @@ require.config(
             exports: 'THREE'
         Stats:
             exports: 'Stats'
-        'THREEx.FullScreen':
-            exports: 'THREEx.FullScreen'
-            deps: ['THREE']
-        'THREEx.RendererStats':
-            exports: 'THREEx.RendererStats'
-            deps: ['THREE']
 )
 
-require ['app', 'jquery', 'Physijs', 'THREEx.FullScreen', 'sounds', 'bootstrap'], (App, $, Physijs, FullScreen, sounds) ->
+require ['app', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'bootstrap'], (App, $, Physijs, FullScreen, sounds) ->
     gameContainer = $('#game')
     playerStatsContainer = $('#player-stats')
 
