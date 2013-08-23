@@ -1,7 +1,26 @@
 $iconSpritePath: "../images/glyphicons-halflings.png";
 $iconWhiteSpritePath: "../images/glyphicons-halflings-white.png";
 
-@import 'sass-bootstrap/lib/bootstrap';
+@import 'darkstrap';
+
+@import 'keys.css';
+
+#keys {
+    kbd {
+        font-size: 110%;
+        margin-right: 10px;
+    }
+
+    dt, dd {
+        margin-bottom: 10px;
+        line-height: 30px;
+    }
+}
+
+.container {
+    // override fullscreen user-agent styles
+    background: transparent;
+}
 
 .browsehappy {
     margin: 0.2em 0;
