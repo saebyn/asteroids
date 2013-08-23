@@ -26,16 +26,18 @@
 
       <div class="container fade hide" id="menu">
         <ol class="unstyled">
-          <li><button class="menu-btn btn btn-primary" data-action="game">Start Game</button></li>
-          <li><button class="menu-btn btn" data-action="keys"><i class="icon-help"></i> Keys</button></li>
-          <li><button class="menu-btn btn" disabled="disabled" data-action="stats">Stats <em>Coming Soon</em></button></li>
-          <li><button class="menu-btn btn" data-action="credits">Credits</button></li>
+          <li><button class="menu-btn btn btn-large btn-primary" data-action="game">Start Game</button></li>
+          <li><button class="menu-btn btn btn-large" data-action="keys"><i class="icon-help"></i> Keys</button></li>
+          <li><button class="menu-btn btn btn-large" disabled="disabled" data-action="stats">Stats <small>Coming Soon</small></button></li>
+          <li><button class="menu-btn btn btn-large" data-action="credits">Credits</button></li>
         </ol>
         <div class="aside">
         </div>
       </div>
 
       <div class="container fade hide" id="keys">
+        <h2>Keys</h2>
+
         <dl class="dl-horizontal">
           <dt><kbd class="light">a</kbd></dt>
           <dd>Turn Ship Left</dd>
@@ -55,12 +57,34 @@
       </div>
 
       <div class="container fade hide" id="stats">
+        <h2>Stats</h2>
         <div class="form-actions">
           <button class="menu-btn btn btn-primary" data-action="menu">Back</button>
         </div>
       </div>
 
       <div class="container fade hide" id="credits">
+        <h2>Credits</h2>
+
+        <h3>Developed by</h3>
+        
+        <p><a href="http://saebyn.info/" target="_blank">John Weaver</a></p>
+
+        <h3>Using</h3>
+        <ul class="unstyled">
+          <li><a href="http://threejs.org/" target="_blank">Three.js</a></li>
+
+          <li><a href="http://chandlerprall.github.io/Physijs/" target="_blank">Physijs</a></li>
+
+          <li><a href="http://getbootstrap.com/" target="_blank">Bootstrap</a> and <a href="https://github.com/danneu/darkstrap" target="_blank">Darkstrap</a></li>
+
+          <li><a href="https://github.com/egonelbre/jsfx" target="_blank">jsfx</a></li>
+
+          <li><a href="https://github.com/jwagner/simplex-noise.js" target="_blank">simplex-noise.js</a></li>
+
+          <li>Built and Deployed with <a href="http://yeoman.io/" target="_blank">Yeoman, Bower, Grunt</a>, and <a href="http://requirejs.org/" target="_blank">RequireJS</a></li>
+        </ul>
+
         <div class="form-actions">
           <button class="menu-btn btn btn-primary" data-action="menu">Back</button>
         </div>
