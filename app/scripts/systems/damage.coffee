@@ -30,74 +30,94 @@ define ['systems/base', 'THREE', 'utils'], (System, THREE, utils) ->
         
     gen(i) for i in [0...number]
 
+  collisionHandler = (system) ->
+    (damagerMesh) ->
+      entity = system.app.entities[this.name]
+      if not entity?
+        console.log 'got collision event on non-entity'
+        return
+
+      if damagerMesh.name of system.app.entities
+        damager = system.app.entities[damagerMesh.name]
+        if damager.damaging?.health?
+          entity.damagable.health -= damager.damaging.health
+
+        if damager.damaging?.destroysSelf?
+          system.app.emit('hit')
+          system.app.removeEntity(damagerMesh.name)
+
+      if entity.damagable.health <= 0
+        system.app.destroyEntity(this.name)
+
+        # If there's a chance this object will fracture rather than
+        # simply being atomized...
+        if entity.damagable.fracture?.chance? and entity.renderable?.mesh?
+          system.fracture(entity.damagable.fracture.chance,
+                          entity.damagable.fracture.generatable,
+                          entity.renderable.mesh,
+                          entity.position,
+                          entity._movement or entity.movement,
+                          entity._type,
+                          entity.damaging.health)
+
+
   class DamageSystem extends System
+    constructor: (@app) ->
+      @collisionHandler = collisionHandler(this)
+
+    fracture: (chance, generatable, mesh, position, movement, type, damage) ->
+      if Math.random() < chance
+        count = (Math.random() * 4 + 2) | 0
+        generatable = utils.clone(generatable)
+
+        generatable.radius = mesh.geometry.boundingSphere.radius / count
+
+        origin = new THREE.Vector3(position.x, position.y, position.z)
+        positions = pickRandomPointsDistant(2.0 * generatable.radius,
+                                            origin,
+                                            count)
+
+        if mesh._physijs?.linearVelocity?
+          originalDirection = mesh._physijs.linearVelocity
+        else
+          originalDirection = new THREE.Vector3(movement.direction.x,
+                                                movement.direction.y,
+                                                movement.direction.z)
+
+        getMoveDirection = (v) ->
+          d = new THREE.Vector3(v.x, v.y, v.z)
+          d.add(originalDirection.divideScalar(2.0))
+          d.normalize()
+          d.multiplyScalar(originalDirection.length() / 1000)
+          {x: d.x, y: d.y, z: d.z}
+
+        @app.addEntity(
+          _type: type
+          position:
+            x: positions[x].point.x
+            y: positions[x].point.y
+            z: positions[x].point.z
+            direction: utils.clone(position.direction)
+          movement:
+            direction: getMoveDirection(positions[x].dir)
+            spin: movement.spin.clone()
+          damagable:
+            health: (Math.random() * 3 + 1) | 0
+          damaging:
+            health: damage
+          generatable: generatable
+        ) for x in [0...count]
+
+    # Hook up collision detection
     registerCollisions: (id, entity) ->
       # listen for collisions on this mesh
-      entity.renderable.mesh.addEventListener('collision', (damagerMesh) =>
-        if damagerMesh.name of @app.entities
-          damager = @app.entities[damagerMesh.name]
-          if damager.damaging?.health?
-            entity.damagable.health -= damager.damaging.health
-
-          if damager.damaging?.destroysSelf?
-            @app.emit('hit')
-            @app.removeEntity(damagerMesh.name)
-
-        if entity.damagable.health <= 0
-          @app.destroyEntity(id)
-
-          # If there's a chance this object will fracture rather than
-          # simply being atomized...
-          if entity.damagable.fracture?.chance?
-            if Math.random() < entity.damagable.fracture.chance
-              count = (Math.random() * 4 + 2) | 0
-              generatable = utils.clone(entity.damagable.fracture.generatable)
-              if not entity.renderable?.mesh?
-                return
-
-              generatable.radius = entity.renderable.mesh.geometry.boundingSphere.radius / count
-
-              origin = new THREE.Vector3(entity.position.x,
-                                         entity.position.y,
-                                         entity.position.z)
-              positions = pickRandomPointsDistant(2.0 * generatable.radius,
-                                                  origin,
-                                                  count)
-
-              movement = entity._movement or entity.movement
-
-              if entity.renderable.mesh?._physijs?.linearVelocity?
-                originalDirection = entity.renderable.mesh._physijs.linearVelocity
-              else
-                originalDirection = new THREE.Vector3(movement.direction.x,
-                                                      movement.direction.y,
-                                                      movement.direction.z)
-
-              getMoveDirection = (v) ->
-                d = new THREE.Vector3(v.x, v.y, v.z)
-                d.add(originalDirection.divideScalar(2.0))
-                d.normalize()
-                d.multiplyScalar(originalDirection.length() / 1000)
-                {x: d.x, y: d.y, z: d.z}
-
-              @app.addEntity(
-                _type: entity._type
-                position:
-                  x: positions[x].point.x
-                  y: positions[x].point.y
-                  z: positions[x].point.z
-                  direction: utils.clone(entity.position.direction)
-                movement:
-                  direction: getMoveDirection(positions[x].dir)
-                  spin: movement.spin.clone()
-                damagable:
-                  health: (Math.random() * 3 + 1) | 0
-                damaging:
-                  health: entity.damaging.health
-                generatable: generatable
-              ) for x in [0...count]
-      )
+      entity.renderable.mesh.addEventListener('collision', @collisionHandler)
       entity.damagable._registered = true
 
     processOurEntities: (entities, elapsedTime) ->
+      # XXX TODO
+      # This sucks because we look over all entities that have the component on
+      # each game loop.
+      # Instead, we should have a way of telling the gameloop how to filter out
+      # the entities we are interested in...
       @registerCollisions(id, entity) for [id, entity] in entities when entity.renderable?.mesh? and not entity.damagable._registered?

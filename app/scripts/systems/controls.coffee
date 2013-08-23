@@ -4,6 +4,7 @@ define ['systems/base', 'THREE'], (System, THREE) ->
     x / Math.abs(x)
 
   maxRotation = 5
+  steerAmount = 1.0
 
   applyTilt = (tiltAmount, direction, lastDirection, obj) ->
     obj.rotateX(tiltAmount * (lastDirection - direction))
@@ -19,13 +20,13 @@ define ['systems/base', 'THREE'], (System, THREE) ->
     lastDirection = entity.controllable.lastDirection
 
     if direction == entity.controllable.left
-      rotation += 1.5 / time
+      rotation += steerAmount / time
       direction = -1
     else if direction == entity.controllable.right
-      rotation -= 1.5 / time
+      rotation -= steerAmount / time
       direction = 1
     else
-      rotation += -rotation / 1.5 / time
+      rotation += -rotation / steerAmount / time
       direction = 0
 
     # If we have a mesh/object to operate on...
