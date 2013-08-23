@@ -36,7 +36,7 @@ define ['systems/base', 'underscore', 'utils', 'THREE'], (System, _, utils, THRE
 
   class WeaponsSystem extends System
     constructor: (@app) ->
-      @processOurEntities = _.throttle(@unthrottledProcess, 150, {trailing: false})
+      @processOurEntities = _.throttle(@unthrottledProcess, 200, {trailing: true})
 
     unthrottledProcess: (entities, elapsedTime) =>
       if @app.controlFiring

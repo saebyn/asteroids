@@ -7,12 +7,16 @@ define ['jsfxlib'], (jsfxlib) ->
 
   samples = jsfxlib.createWaves(sounds)
 
+  play = (snds...) ->
+    snd.pause() for snd in snds
+    (snd.currentTime = 0) for snd in snds
+    snd.play() for snd in snds
+
   death: ->
-    samples.explosion2.play()
-    samples.hit.play()
+    play(samples.explosion2, samples.hit)
   kill: ->
-    samples.explosion1.play()
+    play(samples.explosion1)
   hit: ->
-    samples.hit.play()
+    play(samples.hit)
   fire: ->
-    samples.shoot.play()
+    play(samples.shoot)
