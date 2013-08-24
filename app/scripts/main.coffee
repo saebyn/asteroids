@@ -1,3 +1,5 @@
+root = exports ? this
+
 require.config(
     paths:
         jquery: '../bower_components/jquery/jquery'
@@ -19,52 +21,56 @@ require.config(
 )
 
 require ['app', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'bootstrap'], (App, $, Physijs, FullScreen, sounds) ->
-    gameContainer = $('#game')
-    playerStatsContainer = $('#player-stats')
+  root.mixpanel.track('Game load')
 
-    Physijs.scripts.worker = 'bower_components/Physijs/physijs_worker.js'
-    Physijs.scripts.ammo = '../../bower_components/ammo.js/builds/ammo.js'
+  gameContainer = $('#game')
+  playerStatsContainer = $('#player-stats')
 
-    app = new App(gameContainer, playerStatsContainer)
-    window.app = app
+  Physijs.scripts.worker = 'bower_components/Physijs/physijs_worker.js'
+  Physijs.scripts.ammo = '../../bower_components/ammo.js/builds/ammo.js'
 
-    showAction = (action) ->
-      if action is 'game'
-        $('.btn[data-action="game"]').text('Continue Game')
-        app.togglePause()
+  app = new App(gameContainer, playerStatsContainer)
+  window.app = app
 
-      $('.all > .fade.in').removeClass('in').addClass('hide')
-      $('#' + action).removeClass('hide').addClass('in')
+  showAction = (action) ->
+    root.mixpanel.track('Select ' + action)
 
-    $('.menu-btn').on 'click', ->
-      showAction($(this).data('action'))
-
-    if FullScreen.available()
-      $('#go-fullscreen').removeClass('hide').on 'click', ->
-        $('#go-fullscreen').button('toggle')
-        if app.fullscreen
-          FullScreen.cancel()
-        else
-          FullScreen.request($('.container.all')[0])
-
-    $('#pause-continue').on 'click', ->
+    if action is 'game'
+      $('.btn[data-action="game"]').text('Continue Game')
       app.togglePause()
 
-    app.subscribe 'pause', ->
-      showAction('menu')
+    $('.all > .fade.in').removeClass('in').addClass('hide')
+    $('#' + action).removeClass('hide').addClass('in')
 
-    app.assetManager.preload(
-      ['playership', 'laserbolt'],
-      ['images/asteroid1.png', 'images/asteroid1_bump.png', 'images/particle.png',
-       'images/particle_debris.png'],
-      ->
-        $('#preloader').removeClass('in').addClass('hide')
-        $('#menu').removeClass('hide').addClass('in')
-    )
+  $('.menu-btn').on 'click', ->
+    showAction($(this).data('action'))
 
-    app.subscribe('death', sounds.death)
-    app.subscribe('fire', sounds.fire)
-    app.subscribe('kill', sounds.kill)
-    app.subscribe('hit', sounds.hit)
+  if FullScreen.available()
+    $('#go-fullscreen').removeClass('hide').on 'click', ->
+      $('#go-fullscreen').button('toggle')
+      if app.fullscreen
+        FullScreen.cancel()
+      else
+        FullScreen.request($('.container.all')[0])
 
-    app.gameloop()
+  $('#pause-continue').on 'click', ->
+    app.togglePause()
+
+  app.subscribe 'pause', ->
+    showAction('menu')
+
+  app.assetManager.preload(
+    ['playership', 'laserbolt'],
+    ['images/asteroid1.png', 'images/asteroid1_bump.png', 'images/particle.png',
+     'images/particle_debris.png'],
+    ->
+      $('#preloader').removeClass('in').addClass('hide')
+      $('#menu').removeClass('hide').addClass('in')
+  )
+
+  app.subscribe('death', sounds.death)
+  app.subscribe('fire', sounds.fire)
+  app.subscribe('kill', sounds.kill)
+  app.subscribe('hit', sounds.hit)
+
+  app.gameloop()

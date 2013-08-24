@@ -38,7 +38,10 @@ canvas {
 }
 
 #menu .aside {
-    @include makeColumn(6, 1);
+    @include makeColumn(5, 1);
+    > div {
+        background: white;
+    }
 }
 
 #menu ol li {
