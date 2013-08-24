@@ -4,6 +4,10 @@ define ['systems/base', 'underscore', 'utils', 'THREE'], (System, _, utils, THRE
     speed = entity.fireable.speed or 1.0
     size = entity.fireable.size or 1.0
 
+    # Can't do anything if this stuff doesn't exist
+    if not app.entities.player?.renderable?.mesh?
+      return
+
     z = app.entities.player.renderable.mesh.rotation.z
     direction = new THREE.Vector3(Math.cos(z), Math.sin(z), 0)
 
@@ -40,4 +44,4 @@ define ['systems/base', 'underscore', 'utils', 'THREE'], (System, _, utils, THRE
 
     unthrottledProcess: (entities, elapsedTime) =>
       if @app.controlFiring
-        fireWeapon(@app, components) for [id, components] in entities when components?.position
+        fireWeapon(@app, components) for [id, components] in entities when components.position?

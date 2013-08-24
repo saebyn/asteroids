@@ -30,11 +30,6 @@ define ['systems/base', 'THREE', 'utils'], (System, THREE, utils) ->
         
     gen(i) for i in [0...number]
 
-  # return a list of points distributed randomly
-  # within a sphere of the radius
-  randomPointsInSphere = (radius, count) ->
-    utils.randomVectorInSphere(radius) for i in [0...count]
-
   collisionHandler = (system) ->
     (damagerMesh) ->
       entity = system.app.entities[this.name]
@@ -57,27 +52,17 @@ define ['systems/base', 'THREE', 'utils'], (System, THREE, utils) ->
         # If there's a chance this object will fracture rather than
         # simply being atomized...
         if entity.damagable.fracture?.chance? and entity.renderable?.mesh?
-          # TODO create a new component system for debris,
-          # have it manage particle system creation and evolution
-          particleCount = 500
-          particles = new THREE.Geometry()
-          pMaterial = new THREE.ParticleBasicMaterial(
-            color: 0xFFFFFF
-            size: 5
-            map: system.app.assetManager.getTexture('images/particle.png')
-            blending: THREE.AdditiveBlending
-            transparent: true
-          )
-          particles.vertices = randomPointsInSphere(entity.renderable.mesh.geometry.boundingSphere.radius, particleCount)
-          particleCloud = new THREE.ParticleSystem(particles, pMaterial)
-          particleCloud.sortParticles = true
           system.app.addEntity(
-            renderable:
-              mesh: particleCloud
+            debris:
+              spread: 1000
+              radius: entity.renderable.mesh.geometry.boundingSphere.radius
             position:
               x: entity.position.x
               y: entity.position.y
               z: entity.position.z
+            expirable:
+              time: 1500
+
           )
 
           system.fracture(entity.damagable.fracture.chance,

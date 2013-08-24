@@ -5,7 +5,8 @@ define ['systems/base', 'utils', 'THREE'], (System, utils, THREE) ->
     # entity.renderable.mesh so that the render system can inject
     # it into the scene.
     setupEntity: (entity) ->
-      particleCount = 500
+      radius = entity.explosion.startRadius
+      particleCount = 500 * (radius / 10.0)
       particles = new THREE.Geometry()
       pMaterial = new THREE.ParticleBasicMaterial(
         color: 0xFFFFFF
@@ -15,7 +16,7 @@ define ['systems/base', 'utils', 'THREE'], (System, utils, THREE) ->
         transparent: true
       )
 
-      particles.vertices = (utils.randomVectorOnSphere(entity.explosion.startRadius) for x in [0..particleCount])
+      particles.vertices = (utils.randomVectorOnSphere(radius) for x in [0..particleCount])
       entity.renderable.mesh = new THREE.ParticleSystem(particles, pMaterial)
       entity.renderable.mesh.sortParticles = true
       entity.explosion.particles = particles

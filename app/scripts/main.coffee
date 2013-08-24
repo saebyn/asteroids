@@ -55,7 +55,8 @@ require ['app', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'bootstrap']
 
     app.assetManager.preload(
       ['playership', 'laserbolt'],
-      ['images/asteroid1.png', 'images/asteroid1_bump.png', 'images/particle.png'],
+      ['images/asteroid1.png', 'images/asteroid1_bump.png', 'images/particle.png',
+       'images/particle_debris.png'],
       ->
         $('#preloader').removeClass('in').addClass('hide')
         $('#menu').removeClass('hide').addClass('in')

@@ -367,6 +367,7 @@ define(['systems', 'assetmanager', 'THREE', 'vendor/fullscreen', 'vendor/rendere
         @system('controls', 'controllable', elapsedTime)
         @system('weapons', 'fireable', elapsedTime)
         @system('explosion', 'explosion', elapsedTime)
+        @system('debris', 'debris', elapsedTime)
         @system('render', 'renderable', elapsedTime)
         @system('expire', 'expirable', elapsedTime)
 
