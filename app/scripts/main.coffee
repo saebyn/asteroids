@@ -20,6 +20,7 @@ require.config(
             exports: '_'
 )
 
+
 require ['app', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'bootstrap'], (App, $, Physijs, FullScreen, sounds) ->
   root.mixpanel.track('Game load')
 
@@ -42,9 +43,43 @@ require ['app', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'bootstrap']
     $('.all > .fade.in').removeClass('in').addClass('hide')
     $('#' + action).removeClass('hide').addClass('in')
 
+  checkFeatures = (features...) ->
+    $(selector + ' .available').removeClass('hide') for [present, selector] in features when present
+    $(selector + ' .not-available').removeClass('hide') for [present, selector] in features when not present
+    $(selector + ' .unknown').addClass('hide') for [present, selector] in features
+    (0 for [present, selector] in features when present).length == features.length
+
+  preload = ->
+    app.assetManager.preload(
+      ['playership', 'laserbolt'],
+      ['images/asteroid1.png', 'images/asteroid1_bump.png', 'images/particle.png',
+      'images/particle_debris.png'],
+      ->
+        $('#preloader .progress').hide()
+        $('#preloader .status').text('Checking for browser support...')
+
+        # check for support via modernizr
+        setTimeout ->
+          if not checkFeatures [Modernizr.webgl, '.check-webgl']
+            return
+
+          all = checkFeatures [Modernizr.audio, '.check-audio'],
+                              [Modernizr.localstorage, '.check-localstorage']
+
+          if not all
+            $('#continue-without-feature').removeClass('hide')
+          else
+            setTimeout ->
+              showAction 'menu'
+            , 500
+        , 500
+    )
+
+  # Hook up menu buttons
   $('.menu-btn').on 'click', ->
     showAction($(this).data('action'))
 
+  # Make the full screen button visible if that's supported.
   if FullScreen.available()
     $('#go-fullscreen').removeClass('hide').on 'click', ->
       $('#go-fullscreen').button('toggle')
@@ -53,24 +88,21 @@ require ['app', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'bootstrap']
       else
         FullScreen.request($('.container.all')[0])
 
+  # Hook up the pause button to the app
   $('#pause-continue').on 'click', ->
     app.togglePause()
 
+  # Make pausing the game show the menu
   app.subscribe 'pause', ->
     showAction('menu')
 
-  app.assetManager.preload(
-    ['playership', 'laserbolt'],
-    ['images/asteroid1.png', 'images/asteroid1_bump.png', 'images/particle.png',
-     'images/particle_debris.png'],
-    ->
-      $('#preloader').removeClass('in').addClass('hide')
-      $('#menu').removeClass('hide').addClass('in')
-  )
+  preload()
 
+  # Hook up sounds
   app.subscribe('death', sounds.death)
   app.subscribe('fire', sounds.fire)
   app.subscribe('kill', sounds.kill)
   app.subscribe('hit', sounds.hit)
 
+  # Start the game (it defaults to being paused)
   app.gameloop()
