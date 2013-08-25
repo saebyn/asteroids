@@ -70,7 +70,7 @@ define ['systems', 'assetmanager', 'background', 'THREE', 'vendor/fullscreen', '
           viewAngle: 45.0
           aspect: 1.0
           nearDistance: 0.1
-          farDistance: 1000
+          farDistance: 1600
           position:
             x: 0
             y: 0
