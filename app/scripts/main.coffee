@@ -66,6 +66,9 @@ require ['app', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'bootstrap']
           all = checkFeatures [Modernizr.audio, '.check-audio'],
                               [Modernizr.localstorage, '.check-localstorage']
 
+          app.setup()
+          # Start the game (it defaults to being paused)
+          app.gameloop()
           if not all
             $('#continue-without-feature').removeClass('hide')
           else
@@ -103,6 +106,3 @@ require ['app', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'bootstrap']
   app.subscribe('fire', sounds.fire)
   app.subscribe('kill', sounds.kill)
   app.subscribe('hit', sounds.hit)
-
-  # Start the game (it defaults to being paused)
-  app.gameloop()

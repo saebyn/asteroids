@@ -42,3 +42,8 @@ define ['THREE'], (THREE) ->
   randomVectorOnSphere: randomVectorOnSphere
   randomVectorInSphere: (radius) ->
     randomVectorOnSphere(Math.random() * radius)
+  # Return a list of points distributed randomly
+  # within a sphere of the radius
+  randomPointsInSphere: (radius, count, offset=0) ->
+    randomVectorOnSphere(Math.random() * (radius - offset) + offset) for i in [0...count]
+

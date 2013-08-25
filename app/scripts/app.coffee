@@ -112,6 +112,8 @@ define(['systems', 'assetmanager', 'THREE', 'vendor/fullscreen', 'vendor/rendere
     constructor: (@container, @playerStatsContainer) ->
       @assetManager = new AssetManager()
       @systems = systems.register(this)
+
+    setup: ->
       @setupThree()
       @container.append @renderer.domElement
 
@@ -236,6 +238,36 @@ define(['systems', 'assetmanager', 'THREE', 'vendor/fullscreen', 'vendor/rendere
       camera.name = id
       @cameras[id] = {camera: camera, order: order}
 
+    createBackground: ->
+      # Make some stars as a particle system
+      starTexture = @assetManager.getTexture 'images/star.png'
+
+      createStars = (starType) ->
+        # starType: radius, count, size, minDist, color
+        particles = new THREE.Geometry()
+        starMaterial = new THREE.ParticleBasicMaterial(
+          color: starType.color
+          size: starType.size
+          map: starTexture
+          blending: THREE.AdditiveBlending
+          transparent: true
+        )
+        particles.vertices = utils.randomPointsInSphere(starType.radius,
+                                                        starType.count,
+                                                        starType.minDist)
+        stars = new THREE.ParticleSystem(particles, starMaterial)
+        stars.portParticles = true
+        stars
+
+      starTypes = [
+        {color: '#114fe2', size: 40, count: 1000, minDist: 1000, radius: 5000},
+        {color: '#e77c34', size: 15, count: 1000, minDist: 500, radius: 5000},
+        {color: '#e7db65', size: 10, count: 2000, minDist: 1000, radius: 5000},
+        {color: '#fefcfd', size: 20, count: 1500, minDist: 500, radius: 5000},
+      ]
+      @stars = (createStars(starType) for starType in starTypes)
+      @scene.add(star) for star in @stars
+
     setupThree: ->
       @renderer = new THREE.WebGLRenderer(
         antialias: true
@@ -251,6 +283,8 @@ define(['systems', 'assetmanager', 'THREE', 'vendor/fullscreen', 'vendor/rendere
       @scene.setGravity(new THREE.Vector3(0.0, 0.0, 0.0))
       @setupLighting @scene
       @renderer.setSize @getGameWidth(), @getGameHeight()
+
+      @createBackground()
 
       # On container size change, redo renderer.setSize
       $(window).on('resize', _.throttle(=>
@@ -334,6 +368,21 @@ define(['systems', 'assetmanager', 'THREE', 'vendor/fullscreen', 'vendor/rendere
       @playerStatsContainer.find('.health .max .value').text(max)
       @playerStatsContainer.find('.health .progress .bar').css({width: (100.0 * health / max) + '%'})
 
+    clearDistantEntities: ->
+      # Any entities more than some fixed distance off the screen should be
+      # destroyed.
+      stale = []
+      @scene.traverse (obj) =>
+        if obj.position.length() > @maxDistance and obj.name of @entities
+          @removeEntity(obj.name)
+
+        # Remove any objects in the scene but not registered as an
+        # entity, if the object has a name.
+        if obj.name and obj.name not of @entities
+          stale.push obj
+
+      @scene.remove(obj) for obj in stale
+
 
     gameloop: (currentTime=0) =>
       @stats.begin()
@@ -342,19 +391,7 @@ define(['systems', 'assetmanager', 'THREE', 'vendor/fullscreen', 'vendor/rendere
       if not @paused
         @playerStats.time += elapsedTime
 
-        # Any entities more than some fixed distance off the screen should be
-        # destroyed.
-        stale = []
-        @scene.traverse (obj) =>
-          if obj.position.length() > @maxDistance and obj.name of @entities
-            @removeEntity(obj.name)
-
-          # Remove any objects in the scene but not registered as an
-          # entity, if the object has a name.
-          if obj.name and obj.name not of @entities
-            stale.push obj
-
-        @scene.remove(obj) for obj in stale
+        @clearDistantEntities()
 
         # filter our entities and give them to the appropriate systems
         @system('camera', 'camera', elapsedTime)

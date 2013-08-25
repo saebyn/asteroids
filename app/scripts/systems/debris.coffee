@@ -1,10 +1,5 @@
 # debris system
 define ['systems/base', 'utils', 'THREE'], (System, utils, THREE) ->
-  # return a list of points distributed randomly
-  # within a sphere of the radius
-  randomPointsInSphere = (radius, count) ->
-    utils.randomVectorInSphere(radius) for i in [0...count]
-
   class DebrisSystem extends System
     setup: (entity) ->
       radius = entity.debris.radius
@@ -18,7 +13,7 @@ define ['systems/base', 'utils', 'THREE'], (System, utils, THREE) ->
         blending: THREE.AdditiveBlending
         transparent: true
       )
-      particles.vertices = randomPointsInSphere(radius, particleCount)
+      particles.vertices = utils.randomPointsInSphere(radius, particleCount)
       particleCloud = new THREE.ParticleSystem(particles, pMaterial)
       particleCloud.sortParticles = true
 
