@@ -21,7 +21,39 @@
           </div>
         </div>
 
-        <h1>Loading assets...</h1>
+        <h1 class="status">Loading...</h1>
+
+        <table class="feature-check table table-striped">
+          <tr class="check-webgl">
+            <th scope="row">WebGL <small>(3D graphics in your browser)</small></th>
+            <td class="unknown"><i class="icon-white icon-question-sign" title="Checking..."></i></td>
+            <td class="not-available hide">
+              <h4><i class="icon-white icon-warning-sign" title="Not Available"></i> Not Available</h4>
+              <p>Your browser does not have this capability. <em>This game requires WebGL.</em> Please <a href="http://browsehappy.com/">upgrade your browser</a>.</p>
+            </td>
+            <td class="available hide"><i class="icon-white icon-ok" title="Available"></i></td>
+          </tr>
+          <tr class="check-audio">
+            <th scope="row">HTML5 Audio <small>(sound fx)</small></th>
+            <td class="unknown"><i class="icon-white icon-question-sign" title="Checking..."></i></td>
+            <td class="not-available hide">
+              <h4><i class="icon-white icon-warning-sign" title="Not Available"></i> Not Available</h4>
+              <p>Your browser does not have this capability. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+            </td>
+            <td class="available hide"><i class="icon-white icon-ok" title="Available"></i></td>
+          </tr>
+          <tr class="check-localstorage hide">
+            <th scope="row">Local Storage <small>(saves your scores and preferences)</small></th>
+            <td class="unknown"><i class="icon-white icon-question-sign" title="Checking..."></i></td>
+            <td class="not-available hide">
+              <h4><i class="icon-white icon-warning-sign" title="Not Available"></i> Not Available</h4>
+              <p>Your browser does not have this capability. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+            </td>
+            <td class="available hide"><i class="icon-white icon-ok" title="Available"></i></td>
+          </tr>
+        </table>
+
+        <button class="btn btn-large btn-primary hide menu-btn" data-action="menu" id="continue-without-feature">Continue</button>
       </div>
 
       <div class="container fade hide" id="menu">
@@ -151,6 +183,6 @@
       var Module = {TOTAL_MEMORY: 256 * 1024 * 1024};
     </script>
 
-    <script data-main="scripts/22bf8fda.main" src="bower_components/requirejs/require.js"></script>
+    <script data-main="scripts/ba525bb5.main" src="bower_components/requirejs/require.js"></script>
   </body>
 </html>
