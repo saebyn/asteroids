@@ -1,4 +1,4 @@
-define(['systems', 'assetmanager', 'THREE', 'vendor/fullscreen', 'vendor/rendererstats', 'Stats', 'Physijs', 'jquery', 'underscore', 'utils'], (systems, AssetManager, THREE, FullScreen, RendererStats, Stats, Physijs, $, _, utils) ->
+define ['systems', 'assetmanager', 'background', 'THREE', 'vendor/fullscreen', 'vendor/rendererstats', 'Stats', 'Physijs', 'jquery', 'underscore', 'utils'], (systems, AssetManager, createBackground, THREE, FullScreen, RendererStats, Stats, Physijs, $, _, utils) ->
   FRAME_TIME_COUNTS = 50
   ASTEROID_SPAWN_RATE = 0.1
 
@@ -70,7 +70,7 @@ define(['systems', 'assetmanager', 'THREE', 'vendor/fullscreen', 'vendor/rendere
           viewAngle: 45.0
           aspect: 1.0
           nearDistance: 0.1
-          farDistance: 10000
+          farDistance: 1000
           position:
             x: 0
             y: 0
@@ -117,23 +117,21 @@ define(['systems', 'assetmanager', 'THREE', 'vendor/fullscreen', 'vendor/rendere
       @setupThree()
       @container.append @renderer.domElement
 
-      document.addEventListener 'keydown', (event) =>
-        if event.which == 65
-          @controlDirection = 'left'
-        else if event.which == 68
-          @controlDirection = 'right'
-        else if event.which == 32
+      @subscribe 'controls:start', (action, detail) =>
+        if action == 'steer'
+          @controlDirection = detail
+        else if action == 'fire'
           @controlFiring = true
-        else if event.which == 79 # o
+        else if action == 'fullscreen'
           $('#go-fullscreen').click()
-        else if event.which == 80 # p
+        else if action == 'pause'
           if @container.is(':visible')
             @togglePause()
 
-      document.addEventListener 'keyup', (event) =>
-        if event.which in [65, 68]
+      @subscribe 'controls:stop', (action) =>
+        if action == 'steer'
           @controlDirection = false
-        else if event.which == 32
+        else if action == 'fire'
           @controlFiring = false
 
       @subscribe 'death', =>
@@ -163,7 +161,7 @@ define(['systems', 'assetmanager', 'THREE', 'vendor/fullscreen', 'vendor/rendere
 
     emit: (event, data...) ->
       if event of @eventSubscribers
-        callback(event, data...) for callback in @eventSubscribers[event]
+        callback(data...) for callback in @eventSubscribers[event]
 
     getNextEntityId: ->
       @lastEntityId += 1
@@ -238,36 +236,6 @@ define(['systems', 'assetmanager', 'THREE', 'vendor/fullscreen', 'vendor/rendere
       camera.name = id
       @cameras[id] = {camera: camera, order: order}
 
-    createBackground: ->
-      # Make some stars as a particle system
-      starTexture = @assetManager.getTexture 'images/star.png'
-
-      createStars = (starType) ->
-        # starType: radius, count, size, minDist, color
-        particles = new THREE.Geometry()
-        starMaterial = new THREE.ParticleBasicMaterial(
-          color: starType.color
-          size: starType.size
-          map: starTexture
-          blending: THREE.AdditiveBlending
-          transparent: true
-        )
-        particles.vertices = utils.randomPointsInSphere(starType.radius,
-                                                        starType.count,
-                                                        starType.minDist)
-        stars = new THREE.ParticleSystem(particles, starMaterial)
-        stars.portParticles = true
-        stars
-
-      starTypes = [
-        {color: '#114fe2', size: 40, count: 1000, minDist: 1000, radius: 5000},
-        {color: '#e77c34', size: 15, count: 1000, minDist: 500, radius: 5000},
-        {color: '#e7db65', size: 10, count: 2000, minDist: 1000, radius: 5000},
-        {color: '#fefcfd', size: 20, count: 1500, minDist: 500, radius: 5000},
-      ]
-      @stars = (createStars(starType) for starType in starTypes)
-      @scene.add(star) for star in @stars
-
     setupThree: ->
       @renderer = new THREE.WebGLRenderer(
         antialias: true
@@ -284,7 +252,7 @@ define(['systems', 'assetmanager', 'THREE', 'vendor/fullscreen', 'vendor/rendere
       @setupLighting @scene
       @renderer.setSize @getGameWidth(), @getGameHeight()
 
-      @createBackground()
+      createBackground(@assetManager, @scene)
 
       # On container size change, redo renderer.setSize
       $(window).on('resize', _.throttle(=>
@@ -418,4 +386,3 @@ define(['systems', 'assetmanager', 'THREE', 'vendor/fullscreen', 'vendor/rendere
       @stats.end()
 
       window.requestAnimationFrame @gameloop
-)

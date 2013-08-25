@@ -21,7 +21,7 @@ require.config(
 )
 
 
-require ['app', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'bootstrap'], (App, $, Physijs, FullScreen, sounds) ->
+require ['app', 'keys', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'bootstrap'], (App, Keys, $, Physijs, FullScreen, sounds) ->
   root.mixpanel.track('Game load')
 
   gameContainer = $('#game')
@@ -31,6 +31,7 @@ require ['app', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'bootstrap']
   Physijs.scripts.ammo = '../../bower_components/ammo.js/builds/ammo.js'
 
   app = new App(gameContainer, playerStatsContainer)
+  keys = new Keys(app)
   window.app = app
 
   showAction = (action) ->
@@ -53,7 +54,8 @@ require ['app', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'bootstrap']
     app.assetManager.preload(
       ['playership', 'laserbolt'],
       ['images/asteroid1.png', 'images/asteroid1_bump.png', 'images/particle.png',
-      'images/particle_debris.png'],
+       'images/particle_debris.png', 'images/star.png',
+       'images/nebula1.png', 'images/nebula2.png', 'images/nebula3.png'],
       ->
         $('#preloader .progress').hide()
         $('#preloader .status').text('Checking for browser support...')
