@@ -54,8 +54,7 @@ require ['app', 'keys', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'boo
     app.assetManager.preload(
       ['playership', 'laserbolt'],
       ['images/asteroid1.png', 'images/asteroid1_bump.png', 'images/particle.png',
-       'images/particle_debris.png', 'images/star.png',
-       'images/nebula1.png', 'images/nebula2.png', 'images/nebula3.png'],
+       'images/particle_debris.png', 'images/star.png'],
       ['images/sky/backmo.jpg', 'images/sky/botmo.jpg', 'images/sky/frontmo.jpg',
        'images/sky/leftmo.jpg', 'images/sky/rightmo.jpg', 'images/sky/topmo.jpg'],
       ->
