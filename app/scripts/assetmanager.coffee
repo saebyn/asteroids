@@ -8,7 +8,7 @@ define ['THREE', 'Physijs'], (THREE, Physijs) ->
       # Inst the model loader
       @loader = new THREE.JSONLoader()
 
-    preload: (models, textures, success) ->
+    preload: (models, textures, images, success) ->
       # load models and textures
       # when all are complete, call success with no args
       # always call success, even if no assets or they are
@@ -25,6 +25,10 @@ define ['THREE', 'Physijs'], (THREE, Physijs) ->
       else
         @loadModel(name, callback) for name in models
         @getTexture(path, callback) for path in textures
+        @loadImage(name, callback) for path in images
+
+    loadImage: (name, callback) ->
+      # TODO
 
     loadModel: (modelName, callback) ->
       if modelName not of @models
