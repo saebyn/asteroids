@@ -6,7 +6,7 @@ define ['systems/base', 'utils', 'THREE'], (System, utils, THREE) ->
     # it into the scene.
     setupEntity: (entity) ->
       radius = entity.explosion.startRadius
-      particleCount = 500 * (radius / 10.0)
+      particleCount = 100 * (radius / 10.0)
       particles = new THREE.Geometry()
       pMaterial = new THREE.ParticleBasicMaterial(
         color: 0xFFFFFF
@@ -18,6 +18,7 @@ define ['systems/base', 'utils', 'THREE'], (System, utils, THREE) ->
 
       particles.vertices = (utils.randomVectorOnSphere(radius) for x in [0..particleCount])
       entity.renderable.mesh = new THREE.ParticleSystem(particles, pMaterial)
+      entity.renderable.particles = true
       entity.renderable.mesh.sortParticles = true
       entity.explosion.particles = particles
 

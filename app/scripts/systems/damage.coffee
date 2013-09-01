@@ -30,6 +30,43 @@ define ['systems/base', 'THREE', 'utils'], (System, THREE, utils) ->
         
     gen(i) for i in [0...number]
 
+  damage = (system, damager, entityId, entity) ->
+    if damager?
+      if damager.damaging?.health?
+        entity.damagable.health -= damager.damaging.health
+
+      system.app.emit('hit')
+
+    if entity.damagable.health <= 0
+      if entity.damagable.disappears
+        system.app.removeEntity(entityId)
+      else
+        system.app.destroyEntity(entityId)
+
+      # If there's a chance this object will fracture rather than
+      # simply being atomized...
+      if entity.damagable.fracture?.chance? and entity.renderable?.mesh?
+        system.app.addEntity(
+          debris:
+            spread: 1000
+            radius: entity.renderable.mesh.geometry.boundingSphere.radius
+          position:
+            x: entity.position.x
+            y: entity.position.y
+            z: entity.position.z
+          expirable:
+            time: 1500
+
+        )
+
+        system.fracture(entity.damagable.fracture.chance,
+                        entity.damagable.fracture.generatable,
+                        entity.renderable.mesh,
+                        entity.position,
+                        entity._movement or entity.movement,
+                        entity._type,
+                        entity.damaging.health)
+
   collisionHandler = (system) ->
     (damagerMesh) ->
       entity = system.app.entities[this.name]
@@ -39,40 +76,11 @@ define ['systems/base', 'THREE', 'utils'], (System, THREE, utils) ->
 
       if damagerMesh.name of system.app.entities
         damager = system.app.entities[damagerMesh.name]
-        if damager.damaging?.health?
-          entity.damagable.health -= damager.damaging.health
 
-        if damager.damaging?.destroysSelf?
-          system.app.emit('hit')
-          system.app.removeEntity(damagerMesh.name)
+      damage(system, damager, this.name, entity)
 
-      if entity.damagable.health <= 0
-        system.app.destroyEntity(this.name)
-
-        # If there's a chance this object will fracture rather than
-        # simply being atomized...
-        if entity.damagable.fracture?.chance? and entity.renderable?.mesh?
-          system.app.addEntity(
-            debris:
-              spread: 1000
-              radius: entity.renderable.mesh.geometry.boundingSphere.radius
-            position:
-              x: entity.position.x
-              y: entity.position.y
-              z: entity.position.z
-            expirable:
-              time: 1500
-
-          )
-
-          system.fracture(entity.damagable.fracture.chance,
-                          entity.damagable.fracture.generatable,
-                          entity.renderable.mesh,
-                          entity.position,
-                          entity._movement or entity.movement,
-                          entity._type,
-                          entity.damaging.health)
-
+      if damager?
+        damage(system, entity, damagerMesh.name, damager)
 
   class DamageSystem extends System
     constructor: (@app) ->

@@ -2,6 +2,57 @@ define ['systems', 'assetmanager', 'background', 'THREE', 'vendor/fullscreen', '
   FRAME_TIME_COUNTS = 50
   ASTEROID_SPAWN_RATE = 0.1
 
+  WEAPONS =
+    plasma:
+      speed: 30
+      size: 21 
+      extraComponents:
+        damagable:
+          health: 0
+        damaging:
+          health: 10
+          disappears: true
+        renderable:
+          model: 'laserbolt'
+          mass: 0.001
+        expirable:
+          time: 2000
+          destroy: true
+    missile:
+      speed: 5
+      size: 21 
+      extraComponents:
+        damagable:
+          health: 0
+        damaging:
+          health: 20
+          disappears: true
+        renderable:
+          model: 'missile'
+          mass: 0.1
+        expirable:
+          time: 3000
+          destroy: true
+        targeting:
+          type: 'asteroidSpawner'
+          force: 20
+    mine:
+      speed: 10
+      size: 21
+      extraComponents:
+        damagable:
+          health: 0
+        damaging:
+          health: 30
+          disappears: true
+        renderable:
+          model: 'mine'
+          mass: 0.2
+        expirable:
+          time: 1000
+          destroy: false
+          stop: true
+
   PLAYER =
     position: {x: 0, y: 0, direction: {x: 0, y: 0, z: 0}}
     renderable:
@@ -12,21 +63,12 @@ define ['systems', 'assetmanager', 'background', 'THREE', 'vendor/fullscreen', '
       health: 30
       maxHealth: 30
     controllable: {left: 'left', right: 'right'}
-    fireable:
-      speed: 30
-      size: 21 
-      extraComponents:
-        damaging:
-          health: 10
-          destroysSelf: true
-        renderable:
-          model: 'laserbolt'
-          mass: 0.001
-        expireTime: 2000
+    fireable: utils.clone(WEAPONS.plasma)
 
   class App
     fullscreen: false
     paused: true
+    currentWeapon: 'plasma'
 
     # Where we keep track of our camera entities for easy rendering
     cameras: {}
@@ -40,9 +82,6 @@ define ['systems', 'assetmanager', 'background', 'THREE', 'vendor/fullscreen', '
     maxEntities: 250
 
     lastTime: 0
-
-    controlDirection: false
-    controlFiring: false
 
     lastEntityId: 0
     entities:
@@ -119,9 +158,11 @@ define ['systems', 'assetmanager', 'background', 'THREE', 'vendor/fullscreen', '
 
       @subscribe 'controls:start', (action, detail) =>
         if action == 'steer'
-          @controlDirection = detail
+          if @entities.player?.controllable?
+            @entities.player.controllable.controlDirection = detail
         else if action == 'fire'
-          @controlFiring = true
+          if @entities.player?.controllable?
+            @entities.player.controllable.controlFiring = true
         else if action == 'fullscreen'
           $('#go-fullscreen').click()
         else if action == 'pause'
@@ -130,9 +171,16 @@ define ['systems', 'assetmanager', 'background', 'THREE', 'vendor/fullscreen', '
 
       @subscribe 'controls:stop', (action) =>
         if action == 'steer'
-          @controlDirection = false
+          if @entities.player?.controllable?
+            @entities.player.controllable.controlDirection = false
         else if action == 'fire'
-          @controlFiring = false
+          if @entities.player?.controllable?
+            @entities.player.controllable.controlFiring = false
+
+      @subscribe 'controls:selectWeapon', (weapon) =>
+        @currentWeapon = weapon
+        if @entities.player?
+          @entities.player.fireable = utils.clone(WEAPONS[weapon])
 
       @subscribe 'death', =>
         @playerStats.deaths += 1
@@ -170,9 +218,11 @@ define ['systems', 'assetmanager', 'background', 'THREE', 'vendor/fullscreen', '
     removeEntity: (id) ->
       # Make sure to discard any unique geometries and textures, to prevent
       # accumulation of junk in memory.
-      if @entities[id].renderable? and @entities[id].renderable.mesh? and not @entities[id].renderable.model?
-        @entities[id].renderable.mesh.geometry.dispose()
-        @entities[id].renderable.mesh.material.dispose()
+      if @entities[id].renderable? and not @entities[id].renderable.particles?
+        mesh = @entities[id].renderable.mesh
+        if mesh? and not @entities[id].renderable.model?
+          mesh.geometry.dispose()
+          mesh.material.dispose()
 
       delete @entities[id]
 
@@ -205,7 +255,8 @@ define ['systems', 'assetmanager', 'background', 'THREE', 'vendor/fullscreen', '
             startRadius: 5.0
             speed: 2.2
           expirable:
-            time: 5000
+            destroy: true
+            time: 2000
         )
       else
         console.log 'Tried to explode something that did not have a position:', entity
@@ -379,6 +430,7 @@ define ['systems', 'assetmanager', 'background', 'THREE', 'vendor/fullscreen', '
         # Note that movements need to be applied after the spawner and generator
         # systems.
         @system('movement', 'movement', elapsedTime)
+        @system('targeting', 'targeting', elapsedTime)
 
         @updatePlayerStats()
         @assetManager.maintain()

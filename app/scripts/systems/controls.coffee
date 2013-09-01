@@ -11,9 +11,11 @@ define ['systems/base', 'THREE'], (System, THREE) ->
     obj.__dirtyRotation = true
 
 
-  controlEntity = (direction, time, entity) ->
+  controlEntity = (time, entity) ->
     if not entity.controllable.rotation?
       entity.controllable.rotation = 0
+
+    direction = entity.controllable.controlDirection
 
     # Keep this local for calculation
     rotation = entity.controllable.rotation
@@ -47,4 +49,4 @@ define ['systems/base', 'THREE'], (System, THREE) ->
 
   class ControlSystem extends System
     processOurEntities: (entities, elapsedTime) ->
-      controlEntity(@app.controlDirection, elapsedTime, components) for [id, components] in entities when components?.position
+      controlEntity(elapsedTime, components) for [id, components] in entities when components?.position

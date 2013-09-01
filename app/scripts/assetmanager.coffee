@@ -30,13 +30,13 @@ define ['THREE', 'Physijs'], (THREE, Physijs) ->
     loadImage: (name, callback) ->
       # TODO
 
-    loadModel: (modelName, callback) ->
+    loadModel: (modelName, callback, friction=0.8, restitution=0.4) ->
       if modelName not of @models
         @models[modelName] = true
         @loader.load 'resources/' + modelName + '.js', (geom, materials) =>
           @models[modelName] =
             geom: geom
-            material: new Physijs.createMaterial(materials[0], 0.8, 0.4)
+            material: new Physijs.createMaterial(materials[0], friction, restitution)
             useCount: 0
 
           if callback

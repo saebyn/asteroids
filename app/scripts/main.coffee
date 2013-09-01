@@ -52,7 +52,7 @@ require ['app', 'keys', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'boo
 
   preload = ->
     app.assetManager.preload(
-      ['playership', 'laserbolt'],
+      ['playership', 'laserbolt', 'missile', 'mine'],
       ['images/asteroid1.png', 'images/asteroid1_bump.png', 'images/particle.png',
        'images/particle_debris.png', 'images/star.png'],
       ['images/sky/backmo.jpg', 'images/sky/botmo.jpg', 'images/sky/frontmo.jpg',
@@ -93,6 +93,12 @@ require ['app', 'keys', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'boo
         FullScreen.cancel()
       else
         FullScreen.request($('.container.all')[0])
+
+  # TODO Hook up weapon selectors to app,
+  #      add method on app to select weapon
+  #        - copy weapon selected over fireable
+  #      bind on weapon changes from app to update UI
+  #      select default weapon
 
   # Hook up the pause button to the app
   $('#pause-continue').on 'click', ->
