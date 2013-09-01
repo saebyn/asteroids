@@ -94,11 +94,20 @@ require ['app', 'keys', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'boo
       else
         FullScreen.request($('.container.all')[0])
 
-  # TODO Hook up weapon selectors to app,
-  #      add method on app to select weapon
-  #        - copy weapon selected over fireable
-  #      bind on weapon changes from app to update UI
-  #      select default weapon
+  # Hook up weapon selectors to app.
+  $('#toolbar .selector').on 'click', ->
+    $('#toolbar .selector.active').removeClass('active')
+    weapon = $(this).data('weapon-selector')
+    if weapon
+      app.emit('controls:selectWeapon', weapon)
+      $(this).addClass('active')
+
+  $(document).on 'keypress', (event) ->
+    key = String.fromCharCode(event.charCode)
+    offset = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'].indexOf(key)
+    if offset != -1
+      $('#toolbar .selector').eq(offset).click()
+
 
   # Hook up the pause button to the app
   $('#pause-continue').on 'click', ->
