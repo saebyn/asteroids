@@ -110,6 +110,7 @@ define ['systems', 'assetmanager', 'background', 'THREE', 'vendor/fullscreen', '
           aspect: 1.0
           nearDistance: 0.1
           farDistance: 1600
+          radar: true
           position:
             x: 0
             y: 0
@@ -119,7 +120,8 @@ define ['systems', 'assetmanager', 'background', 'THREE', 'vendor/fullscreen', '
             bottom: 0.75
             width: 0.15
             height: 0.15
-            background: '#fff'
+            background: '#004400'
+            backgroundAlpha: 0.5
           order: 2
           
       asteroidSpawner:
@@ -363,7 +365,16 @@ define ['systems', 'assetmanager', 'background', 'THREE', 'vendor/fullscreen', '
       @renderer.setViewport(left, bottom, width, height)
       @renderer.setScissor(left, bottom, width, height)
       @renderer.enableScissorTest(true)
-      @renderer.setClearColor(cameraDef.view?.background or '#000000')
+      @renderer.setClearColor(
+        cameraDef.view?.background or '#000000', 
+        cameraDef.view?.backgroundAlpha or 1
+      )
+
+      if cameraDef.material?
+        @scene.overrideMaterial = cameraDef.material
+      else
+        @scene.overrideMaterial = undefined
+
       @renderer.render(@scene, @cameras[cameraId].camera)
 
     render: (elapsedTime) ->
