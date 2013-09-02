@@ -14,7 +14,13 @@ define [], ->
 
   HAVE_ENOUGH_DATA = 4
 
-  tracks = (new Audio(source) for source in trackSources)
+  loadTrack = (src) ->
+    track = new Audio()
+    track.preload = 'metadata'
+    track.src = src
+    track
+
+  tracks = (loadTrack(source) for source in trackSources)
   checkTime = 5000  # 5 seconds
 
   playIfCan = ->
