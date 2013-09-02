@@ -24,7 +24,6 @@ define [], ->
       # pick a random track and play it
       track = tracks[(Math.random() * tracks.length) | 0]
       if track.readyState == HAVE_ENOUGH_DATA
-        console.log 'starting track'
         track.currentTime = 0
         track.play()
 
