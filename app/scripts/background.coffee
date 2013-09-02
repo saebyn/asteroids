@@ -2,12 +2,12 @@ define ['THREE', 'utils'], (THREE, utils) ->
   (assetManager, scene) ->
     base = 'images/sky/'
     # front, back, left, right, top, bottom
-    paths = [base + 'frontmo.jpg',
-             base + 'backmo.jpg',
-             base + 'topmo.jpg',
-             base + 'botmo.jpg',
-             base + 'leftmo.jpg',
-             base + 'rightmo.jpg']
+    paths = [base + 'frontmo.png',
+             base + 'backmo.png',
+             base + 'topmo.png',
+             base + 'botmo.png',
+             base + 'leftmo.png',
+             base + 'rightmo.png']
 
     # TODO use assetManager
     cubeTexture = THREE.ImageUtils.loadTextureCube(paths)

@@ -8,6 +8,8 @@ define ['jsfxlib'], (jsfxlib) ->
   samples = jsfxlib.createWaves(sounds)
 
   play = (snds...) ->
+    # Stop and reset any of the sounds that we want to play, if they are
+    # currently playing.
     snd.pause() for snd in snds
     (snd.currentTime = 0) for snd in snds
     snd.play() for snd in snds
