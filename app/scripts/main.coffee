@@ -21,7 +21,7 @@ require.config(
 )
 
 
-require ['app', 'keys', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'bootstrap'], (App, Keys, $, Physijs, FullScreen, sounds) ->
+require ['app', 'keys', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'music', 'bootstrap'], (App, Keys, $, Physijs, FullScreen, sounds, music) ->
   root.mixpanel.track('Game load')
 
   gameContainer = $('#game')
@@ -76,6 +76,7 @@ require ['app', 'keys', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'boo
             $('#continue-without-feature').removeClass('hide')
           else
             setTimeout ->
+              music.start()
               showAction 'menu'
             , 500
         , 500
