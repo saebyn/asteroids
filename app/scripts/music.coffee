@@ -3,21 +3,36 @@ define [], ->
 
   checkTime = 5000  # 5 seconds
 
-  playIfCan = (assetManager) ->
-    next = ->
-      tracks = assetManager.getTracks()
-      if tracks.length > 0
-        # if no tracks are playing
-        if _.every(tracks, (track) ->
-          track.ended or track.paused)
-          # pick a random track and play it
-          track = tracks[(Math.random() * tracks.length) | 0]
-          track.currentTime = 0
-          track.play()
+  class Music
+    constructor: (@assetManager) ->
+      @paused = false
 
-      # set timeout
-      setTimeout(next, checkTime)
+    start: ->
+      @paused = false
 
-    next()
+      next = =>
+        if @paused
+          return
 
-  start: playIfCan
+        tracks = @assetManager.getTracks()
+        # Fetch the tracks available
+        if tracks.length > 0
+          # if no tracks are playing
+          if _.every(tracks, (track) ->
+            track.ended or track.paused)
+            # pick a random track and play it
+            track = tracks[(Math.random() * tracks.length) | 0]
+            track.currentTime = 0
+            track.play()
+
+        # set timeout
+        setTimeout(next, checkTime)
+
+      next()
+
+    stop: ->
+      @paused = true
+      _.each(@assetManager.getTracks(), (track) ->
+        track.pause()
+        track.currentTime = 0
+      )

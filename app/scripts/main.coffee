@@ -21,7 +21,7 @@ require.config(
 )
 
 
-require ['app', 'keys', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'music', 'bootstrap'], (App, Keys, $, Physijs, FullScreen, sounds, music) ->
+require ['app', 'keys', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'music', 'bootstrap'], (App, Keys, $, Physijs, FullScreen, sounds, Music) ->
   root.mixpanel.track('Game load')
 
   gameContainer = $('#game')
@@ -31,6 +31,9 @@ require ['app', 'keys', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'mus
   Physijs.scripts.ammo = '../../bower_components/ammo.js/builds/ammo.js'
 
   app = new App(gameContainer, playerStatsContainer)
+
+  window.music = music = new Music(app.assetManager)
+
   keys = new Keys(app)
   window.app = app
 
@@ -69,7 +72,8 @@ require ['app', 'keys', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'mus
 
         # check for support via modernizr
         setTimeout ->
-          if not checkFeatures [Modernizr.webgl, '.check-webgl']
+          if not checkFeatures([Modernizr.webgl, '.check-webgl']
+                               [Modernizr.webworkers, '.check-workers'])
             return
 
           all = checkFeatures [Modernizr.audio, '.check-audio'],
@@ -79,7 +83,7 @@ require ['app', 'keys', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'mus
           # Start the game (it defaults to being paused)
           app.gameloop()
           if Modernizr.audio
-              music.start(app.assetManager)
+              music.start()
           if not all
             $('#continue-without-feature').removeClass('hide')
           else
