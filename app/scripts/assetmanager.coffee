@@ -1,19 +1,20 @@
-define ['THREE', 'Physijs'], (THREE, Physijs) ->
+define ['THREE', 'Physijs', 'underscore'], (THREE, Physijs, _) ->
   class AssetManager
     maxCachedModels: 10
     models: {}
     textures: {}
+    tracks: {}
 
     constructor: ->
       # Inst the model loader
       @loader = new THREE.JSONLoader()
 
-    preload: (models, textures, images, success) ->
+    preload: (models, textures, images, music, success) ->
       # load models and textures
       # when all are complete, call success with no args
       # always call success, even if no assets or they are
       # already loaded
-      totalAssets = models.length + textures.length
+      totalAssets = models.length + textures.length + images.length + music.length
       loadedAssets = 0
       callback = ->
         loadedAssets += 1
@@ -26,6 +27,7 @@ define ['THREE', 'Physijs'], (THREE, Physijs) ->
         @loadModel(name, callback) for name in models
         @getTexture(path, callback) for path in textures
         @loadImage(name, callback) for path in images
+        @loadTrack(path, callback) for path in music
 
     loadImage: (name, callback) ->
       # TODO
@@ -41,6 +43,17 @@ define ['THREE', 'Physijs'], (THREE, Physijs) ->
 
           if callback
             callback()
+
+    loadTrack: (path, callback) ->
+      track = new Audio()
+      track.src = path
+      if callback
+        track.addEventListener 'canplaythrough', =>
+          @tracks[path] = track
+          callback()
+
+    getTracks: ->
+      _.values(@tracks)
 
     # Has the model finished loading?
     isModelLoaded: (modelName) ->

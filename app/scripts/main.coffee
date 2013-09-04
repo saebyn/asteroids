@@ -57,6 +57,12 @@ require ['app', 'keys', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'mus
        'images/particle_debris.png', 'images/star.png'],
       ['images/sky/backmo.png', 'images/sky/botmo.png', 'images/sky/frontmo.png',
        'images/sky/leftmo.png', 'images/sky/rightmo.png', 'images/sky/topmo.png'],
+      ['resources/music/allofus.mp3', 'resources/music/arpanauts.mp3',
+       'resources/music/comeandfindme.mp3', 'resources/music/digitalnative.mp3',
+       'resources/music/hhavok-intro.mp3', 'resources/music/hhavok-main.mp3',
+       'resources/music/searching.mp3', 'resources/music/underclocked.mp3',
+       'resources/music/wereallunderthestars.mp3',
+       'resources/music/weretheresistors.mp3'],
       ->
         $('#preloader .progress').hide()
         $('#preloader .status').text('Checking for browser support...')
@@ -72,11 +78,12 @@ require ['app', 'keys', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'mus
           app.setup()
           # Start the game (it defaults to being paused)
           app.gameloop()
+          if Modernizr.audio
+              music.start(app.assetManager)
           if not all
             $('#continue-without-feature').removeClass('hide')
           else
             setTimeout ->
-              music.start()
               showAction 'menu'
             , 500
         , 500
