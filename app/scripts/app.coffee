@@ -192,6 +192,7 @@ define ['systems', 'assetmanager', 'background', 'THREE', 'vendor/fullscreen', '
         setTimeout(=>
           @playerStats.time = 0
           @entities.player = utils.clone(PLAYER)
+          @emit('controls:selectWeapon', @currentWeapon)
         , 5000)
 
       @subscribe 'kill', =>

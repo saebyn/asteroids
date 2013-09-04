@@ -14,12 +14,15 @@ define ['THREE', 'Physijs', 'underscore'], (THREE, Physijs, _) ->
       # when all are complete, call success with no args
       # always call success, even if no assets or they are
       # already loaded
-      totalAssets = models.length + textures.length + images.length + music.length
+      totalAssets = models.length + textures.length + images.length
       loadedAssets = 0
-      callback = ->
+      callback = (type, name) ->
         loadedAssets += 1
+        console.log type, name, loadedAssets, totalAssets
         if loadedAssets == totalAssets
           success()
+
+      @loadTrack(path) for path in music
 
       if totalAssets == 0
         success()
@@ -27,10 +30,10 @@ define ['THREE', 'Physijs', 'underscore'], (THREE, Physijs, _) ->
         @loadModel(name, callback) for name in models
         @getTexture(path, callback) for path in textures
         @loadImage(name, callback) for path in images
-        @loadTrack(path, callback) for path in music
 
     loadImage: (name, callback) ->
       # TODO
+      callback('image', name)
 
     loadModel: (modelName, callback, friction=0.8, restitution=0.4) ->
       if modelName not of @models
@@ -42,15 +45,19 @@ define ['THREE', 'Physijs', 'underscore'], (THREE, Physijs, _) ->
             useCount: 0
 
           if callback
-            callback()
+            callback('model', modelName)
 
-    loadTrack: (path, callback) ->
-      track = new Audio()
-      track.src = path
-      if callback
+    loadTrack: (path) ->
+      setTimeout =>
+        track = new Audio()
+        track.preload = 'auto'
+        track.src = path
         track.addEventListener 'canplaythrough', =>
           @tracks[path] = track
-          callback()
+
+        track.addEventListener 'error', =>
+          @loadTrack(path)
+      , Math.random() * 30000
 
     getTracks: ->
       _.values(@tracks)
@@ -73,7 +80,9 @@ define ['THREE', 'Physijs', 'underscore'], (THREE, Physijs, _) ->
 
     getTexture: (path, callback) ->
       if path not of @textures
-        @textures[path] = new THREE.ImageUtils.loadTexture(path, undefined, callback)
+        @textures[path] = new THREE.ImageUtils.loadTexture(path, undefined, ->
+          callback('texture', path)
+        )
 
       @textures[path]
 
