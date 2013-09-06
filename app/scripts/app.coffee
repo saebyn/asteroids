@@ -1,4 +1,4 @@
-define ['systems', 'assetmanager', 'background', 'THREE', 'vendor/fullscreen', 'vendor/rendererstats', 'Stats', 'Physijs', 'jquery', 'underscore', 'utils'], (systems, AssetManager, createBackground, THREE, FullScreen, RendererStats, Stats, Physijs, $, _, utils) ->
+define ['systems', 'assetmanager', 'background', 'THREE', 'vendor/fullscreen', 'Physijs', 'jquery', 'underscore', 'utils'], (systems, AssetManager, createBackground, THREE, FullScreen, Physijs, $, _, utils) ->
   FRAME_TIME_COUNTS = 50
   ASTEROID_SPAWN_RATE = 0.1
 
@@ -296,11 +296,6 @@ define ['systems', 'assetmanager', 'background', 'THREE', 'vendor/fullscreen', '
       )
       @renderer.setClearColor(0x000000, 1)
 
-      @stats = new Stats()
-      @stats.setMode(0)
-      @rendererStats = new RendererStats()
-      $('#stats-container').append(@stats.domElement).append(@rendererStats.domElement)
-
       @scene = new Physijs.Scene()
       @scene.setGravity(new THREE.Vector3(0.0, 0.0, 0.0))
       @setupLighting @scene
@@ -386,7 +381,6 @@ define ['systems', 'assetmanager', 'background', 'THREE', 'vendor/fullscreen', '
                           (x) -> @cameras[x].order
                         , this).value()
       @renderCamera(cameraId) for cameraId in orderedCameras
-      @rendererStats.update(@renderer)
 
     updatePlayerStats: ->
       # Update stats display
@@ -416,7 +410,6 @@ define ['systems', 'assetmanager', 'background', 'THREE', 'vendor/fullscreen', '
 
 
     gameloop: (currentTime=0) =>
-      @stats.begin()
       elapsedTime = @fpsUpdate(currentTime)
 
       if not @paused
@@ -446,7 +439,5 @@ define ['systems', 'assetmanager', 'background', 'THREE', 'vendor/fullscreen', '
 
         @updatePlayerStats()
         @assetManager.maintain()
-
-      @stats.end()
 
       window.requestAnimationFrame @gameloop

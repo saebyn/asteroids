@@ -10,7 +10,8 @@
     "stats.js": "*",
     "simplex-noise.js": "jwagner/simplex-noise.js",
     "jsfx": "gordlea/jsfx",
-    "threeutils": "saebyn/threeutils"
+    "threeutils": "saebyn/threeutils",
+    "DCPU-16": "saebyn/DCPU-16"
   },
   "devDependencies": {}
 }
