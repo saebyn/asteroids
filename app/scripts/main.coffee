@@ -81,7 +81,14 @@ require ['app', 'keys', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'mus
           # Start the game (it defaults to being paused)
           app.gameloop()
           if Modernizr.audio
-              music.start()
+            music.start()
+
+          if not Modernizr.localstorage
+            $('button[data-action="stats"]').attr(
+              disabled: 'disabled'
+              title: 'Requires HTML5 local storage'
+            )
+
           if not all
             $('#continue-without-feature').removeClass('hide')
           else
