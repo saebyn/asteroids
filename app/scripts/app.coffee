@@ -1,4 +1,4 @@
-define ['systems', 'assetmanager', 'background', 'THREE', 'vendor/fullscreen', 'Physijs', 'jquery', 'underscore', 'utils'], (systems, AssetManager, createBackground, THREE, FullScreen, Physijs, $, _, utils) ->
+define ['systems', 'playerstats', 'assetmanager', 'background', 'THREE', 'vendor/fullscreen', 'Physijs', 'jquery', 'underscore', 'utils'], (systems, PlayerStats, AssetManager, createBackground, THREE, FullScreen, Physijs, $, _, utils) ->
   FRAME_TIME_COUNTS = 50
   ASTEROID_SPAWN_RATE = 0.1
 
@@ -73,11 +73,6 @@ define ['systems', 'assetmanager', 'background', 'THREE', 'vendor/fullscreen', '
     # Where we keep track of our camera entities for easy rendering
     cameras: {}
 
-    playerStats:
-      deaths: 0
-      kills: 0
-      time: 0
-
     maxDistance: 3400
     maxEntities: 250
 
@@ -150,9 +145,10 @@ define ['systems', 'assetmanager', 'background', 'THREE', 'vendor/fullscreen', '
 
     eventSubscribers: {}
 
-    constructor: (@container, @playerStatsContainer) ->
+    constructor: (@container, statsContainer) ->
       @assetManager = new AssetManager()
       @systems = systems.register(this)
+      @playerStats = new PlayerStats(statsContainer, this)
 
     setup: ->
       @setupThree()
@@ -185,18 +181,16 @@ define ['systems', 'assetmanager', 'background', 'THREE', 'vendor/fullscreen', '
           @entities.player.fireable = utils.clone(WEAPONS[weapon])
 
       @subscribe 'death', =>
-        @playerStats.deaths += 1
         # TODO show some death message
         # Reset rate asteroid spawn rate
         @entities.asteroidSpawner.spawnable.rate = ASTEROID_SPAWN_RATE
         setTimeout(=>
-          @playerStats.time = 0
+          @emit('start')
           @entities.player = utils.clone(PLAYER)
           @emit('controls:selectWeapon', @currentWeapon)
         , 5000)
 
-      @subscribe 'kill', =>
-        @playerStats.kills += 1
+      @emit('start')
 
     togglePause: ->
       @paused = not @paused
@@ -384,14 +378,9 @@ define ['systems', 'assetmanager', 'background', 'THREE', 'vendor/fullscreen', '
 
     updatePlayerStats: ->
       # Update stats display
-      @playerStatsContainer.find('.deaths .value').text(@playerStats.deaths)
-      @playerStatsContainer.find('.kills .value').text(@playerStats.kills)
-      @playerStatsContainer.find('.time .value').text((@playerStats.time / 1000.0) | 0)
       health = @entities.player?.damagable?.health or 0
       max = @entities.player?.damagable?.maxHealth or Math.Infinity
-      @playerStatsContainer.find('.health .current .value').text(health)
-      @playerStatsContainer.find('.health .max .value').text(max)
-      @playerStatsContainer.find('.health .progress .bar').css({width: (100.0 * health / max) + '%'})
+      @playerStats.render(health, max)
 
     clearDistantEntities: ->
       # Any entities more than some fixed distance off the screen should be
@@ -413,7 +402,7 @@ define ['systems', 'assetmanager', 'background', 'THREE', 'vendor/fullscreen', '
       elapsedTime = @fpsUpdate(currentTime)
 
       if not @paused
-        @playerStats.time += elapsedTime
+        @playerStats.session.time += elapsedTime
 
         @clearDistantEntities()
 

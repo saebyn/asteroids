@@ -55,7 +55,7 @@
             </td>
             <td class="available hide"><i class="icon-white icon-ok" title="Available"></i></td>
           </tr>
-          <tr class="check-localstorage hide">
+          <tr class="check-localstorage">
             <th scope="row">Local Storage <small>(saves your scores and preferences)</small></th>
             <td class="unknown"><i class="icon-white icon-question-sign" title="Checking..."></i></td>
             <td class="not-available hide">
@@ -72,8 +72,8 @@
       <div class="container fade hide" id="menu">
         <ol class="unstyled">
           <li><button class="menu-btn btn btn-large btn-primary" data-action="game">Start Game</button></li>
-          <li><button class="menu-btn btn btn-large" data-action="keys"><i class="icon-help"></i> Keys</button></li>
-          <li><button class="menu-btn btn btn-large" disabled data-action="stats">Stats <small>Coming Soon</small></button></li>
+          <li><button class="menu-btn btn btn-large" data-action="keys">Keys</button></li>
+          <li><button class="menu-btn btn btn-large" data-action="stats">Stats</button></li>
           <li><button class="menu-btn btn btn-large" data-action="credits">Credits</button></li>
         </ol>
         <div class="aside well">
@@ -106,6 +106,16 @@
 
       <div class="container fade hide" id="stats">
         <h2>Stats</h2>
+        <table class="table table-condensed table-striped">
+            <tr class="deaths">
+              <th>Deaths</th>
+              <td class="value">0</td>
+            </tr>
+            <tr class="kills">
+              <th>Kills</th>
+              <td class="value">0</td>
+            </tr>
+        </table>
         <div class="form-actions">
           <button class="menu-btn btn btn-primary" data-action="menu">Back</button>
         </div>

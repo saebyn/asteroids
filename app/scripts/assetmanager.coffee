@@ -18,7 +18,6 @@ define ['THREE', 'Physijs', 'underscore'], (THREE, Physijs, _) ->
       loadedAssets = 0
       callback = (type, name) ->
         loadedAssets += 1
-        console.log type, name, loadedAssets, totalAssets
         if loadedAssets == totalAssets
           success()
 

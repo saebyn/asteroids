@@ -5,7 +5,6 @@ require.config(
         jquery: '../bower_components/jquery/jquery'
         underscore: '../bower_components/underscore/underscore'
         THREE: '../bower_components/threejs/build/three'
-        Stats: '../bower_components/stats.js/src/Stats'
         Physijs: '../bower_components/Physijs/physi'
         bootstrap: 'vendor/bootstrap'
         SimplexNoise: '../bower_components/simplex-noise.js/simplex-noise'
@@ -24,18 +23,14 @@ require.config(
 require ['app', 'keys', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'music', 'bootstrap'], (App, Keys, $, Physijs, FullScreen, sounds, Music) ->
   root.mixpanel.track('Game load')
 
-  gameContainer = $('#game')
-  playerStatsContainer = $('#player-stats')
-
   Physijs.scripts.worker = 'bower_components/Physijs/physijs_worker.js'
   Physijs.scripts.ammo = '../../bower_components/ammo.js/builds/ammo.js'
 
-  app = new App(gameContainer, playerStatsContainer)
+  window.app = app = new App($('#game'), $('#player-stats'))
 
   window.music = music = new Music(app.assetManager)
 
   keys = new Keys(app)
-  window.app = app
 
   showAction = (action) ->
     root.mixpanel.track('Select ' + action)
@@ -43,6 +38,9 @@ require ['app', 'keys', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'mus
     if action is 'game'
       $('.btn[data-action="game"]').text('Continue Game')
       app.togglePause()
+
+    if action is 'stats'
+      app.playerStats.renderLifetime($('#stats'))
 
     $('.all > .fade.in').removeClass('in').addClass('hide')
     $('#' + action).removeClass('hide').addClass('in')
