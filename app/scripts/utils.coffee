@@ -1,4 +1,4 @@
-define ['THREE'], (THREE) ->
+define ['THREE', 'jquery'], (THREE, $) ->
   randomSphereCoord = ->
     u = Math.random()
     v = Math.random()
@@ -46,4 +46,8 @@ define ['THREE'], (THREE) ->
   # within a sphere of the radius
   randomPointsInSphere: (radius, count, offset=0) ->
     randomVectorOnSphere(Math.random() * (radius - offset) + offset) for i in [0...count]
-
+  checkFeatures: (features...) ->
+    $(selector + ' .available').removeClass('hide') for [present, selector] in features when present
+    $(selector + ' .not-available').removeClass('hide') for [present, selector] in features when not present
+    $(selector + ' .unknown').addClass('hide') for [present, selector] in features
+    (0 for [present, selector] in features when present).length == features.length

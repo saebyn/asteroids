@@ -20,39 +20,33 @@ require.config(
 )
 
 
-require ['app', 'keys', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'music', 'bootstrap'], (App, Keys, $, Physijs, FullScreen, sounds, Music) ->
+require ['game', 'keys', 'utils', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'music', 'bootstrap'], (Game, Keys, utils, $, Physijs, FullScreen, sounds, Music) ->
   root.mixpanel.track('Game load')
 
   Physijs.scripts.worker = 'bower_components/Physijs/physijs_worker.js'
   Physijs.scripts.ammo = '../../bower_components/ammo.js/builds/ammo.js'
 
-  window.app = app = new App($('#game'), $('#player-stats'))
+  window.game = game = new Game($('#game'), $('#player-stats'))
 
-  window.music = music = new Music(app.assetManager)
+  window.music = music = new Music(game.assetManager)
 
-  keys = new Keys(app)
+  keys = new Keys(game)
 
   showAction = (action) ->
     root.mixpanel.track('Select ' + action)
 
     if action is 'game'
       $('.btn[data-action="game"]').text('Continue Game')
-      app.togglePause()
+      game.togglePause()
 
     if action is 'stats'
-      app.playerStats.renderLifetime($('#stats'))
+      game.playerStats.renderLifetime($('#stats'))
 
     $('.all > .fade.in').removeClass('in').addClass('hide')
     $('#' + action).removeClass('hide').addClass('in')
 
-  checkFeatures = (features...) ->
-    $(selector + ' .available').removeClass('hide') for [present, selector] in features when present
-    $(selector + ' .not-available').removeClass('hide') for [present, selector] in features when not present
-    $(selector + ' .unknown').addClass('hide') for [present, selector] in features
-    (0 for [present, selector] in features when present).length == features.length
-
   preload = ->
-    app.assetManager.preload(
+    game.assetManager.preload(
       ['playership', 'laserbolt', 'missile', 'mine'],
       ['images/asteroid1.png', 'images/asteroid1_bump.png', 'images/particle.png',
        'images/particle_debris.png', 'images/star.png'],
@@ -70,16 +64,16 @@ require ['app', 'keys', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'mus
 
         # check for support via modernizr
         setTimeout ->
-          if not checkFeatures([Modernizr.webgl, '.check-webgl']
-                               [Modernizr.webworkers, '.check-workers'])
+          if not utils.checkFeatures([Modernizr.webgl, '.check-webgl']
+                                     [Modernizr.webworkers, '.check-workers'])
             return
 
-          all = checkFeatures [Modernizr.audio, '.check-audio'],
-                              [Modernizr.localstorage, '.check-localstorage']
+          all = utils.checkFeatures [Modernizr.audio, '.check-audio'],
+                                    [Modernizr.localstorage, '.check-localstorage']
 
-          app.setup()
+          game.setup()
           # Start the game (it defaults to being paused)
-          app.gameloop()
+          game.gameloop()
           if Modernizr.audio
             music.start()
 
@@ -106,17 +100,20 @@ require ['app', 'keys', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'mus
   if FullScreen.available()
     $('#go-fullscreen').removeClass('hide').on 'click', ->
       $('#go-fullscreen').button('toggle')
-      if app.fullscreen
+      if game.fullscreen
         FullScreen.cancel()
       else
         FullScreen.request($('.container.all')[0])
 
-  # Hook up weapon selectors to app.
+    $(window).on 'resize', ->
+      game.fullscreen = FullScreen.activated()
+
+  # Hook up weapon selectors to game.
   $('#toolbar .selector').on 'click', ->
     $('#toolbar .selector.active').removeClass('active')
     weapon = $(this).data('weapon-selector')
     if weapon
-      app.emit('controls:selectWeapon', weapon)
+      game.emit('controls:selectWeapon', weapon)
       $(this).addClass('active')
 
   $(document).on 'keypress', (event) ->
@@ -126,18 +123,18 @@ require ['app', 'keys', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'mus
       $('#toolbar .selector').eq(offset).click()
 
 
-  # Hook up the pause button to the app
+  # Hook up the pause button to the game
   $('#pause-continue').on 'click', ->
-    app.togglePause()
+    game.togglePause()
 
   # Make pausing the game show the menu
-  app.subscribe 'pause', ->
+  game.subscribe 'pause', ->
     showAction('menu')
 
   preload()
 
   # Hook up sounds
-  app.subscribe('death', sounds.death)
-  app.subscribe('fire', sounds.fire)
-  app.subscribe('kill', sounds.kill)
-  app.subscribe('hit', sounds.hit)
+  game.subscribe('death', sounds.death)
+  game.subscribe('fire', sounds.fire)
+  game.subscribe('kill', sounds.kill)
+  game.subscribe('hit', sounds.hit)

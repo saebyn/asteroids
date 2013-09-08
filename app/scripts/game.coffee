@@ -1,5 +1,5 @@
-define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions', 'background', 'THREE', 'vendor/fullscreen', 'Physijs', 'jquery', 'underscore', 'utils'], (systems, PlayerStats, AssetManager, EntityManager, gameDefinitions, createBackground, THREE, FullScreen, Physijs, $, _, utils) ->
-  class App
+define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions', 'background', 'THREE', 'Physijs', 'jquery', 'underscore', 'utils'], (systems, PlayerStats, AssetManager, EntityManager, gameDefinitions, createBackground, THREE, Physijs, $, _, utils) ->
+  class Game
     fullscreen: false
     paused: true
     currentWeapon: 'plasma'
@@ -97,8 +97,6 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
 
       # On container size change, redo renderer.setSize
       $(window).on('resize', _.throttle(=>
-        @fullscreen = FullScreen.activated()
-
         if @fullscreen
           @container.parent().addClass('fullscreen')
         else
