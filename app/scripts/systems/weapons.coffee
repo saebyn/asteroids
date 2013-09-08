@@ -39,7 +39,7 @@ define ['systems/base', 'underscore', 'utils', 'THREE'], (System, _, utils, THRE
           direction: direction.multiplyScalar(speed / 1000.0)
           spin: {x: 0, y: 0, z: 0}
       
-      @app.addEntity(
+      @app.entities.addEntity(
         _.defaults(projectile, utils.clone(entity.fireable.extraComponents)))
 
     unthrottledProcess: (entities, elapsedTime) =>

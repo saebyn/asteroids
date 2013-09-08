@@ -14,9 +14,9 @@ define ['systems/base', 'THREE'], (System, THREE) ->
 
         if expirable.destroy
           if expirable.explodes
-            @app.destroyEntity(id)
+            @app.entities.destroyEntity(id)
           else
-            @app.removeEntity(id)
+            @app.entities.removeEntity(id)
 
         delete entity.expirable
 

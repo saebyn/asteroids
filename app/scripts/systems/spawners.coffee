@@ -50,7 +50,7 @@ define ['systems/base', 'underscore', 'utils', 'THREE'], (System, _, utils, THRE
           y: direction.y
           z: 0
 
-    app.addEntity(_.defaults(spawn, utils.clone(entity.spawnable.extraComponents)))
+    app.entities.addEntity(_.defaults(spawn, utils.clone(entity.spawnable.extraComponents)))
 
   updateRates = (entity, elapsedTime) ->
     entity.spawnable.rate += entity.spawnable.rateChange * entity.spawnable.rate * elapsedTime / 1000.0
@@ -59,7 +59,7 @@ define ['systems/base', 'underscore', 'utils', 'THREE'], (System, _, utils, THRE
     constructor: (@app) ->
       @app.subscribe 'death', =>
         # Remove all spawned entities
-        @app.removeEntity(id) for id of @app.entities when @app.entities[id]._type?
+        @app.entities.removeEntity(id) for id of @app.entities when @app.entities[id]._type?
 
     processOurEntities: (entities, elapsedTime) ->
       # pick which ones we want to spawn

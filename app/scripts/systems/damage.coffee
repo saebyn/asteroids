@@ -39,14 +39,14 @@ define ['systems/base', 'THREE', 'utils'], (System, THREE, utils) ->
 
     if entity.damagable.health <= 0
       if entity.damagable.disappears
-        system.app.removeEntity(entityId)
+        system.app.entities.removeEntity(entityId)
       else
-        system.app.destroyEntity(entityId)
+        system.app.entities.destroyEntity(entityId)
 
       # If there's a chance this object will fracture rather than
       # simply being atomized...
       if entity.damagable.fracture?.chance? and entity.renderable?.mesh?
-        system.app.addEntity(
+        system.app.entities.addEntity(
           debris:
             spread: 1000
             radius: entity.renderable.mesh.geometry.boundingSphere.radius
@@ -112,7 +112,7 @@ define ['systems/base', 'THREE', 'utils'], (System, THREE, utils) ->
           d.multiplyScalar(originalDirection.length() / 1000)
           {x: d.x, y: d.y, z: d.z}
 
-        @app.addEntity(
+        @app.entities.addEntity(
           _type: type
           position:
             x: positions[x].point.x

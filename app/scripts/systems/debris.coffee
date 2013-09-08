@@ -31,7 +31,7 @@ define ['systems/base', 'utils', 'THREE'], (System, utils, THREE) ->
         vector.multiply(randomVector) for vector in entity.debris.particles.vertices
         entity.renderable.mesh.geometry.__dirtyVertices = true
       else
-        @app.removeEntity(id)
+        @app.entities.removeEntity(id)
 
     processOurEntities: (entities, elapsedTime) ->
       @setup(components) for [id, components] in entities when not components.renderable?
