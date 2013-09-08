@@ -83,6 +83,3 @@ define ['systems/base', 'THREE', 'Physijs'], (System, THREE, Physijs) ->
   
       # if the entity has a loaded model, but it's not in the scene...
       @addModelToScene(id, components) for [id, components] in entities when not components.renderable.meshLoaded
-
-      # tell the app to render
-      @app.render(elapsedTime)

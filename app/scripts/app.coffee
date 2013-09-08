@@ -4,9 +4,6 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
     paused: true
     currentWeapon: 'plasma'
 
-    # Where we keep track of our camera entities for easy rendering
-    cameras: {}
-
     lastTime: 0
 
     eventSubscribers: {}
@@ -85,11 +82,6 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
       else
         @container.height()
 
-    registerCamera: (id, camera, order) ->
-      @scene.add camera
-      camera.name = id
-      @cameras[id] = {camera: camera, order: order}
-
     setupThree: ->
       @renderer = new THREE.WebGLRenderer(
         antialias: true
@@ -140,47 +132,6 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
       @lastTime = currentTime
       elapsedTime
 
-    renderCamera: (cameraId) ->
-      # Load viewport info from camera entity
-      cameraDef = @entities[cameraId].camera
-      windowWidth = @getGameWidth()
-      windowHeight = @getGameHeight()
-      # From http://mrdoob.github.io/three.js/examples/webgl_multiple_views.html
-      if cameraDef.view?
-        left = Math.floor(windowWidth * cameraDef.view.left)
-        bottom = Math.floor(windowHeight * cameraDef.view.bottom)
-        width = Math.floor(windowWidth * cameraDef.view.width)
-        height = Math.floor(windowHeight * cameraDef.view.height)
-      else
-        left = 0
-        bottom = 0
-        width = windowWidth
-        height = windowHeight
-
-      @renderer.setViewport(left, bottom, width, height)
-      @renderer.setScissor(left, bottom, width, height)
-      @renderer.enableScissorTest(true)
-      @renderer.setClearColor(
-        cameraDef.view?.background or '#000000', 
-        cameraDef.view?.backgroundAlpha or 1
-      )
-
-      if cameraDef.material?
-        @scene.overrideMaterial = cameraDef.material
-      else
-        @scene.overrideMaterial = undefined
-
-      @renderer.render(@scene, @cameras[cameraId].camera)
-
-    render: (elapsedTime) ->
-      @scene.simulate(elapsedTime / 1000.0)
-      # iterate over cameras, rendering to each
-      orderedCameras = _.chain(@cameras)
-                        .keys().sortBy(
-                          (x) -> @cameras[x].order
-                        , this).value()
-      @renderCamera(cameraId) for cameraId in orderedCameras
-
     updatePlayerStats: ->
       # Update stats display
       health = @entities.player?.damagable?.health or 0
@@ -214,6 +165,8 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
         # systems.
         @system('movement', 'movement', elapsedTime)
         @system('targeting', 'targeting', elapsedTime)
+
+        @scene.simulate(elapsedTime / 1000.0)
 
         @updatePlayerStats()
         @assetManager.maintain()

@@ -12,7 +12,9 @@ define ['systems/base', 'THREE', 'shaders/radar'], (System, THREE, radarShader) 
           cameraInst.position.y = camera.position.y
           cameraInst.position.z = camera.position.z
 
-        @app.registerCamera(id, cameraInst, camera.order?)
+        cameraInst.name = id
+        camera.instance = cameraInst
+        @app.scene.add cameraInst
         camera.registered = true
 
       if camera.radar
@@ -37,14 +39,55 @@ define ['systems/base', 'THREE', 'shaders/radar'], (System, THREE, radarShader) 
       if camera.radar?
         camera.radar.uniforms.time.value += elapsedTime
 
-    updateAspect: (camera, def) ->
-      camera.camera.aspect = @app.getGameWidth() / @app.getGameHeight()
-      camera.camera.updateProjectionMatrix()
-      @updateRadarSize(def)
+    updateAspect: (camera) ->
+      camera.instance.aspect = @app.getGameWidth() / @app.getGameHeight()
+      camera.instance.updateProjectionMatrix()
+      @updateRadarSize(camera)
+
+    render: (camera) ->
+      windowWidth = @app.getGameWidth()
+      windowHeight = @app.getGameHeight()
+      # From http://mrdoob.github.io/three.js/examples/webgl_multiple_views.html
+      if camera.view?
+        left = Math.floor(windowWidth * camera.view.left)
+        bottom = Math.floor(windowHeight * camera.view.bottom)
+        width = Math.floor(windowWidth * camera.view.width)
+        height = Math.floor(windowHeight * camera.view.height)
+      else
+        left = 0
+        bottom = 0
+        width = windowWidth
+        height = windowHeight
+
+      @app.renderer.setViewport(left, bottom, width, height)
+      @app.renderer.setScissor(left, bottom, width, height)
+      @app.renderer.enableScissorTest(true)
+      @app.renderer.setClearColor(
+        camera.view?.background or '#000000', 
+        camera.view?.backgroundAlpha or 1
+      )
+
+      if camera.material?
+        @app.scene.overrideMaterial = camera.material
+      else
+        @app.scene.overrideMaterial = undefined
+
+      @app.renderer.render(@app.scene, camera.instance)
     
     processOurEntities: (entities, elapsed) ->
       @registerCamera(id, components.camera) for [id, components] in entities when not components.camera.registered?
 
-      @updateAspect(@app.cameras[id], components.camera) for [id, components] in entities when components.camera.registered?
+      registered = (entity for entity in entities when entity[1].camera.registered?)
 
-      @updateRadarTime(components.camera, elapsed) for [id, components] in entities when components.camera.registered?
+      @updateAspect(components.camera) for [id, components] in registered when components.camera.instance?
+
+      @updateRadarTime(components.camera, elapsed) for [id, components] in registered
+
+      orderedCameras = _.chain(registered)
+                        .filter(([id, components]) ->
+                          components.camera.instance?
+                        ).sortBy(([id, components]) ->
+                          components.camera.order or Number.MAX_VALUE
+                        ).value()
+
+      @render(components.camera) for [id, components] in orderedCameras
