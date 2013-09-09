@@ -73,6 +73,7 @@ require ['game', 'keys', 'utils', 'jquery', 'Physijs', 'vendor/fullscreen', 'sou
 
           game.setup()
           # Start the game (it defaults to being paused)
+          game.loadLevel('space')
           game.gameloop()
           if Modernizr.audio
             music.start()
