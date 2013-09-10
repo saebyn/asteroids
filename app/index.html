@@ -1,8 +1,8 @@
 <!doctype html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<!--[if lt IE 7]>      <html class="ng-app no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="ng-app no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="ng-app no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="ng-app no-js"> <!--<![endif]-->
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -18,219 +18,241 @@
     <!-- endbuild -->
   </head>
   <body>
-    <div class="container all">
-      <div class="fade in" id="preloader">
-        <div class="progress progress-striped active">
-          <div class="bar">
-          </div>
-        </div>
-
-        <h1 class="status">Loading...</h1>
-
-        <table class="feature-check table table-striped">
-          <tr class="check-webgl">
-            <th scope="row">WebGL <small>(3D graphics in your browser)</small></th>
-            <td class="unknown"><i class="icon-white icon-question-sign" title="Checking..."></i></td>
-            <td class="not-available hide">
-              <h4><i class="icon-white icon-warning-sign" title="Not Available"></i> Not Available</h4>
-              <p>Your browser does not have this capability. <em>This game requires WebGL.</em> Please <a href="http://browsehappy.com/">upgrade your browser</a>.</p>
-            </td>
-            <td class="available hide"><i class="icon-white icon-ok" title="Available"></i></td>
-          </tr>
-          <tr class="check-workers">
-            <th scope="row">Web Workers <small>(Calculating physics in the background)</small></th>
-            <td class="unknown"><i class="icon-white icon-question-sign" title="Checking..."></i></td>
-            <td class="not-available hide">
-              <h4><i class="icon-white icon-warning-sign" title="Not Available"></i> Not Available</h4>
-              <p>Your browser does not have this capability. <em>This game requires Web Workers.</em> Please <a href="http://browsehappy.com/">upgrade your browser</a>.</p>
-            </td>
-            <td class="available hide"><i class="icon-white icon-ok" title="Available"></i></td>
-          </tr>
-          <tr class="check-audio">
-            <th scope="row">HTML5 Audio <small>(sound fx)</small></th>
-            <td class="unknown"><i class="icon-white icon-question-sign" title="Checking..."></i></td>
-            <td class="not-available hide">
-              <h4><i class="icon-white icon-warning-sign" title="Not Available"></i> Not Available</h4>
-              <p>Your browser does not have this capability. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-            </td>
-            <td class="available hide"><i class="icon-white icon-ok" title="Available"></i></td>
-          </tr>
-          <tr class="check-localstorage">
-            <th scope="row">Local Storage <small>(saves your scores and preferences)</small></th>
-            <td class="unknown"><i class="icon-white icon-question-sign" title="Checking..."></i></td>
-            <td class="not-available hide">
-              <h4><i class="icon-white icon-warning-sign" title="Not Available"></i> Not Available</h4>
-              <p>Your browser does not have this capability. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-            </td>
-            <td class="available hide"><i class="icon-white icon-ok" title="Available"></i></td>
-          </tr>
-        </table>
-
-        <button class="btn btn-large btn-primary hide menu-btn" data-action="menu" id="continue-without-feature">Continue</button>
-      </div>
-
-      <div class="container fade hide" id="menu">
-        <ol class="unstyled">
-          <li><button class="menu-btn btn btn-large btn-primary" data-action="game">Start Game</button></li>
-          <li><button class="menu-btn btn btn-large" data-action="keys">Keys</button></li>
-          <li><button class="menu-btn btn btn-large" data-action="stats">Stats</button></li>
-          <li><button class="menu-btn btn btn-large" data-action="credits">Credits</button></li>
-        </ol>
-        <div class="aside well">
-          <div id="wufoo-z7x4m1">
-            Fill out my <a href="http://saebyn.wufoo.com/forms/z7x4m1">online form</a>.
-          </div>
-        </div>
-      </div>
-
-      <div class="container fade hide" id="keys">
-        <h2>Keys</h2>
-
-        <dl class="dl-horizontal">
-          <dt><kbd class="light">a</kbd></dt>
-          <dd>Turn Ship Left</dd>
-          <dt><kbd class="light">d</kbd></dt>
-          <dd>Turn Ship Right</dd>
-          <dt><kbd class="light">spacebar</kbd></dt>
-          <dd>Fire Weapon <small>(hold for rapid fire)</small></dd>
-          <dt><kbd class="light">p</kbd></dt>
-          <dd>Pause &amp; Unpause</dd>
-          <dt><kbd class="light">o</kbd></dt>
-          <dd>Toggle Full Screen</dd>
-        </dl>
-
-        <div class="form-actions">
-          <button class="menu-btn btn btn-primary" data-action="menu">Back</button>
-        </div>
-      </div>
-
-      <div class="container fade hide" id="stats">
-        <h2>Stats</h2>
-        <table class="table table-condensed table-striped">
-            <tr class="deaths">
-              <th>Deaths</th>
-              <td class="value">0</td>
-            </tr>
-            <tr class="kills">
-              <th>Kills</th>
-              <td class="value">0</td>
-            </tr>
-        </table>
-        <div class="form-actions">
-          <button class="menu-btn btn btn-primary" data-action="menu">Back</button>
-        </div>
-      </div>
-
-      <div class="container fade hide" id="credits">
-        <h2>Credits</h2>
-
-        <h3>Developed by</h3>
-        
-        <p><a href="http://saebyn.info/" target="_blank">John Weaver</a></p>
-
-        <h3>Using</h3>
-        <ul class="unstyled">
-          <li><a href="http://threejs.org/" target="_blank">Three.js</a></li>
-
-          <li><a href="http://chandlerprall.github.io/Physijs/" target="_blank">Physijs</a></li>
-
-          <li><a href="http://getbootstrap.com/" target="_blank">Bootstrap</a> and <a href="https://github.com/danneu/darkstrap" target="_blank">Darkstrap</a></li>
-
-          <li><a href="https://github.com/egonelbre/jsfx" target="_blank">jsfx</a></li>
-
-          <li><a href="https://github.com/jwagner/simplex-noise.js" target="_blank">simplex-noise.js</a></li>
-
-          <li>Built and Deployed with <a href="http://yeoman.io/" target="_blank">Yeoman, Bower, Grunt</a>, and <a href="http://requirejs.org/" target="_blank">RequireJS</a></li>
-        </ul>
-
-        <h3>Music</h3>
-        <p>
-          <i>Resistor Anthems</i> by <a href="http://ericskiff.com/music/">Eric Skiff</a> under a Creative Commons Attribution License.
-        </p>
-
-        <div class="form-actions">
-          <button class="menu-btn btn btn-primary" data-action="menu">Back</button>
-        </div>
-      </div>
-
-      <div class="fade hide" id="game">
-        <div id="options">
-          <span class="btn-group pull-right">
-            <button id="go-fullscreen" class="btn btn-inverse hide"><i class="icon-white icon-fullscreen"></i> Fullscreen <kbd class="light">o</kbd></button>
-            <button id="pause-continue" class="btn btn-inverse active"><i class="icon-white icon-pause"></i> Pause <kbd class="light">p</kbd></button>
-          </span>
-
-          <div id="player-stats">
-            <div class="health" title="Ship Health Remaining (HP)">
-              <div class="progress">
-                <span class="bar bar-danger"></span>
-              </div>
-              <div class="stat">
-                <span class="current">
-                  <span class="value">0</span>
-                </span>
-                /
-                <span class="max">
-                  <span class="value">0</span>
-                </span>
-              </div>
+    <game container="#game" player-stats-container="#player-stats" lifetime-stats-container="#stats">
+      <div class="container all" data-game-menu>
+        <div class="fade in" id="preloader" preloader="game">
+          <div class="progress progress-striped active">
+            <div class="bar">
             </div>
-            <span class="deaths"><span class="badge badge-important value">0</span> deaths</span>
-            <span class="kills"><span class="badge badge-success value">0</span> kills</span>
-            <span class="time"><span class="badge badge-info value">0</span> seconds so far</span>
           </div>
 
-          <span class="clearfix"></span>
+          <h1 class="status">Loading...</h1>
+
+          <table class="feature-check table table-striped">
+            <tr class="check-webgl">
+              <th scope="row">WebGL <small>(3D graphics in your browser)</small></th>
+              <td class="unknown"><i class="icon-white icon-question-sign" title="Checking..."></i></td>
+              <td class="not-available hide">
+                <h4><i class="icon-white icon-warning-sign" title="Not Available"></i> Not Available</h4>
+                <p>Your browser does not have this capability. <em>This game requires WebGL.</em> Please <a href="http://browsehappy.com/">upgrade your browser</a>.</p>
+              </td>
+              <td class="available hide"><i class="icon-white icon-ok" title="Available"></i></td>
+            </tr>
+            <tr class="check-workers">
+              <th scope="row">Web Workers <small>(Calculating physics in the background)</small></th>
+              <td class="unknown"><i class="icon-white icon-question-sign" title="Checking..."></i></td>
+              <td class="not-available hide">
+                <h4><i class="icon-white icon-warning-sign" title="Not Available"></i> Not Available</h4>
+                <p>Your browser does not have this capability. <em>This game requires Web Workers.</em> Please <a href="http://browsehappy.com/">upgrade your browser</a>.</p>
+              </td>
+              <td class="available hide"><i class="icon-white icon-ok" title="Available"></i></td>
+            </tr>
+            <tr class="check-audio">
+              <th scope="row">HTML5 Audio <small>(sound fx)</small></th>
+              <td class="unknown"><i class="icon-white icon-question-sign" title="Checking..."></i></td>
+              <td class="not-available hide">
+                <h4><i class="icon-white icon-warning-sign" title="Not Available"></i> Not Available</h4>
+                <p>Your browser does not have this capability. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+              </td>
+              <td class="available hide"><i class="icon-white icon-ok" title="Available"></i></td>
+            </tr>
+            <tr class="check-localstorage">
+              <th scope="row">Local Storage <small>(saves your scores and preferences)</small></th>
+              <td class="unknown"><i class="icon-white icon-question-sign" title="Checking..."></i></td>
+              <td class="not-available hide">
+                <h4><i class="icon-white icon-warning-sign" title="Not Available"></i> Not Available</h4>
+                <p>Your browser does not have this capability. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+              </td>
+              <td class="available hide"><i class="icon-white icon-ok" title="Available"></i></td>
+            </tr>
+          </table>
+
+          <button class="btn btn-large btn-primary hide menu-btn" data-action="menu" id="continue-without-feature">Continue</button>
         </div>
 
-        <div id="toolbar">
-          <div data-weapon-selector="plasma" class="selector active">
-            <img src="images/plasma_weapon_icon.png"
-                 title="Plasma Bullet" width="100" height="100">
-            <kbd class="light">1</kbd>
+        <div class="container fade hide" id="menu">
+          <ol class="unstyled">
+            <li data-ng-hide="continued"><button class="menu-btn btn btn-large btn-primary" data-action="game">Start Game</button></li>
+            <li data-ng-show="continued"><button class="menu-btn btn btn-large btn-primary" data-action="game">Continue Game</button></li>
+            <li><button class="menu-btn btn btn-large" data-action="settings">Settings</button></li>
+            <li><button class="menu-btn btn btn-large" data-action="keys">Keys</button></li>
+            <li><button class="menu-btn btn btn-large" data-action="stats">Stats</button></li>
+            <li><button class="menu-btn btn btn-large" data-action="credits">Credits</button></li>
+          </ol>
+          <div class="aside well">
+            <div id="wufoo-z7x4m1">
+              Fill out my <a href="http://saebyn.wufoo.com/forms/z7x4m1">online form</a>.
+            </div>
           </div>
-          <div data-weapon-selector="missile" class="selector">
-            <img src="images/missile_weapon_icon.png"
-                 title="Object-seeking Missile" width="100" height="100">
-            <kbd class="light">2</kbd>
+        </div>
+
+        <div class="container fade hide" id="settings">
+          <h2>Settings</h2>
+
+          <table class="table table-condensed table-striped">
+            <tr data-ng-hide="musicDisabled">
+              <th>Music</th>
+              <td><input type="checkbox" data-ng-model="musicPlaying"></td>
+          </table>
+
+          <div class="form-actions">
+            <button class="menu-btn btn btn-primary" data-action="menu">Back</button>
           </div>
-          <div data-weapon-selector="mine" class="selector">
-            <img src="images/mine_weapon_icon.png"
-                 title="Space Mine" width="100" height="100">
-            <kbd class="light">3</kbd>
+        </div>
+
+
+        <div class="container fade hide" id="keys">
+          <h2>Keys</h2>
+
+          <dl class="dl-horizontal">
+            <dt><kbd class="light">a</kbd></dt>
+            <dd>Turn Ship Left</dd>
+            <dt><kbd class="light">d</kbd></dt>
+            <dd>Turn Ship Right</dd>
+            <dt><kbd class="light">spacebar</kbd></dt>
+            <dd>Fire Weapon <small>(hold for rapid fire)</small></dd>
+            <dt><kbd class="light">p</kbd></dt>
+            <dd>Pause &amp; Unpause</dd>
+            <dt><kbd class="light">o</kbd></dt>
+            <dd>Toggle Full Screen</dd>
+          </dl>
+
+          <div class="form-actions">
+            <button class="menu-btn btn btn-primary" data-action="menu">Back</button>
+          </div>
+        </div>
+
+        <div class="container fade hide" id="stats">
+          <h2>Stats</h2>
+          <table class="table table-condensed table-striped">
+              <tr class="deaths">
+                <th>Deaths</th>
+                <td class="value">0</td>
+              </tr>
+              <tr class="kills">
+                <th>Kills</th>
+                <td class="value">0</td>
+              </tr>
+          </table>
+          <div class="form-actions">
+            <button class="menu-btn btn btn-primary" data-action="menu">Back</button>
+          </div>
+        </div>
+
+        <div class="container fade hide" id="credits">
+          <h2>Credits</h2>
+
+          <h3>Developed by</h3>
+          
+          <p><a href="http://saebyn.info/" target="_blank">John Weaver</a></p>
+
+          <h3>Using</h3>
+          <ul class="unstyled">
+            <li><a href="http://threejs.org/" target="_blank">Three.js</a></li>
+
+            <li><a href="http://chandlerprall.github.io/Physijs/" target="_blank">Physijs</a></li>
+
+            <li><a href="http://getbootstrap.com/" target="_blank">Bootstrap</a> and <a href="https://github.com/danneu/darkstrap" target="_blank">Darkstrap</a></li>
+
+            <li><a href="https://github.com/egonelbre/jsfx" target="_blank">jsfx</a></li>
+
+            <li><a href="https://github.com/jwagner/simplex-noise.js" target="_blank">simplex-noise.js</a></li>
+
+            <li>Built and Deployed with <a href="http://yeoman.io/" target="_blank">Yeoman, Bower, Grunt</a>, and <a href="http://requirejs.org/" target="_blank">RequireJS</a></li>
+          </ul>
+
+          <h3>Music</h3>
+          <p>
+            <i>Resistor Anthems</i> by <a href="http://ericskiff.com/music/">Eric Skiff</a> under a Creative Commons Attribution License.
+          </p>
+
+          <div class="form-actions">
+            <button class="menu-btn btn btn-primary" data-action="menu">Back</button>
+          </div>
+        </div>
+
+        <div class="fade hide" id="game">
+          <div id="options">
+            <span class="btn-group pull-right">
+              <button data-fullscreen class="btn btn-inverse" data-ng-class="{active: fullscreen}" data-ng-show="supportsFullscreen"><i class="icon-white icon-fullscreen"></i> Fullscreen <kbd class="light">o</kbd></button>
+              <button data-ng-click="game.togglePause()" class="btn btn-inverse"><i class="icon-white icon-pause"></i> Pause <kbd class="light">p</kbd></button>
+            </span>
+
+            <div id="player-stats">
+              <div class="health" title="Ship Health Remaining (HP)">
+                <div class="progress">
+                  <span class="bar bar-danger"></span>
+                </div>
+                <div class="stat">
+                  <span class="current">
+                    <span class="value">0</span>
+                  </span>
+                  /
+                  <span class="max">
+                    <span class="value">0</span>
+                  </span>
+                </div>
+              </div>
+              <span class="deaths"><span class="badge badge-important value">0</span> deaths</span>
+              <span class="kills"><span class="badge badge-success value">0</span> kills</span>
+              <span class="time"><span class="badge badge-info value">0</span> seconds so far</span>
+            </div>
+
+            <span class="clearfix"></span>
+          </div>
+
+          <div data-weapons id="toolbar">
+            <div data-weapon-selector="plasma" class="selector active">
+              <img src="images/plasma_weapon_icon.png"
+                   title="Plasma Bullet" width="100" height="100">
+              <kbd class="light">1</kbd>
+            </div>
+            <div data-weapon-selector="missile" class="selector">
+              <img src="images/missile_weapon_icon.png"
+                   title="Object-seeking Missile" width="100" height="100">
+              <kbd class="light">2</kbd>
+            </div>
+            <div data-weapon-selector="mine" class="selector">
+              <img src="images/mine_weapon_icon.png"
+                   title="Space Mine" width="100" height="100">
+              <kbd class="light">3</kbd>
+            </div>
           </div>
         </div>
       </div>
+    </game>
 
-      <div class="pull-right">
-        <a href="https://twitter.com/share" class="twitter-share-button" data-text="Check out this game" data-related="saebyn">Tweet</a>
-        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+    <div class="pull-right">
+      <a href="https://twitter.com/share" class="twitter-share-button" data-text="Check out this game" data-related="saebyn">Tweet</a>
+      <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
-        <script data-gittip-username="saebyn"
-                data-gittip-widget="button"
-                src="//gttp.co/v1.js"></script>
-      </div>
+      <script data-gittip-username="saebyn"
+              data-gittip-widget="button"
+              src="//gttp.co/v1.js"></script>
     </div>
 
     <!--[if lt IE 7]>
         <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
 
-    <!-- start Mixpanel --><script type="text/javascript">(function(e,b){if(!b.__SV){var a,f,i,g;window.mixpanel=b;a=e.createElement("script");a.type="text/javascript";a.async=!0;a.src=("https:"===e.location.protocol?"https:":"http:")+'//cdn.mxpnl.com/libs/mixpanel-2.2.min.js';f=e.getElementsByTagName("script")[0];f.parentNode.insertBefore(a,f);b._i=[];b.init=function(a,e,d){function f(b,h){var a=h.split(".");2==a.length&&(b=b[a[0]],h=a[1]);b[h]=function(){b.push([h].concat(Array.prototype.slice.call(arguments,0)))}}var c=b;"undefined"!==typeof d?c=b[d]=[]:d="mixpanel";c.people=c.people||[];c.toString=function(b){var a="mixpanel";"mixpanel"!==d&&(a+="."+d);b||(a+=" (stub)");return a};c.people.toString=function(){return c.toString(1)+".people (stub)"};i="disable track track_pageview track_links track_forms register register_once alias unregister identify name_tag set_config people.set people.set_once people.increment people.append people.track_charge people.clear_charges people.delete_user".split(" ");for(g=0;g<i.length;g++)f(c,i[g]);b._i.push([a,e,d])};b.__SV=1.2}})(document,window.mixpanel||[]);mixpanel.init("1027bd20d655adbe3c4541da7ff0ca5b");</script><!-- end Mixpanel -->
-          <script type="text/javascript">var z7x4m1;(function(d, t) {
-            var s = d.createElement(t), options = {
-            'userName':'saebyn', 
-            'formHash':'z7x4m1', 
-            'autoResize':true,
-            'height':'610',
-            'async':true,
-            'header':'show'};
-            s.src = ('https:' == d.location.protocol ? 'https://' : 'http://') + 'wufoo.com/scripts/embed/form.js';
-            s.onload = s.onreadystatechange = function() {
-            var rs = this.readyState; if (rs) if (rs != 'complete') if (rs != 'loaded') return;
-            try { z7x4m1 = new WufooForm();z7x4m1.initialize(options);z7x4m1.display(); } catch (e) {}};
-            var scr = d.getElementsByTagName(t)[0], par = scr.parentNode; par.insertBefore(s, scr);
-            })(document, 'script');</script>
+    <!-- start Mixpanel -->
+    <script type="text/javascript">(function(e,b){if(!b.__SV){var a,f,i,g;window.mixpanel=b;a=e.createElement("script");a.type="text/javascript";a.async=!0;a.src=("https:"===e.location.protocol?"https:":"http:")+'//cdn.mxpnl.com/libs/mixpanel-2.2.min.js';f=e.getElementsByTagName("script")[0];f.parentNode.insertBefore(a,f);b._i=[];b.init=function(a,e,d){function f(b,h){var a=h.split(".");2==a.length&&(b=b[a[0]],h=a[1]);b[h]=function(){b.push([h].concat(Array.prototype.slice.call(arguments,0)))}}var c=b;"undefined"!==typeof d?c=b[d]=[]:d="mixpanel";c.people=c.people||[];c.toString=function(b){var a="mixpanel";"mixpanel"!==d&&(a+="."+d);b||(a+=" (stub)");return a};c.people.toString=function(){return c.toString(1)+".people (stub)"};i="disable track track_pageview track_links track_forms register register_once alias unregister identify name_tag set_config people.set people.set_once people.increment people.append people.track_charge people.clear_charges people.delete_user".split(" ");for(g=0;g<i.length;g++)f(c,i[g]);b._i.push([a,e,d])};b.__SV=1.2}})(document,window.mixpanel||[]);mixpanel.init("1027bd20d655adbe3c4541da7ff0ca5b");</script>
+    <!-- end Mixpanel -->
+
+    <script type="text/javascript">var z7x4m1;(function(d, t) {
+      var s = d.createElement(t), options = {
+      'userName':'saebyn', 
+      'formHash':'z7x4m1', 
+      'autoResize':true,
+      'height':'610',
+      'async':true,
+      'header':'show'};
+      s.src = ('https:' == d.location.protocol ? 'https://' : 'http://') + 'wufoo.com/scripts/embed/form.js';
+      s.onload = s.onreadystatechange = function() {
+      var rs = this.readyState; if (rs) if (rs != 'complete') if (rs != 'loaded') return;
+      try { z7x4m1 = new WufooForm();z7x4m1.initialize(options);z7x4m1.display(); } catch (e) {}};
+      var scr = d.getElementsByTagName(t)[0], par = scr.parentNode; par.insertBefore(s, scr);
+      })(document, 'script');</script>
 
     <script>
       var Module = {TOTAL_MEMORY: 256 * 1024 * 1024};
