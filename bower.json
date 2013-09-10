@@ -11,7 +11,9 @@
     "simplex-noise.js": "jwagner/simplex-noise.js",
     "jsfx": "gordlea/jsfx",
     "threeutils": "saebyn/threeutils",
-    "DCPU-16": "saebyn/DCPU-16"
+    "DCPU-16": "saebyn/DCPU-16",
+    "angular": "~1.0.8",
+    "angular-cookies": "~1.0.8"
   },
   "devDependencies": {}
 }

@@ -3,6 +3,7 @@ root = exports ? this
 require.config(
     paths:
       angular: '../bower_components/angular/angular'
+      angularCookies: '../bower_components/angular-cookies/angular-cookies'
       jquery: '../bower_components/jquery/jquery'
       underscore: '../bower_components/underscore/underscore'
       THREE: '../bower_components/threejs/build/three'
@@ -15,6 +16,8 @@ require.config(
     shim:
       angular:
         exports: 'angular'
+      angularCookies:
+        deps: ['angular']
       bootstrap:
         deps: ['jquery']
         exports: '$'
@@ -27,7 +30,7 @@ require.config(
 
 window.name = 'NG_DEFER_BOOTSTRAP!'
 
-require ['angular', 'app', 'game', 'keys', 'utils', 'jquery', 'Physijs', 'vendor/fullscreen', 'sounds', 'music', 'bootstrap'], (angular, app, Game, Keys, utils, $, Physijs, FullScreen, sounds, Music) ->
+require ['angular', 'app', 'Physijs', 'bootstrap', 'angularCookies', 'jquery'], (angular, app, Physijs) ->
   root.mixpanel.track('Game load')
 
   Physijs.scripts.worker = 'bower_components/Physijs/physijs_worker.js'

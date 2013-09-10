@@ -34,9 +34,12 @@ define ['angular', 'game', 'music', 'sounds', 'keys', 'utils', 'vendor/fullscree
         'playerStatsContainer': '@'
         'lifetimeStatsContainer': '@'
       restrict: 'E'
-      controller: ['$scope', ($scope) ->
+      controller: ['$scope', '$cookieStore', ($scope, $cookieStore) ->
+        # TODO move this controller out of here, and tie it to
+        # the settings element, rather than the game directive.
         $scope.$watch 'musicPlaying', (musicPlaying, before, scope) ->
           if not scope.musicDisabled and scope.music?
+            $cookieStore.put('music', musicPlaying)
             if musicPlaying
               scope.music.start()
             else
@@ -65,7 +68,7 @@ define ['angular', 'game', 'music', 'sounds', 'keys', 'utils', 'vendor/fullscree
           game.subscribe('kill', sounds.kill)
           game.subscribe('hit', sounds.hit)
     )
-    .directive('preloader', ($timeout) ->
+    .directive('preloader', ($timeout, $cookieStore) ->
       restrict: 'A'
       link: (scope, element, attrs) ->
         scope.$watch 'game', (game) ->
@@ -101,7 +104,8 @@ define ['angular', 'game', 'music', 'sounds', 'keys', 'utils', 'vendor/fullscree
                 # Start the game (it defaults to being paused)
                 scope.game.gameloop()
                 if Modernizr.audio
-                  scope.musicPlaying = true
+                  if $cookieStore.get('music') is not false
+                    scope.musicPlaying = true
                 else
                   scope.musicDisabled = true
 
