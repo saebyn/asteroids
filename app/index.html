@@ -74,6 +74,7 @@
           <ol class="unstyled">
             <li data-ng-hide="continued"><button class="menu-btn btn btn-large btn-primary" data-action="game">Start Game</button></li>
             <li data-ng-show="continued"><button class="menu-btn btn btn-large btn-primary" data-action="game">Continue Game</button></li>
+            <li><button class="menu-btn btn btn-large" data-action="settings">Settings</button></li>
             <li><button class="menu-btn btn btn-large" data-action="keys">Keys</button></li>
             <li><button class="menu-btn btn btn-large" data-action="stats">Stats</button></li>
             <li><button class="menu-btn btn btn-large" data-action="credits">Credits</button></li>
@@ -84,6 +85,21 @@
             </div>
           </div>
         </div>
+
+        <div class="container fade hide" id="settings">
+          <h2>Settings</h2>
+
+          <table class="table table-condensed table-striped">
+            <tr>
+              <th>Music</th>
+              <td><input type="checkbox" data-ng-model="musicPlaying"></td>
+          </table>
+
+          <div class="form-actions">
+            <button class="menu-btn btn btn-primary" data-action="menu">Back</button>
+          </div>
+        </div>
+
 
         <div class="container fade hide" id="keys">
           <h2>Keys</h2>

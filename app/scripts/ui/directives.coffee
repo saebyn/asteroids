@@ -34,6 +34,14 @@ define ['angular', 'game', 'music', 'sounds', 'keys', 'utils', 'vendor/fullscree
         'playerStatsContainer': '@'
         'lifetimeStatsContainer': '@'
       restrict: 'E'
+      controller: ['$scope', ($scope) ->
+        $scope.$watch 'musicPlaying', (musicPlaying, before, scope) ->
+          if not scope.musicDisabled and scope.music?
+            if musicPlaying
+              scope.music.start()
+            else
+              scope.music.stop()
+      ]
       link: (scope, element, attrs) ->
         scope.$watch 'container+playerStatsContainer', ->
           scope.game = new Game(
@@ -42,6 +50,8 @@ define ['angular', 'game', 'music', 'sounds', 'keys', 'utils', 'vendor/fullscree
           )
           scope.music = new Music(scope.game.assetManager)
           scope.keys = new Keys(scope.game)
+          scope.musicDisabled = false
+          scope.musicPlaying = false
 
         scope.renderLifetimeStats = ->
           if scope.game?
@@ -55,7 +65,7 @@ define ['angular', 'game', 'music', 'sounds', 'keys', 'utils', 'vendor/fullscree
           game.subscribe('kill', sounds.kill)
           game.subscribe('hit', sounds.hit)
     )
-    .directive('preloader', ->
+    .directive('preloader', ($timeout) ->
       restrict: 'A'
       link: (scope, element, attrs) ->
         scope.$watch 'game', (game) ->
@@ -79,7 +89,7 @@ define ['angular', 'game', 'music', 'sounds', 'keys', 'utils', 'vendor/fullscree
               $('#preloader .status').text('Checking for browser support...')
 
               # check for support via modernizr
-              setTimeout ->
+              $timeout ->
                 if not utils.checkFeatures([Modernizr.webgl, '.check-webgl']
                                            [Modernizr.webworkers, '.check-workers'])
                   return
@@ -91,7 +101,9 @@ define ['angular', 'game', 'music', 'sounds', 'keys', 'utils', 'vendor/fullscree
                 # Start the game (it defaults to being paused)
                 scope.game.gameloop()
                 if Modernizr.audio
-                  scope.music.start()
+                  scope.musicPlaying = true
+                else
+                  scope.musicDisabled = true
 
                 if not Modernizr.localstorage
                   $('button[data-action="stats"]').attr(
@@ -100,9 +112,9 @@ define ['angular', 'game', 'music', 'sounds', 'keys', 'utils', 'vendor/fullscree
                   )
 
                 if not all
-                  $('#continue-without-feature').removeClass('hide')
+                  angular.element('#continue-without-feature').removeClass('hide')
                 else
-                  setTimeout ->
+                  $timeout ->
                     scope.$broadcast('showAction', 'menu')
                   , 500
               , 500
