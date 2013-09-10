@@ -20,7 +20,7 @@
   <body>
     <game container="#game" player-stats-container="#player-stats" lifetime-stats-container="#stats">
       <div class="container all" data-game-menu>
-        <div class="fade in" id="preloader" data-preloader>
+        <div class="fade in" id="preloader" preloader="game">
           <div class="progress progress-striped active">
             <div class="bar">
             </div>
@@ -158,8 +158,8 @@
         <div class="fade hide" id="game">
           <div id="options">
             <span class="btn-group pull-right">
-              <button data-fullscreen class="btn btn-inverse" data-ng-show="supportsFullscreen"><i class="icon-white icon-fullscreen"></i> Fullscreen <kbd class="light">o</kbd></button>
-              <button data-ng-click="game.togglePause()" class="btn btn-inverse active"><i class="icon-white icon-pause"></i> Pause <kbd class="light">p</kbd></button>
+              <button data-fullscreen class="btn btn-inverse" data-ng-class="{active: fullscreen}" data-ng-show="supportsFullscreen"><i class="icon-white icon-fullscreen"></i> Fullscreen <kbd class="light">o</kbd></button>
+              <button data-ng-click="game.togglePause()" class="btn btn-inverse"><i class="icon-white icon-pause"></i> Pause <kbd class="light">p</kbd></button>
             </span>
 
             <div id="player-stats">
@@ -185,7 +185,7 @@
             <span class="clearfix"></span>
           </div>
 
-          <div id="toolbar">
+          <div data-weapons id="toolbar">
             <div data-weapon-selector="plasma" class="selector active">
               <img src="images/plasma_weapon_icon.png"
                    title="Plasma Bullet" width="100" height="100">

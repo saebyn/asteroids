@@ -21,9 +21,8 @@ define ['angular', 'game', 'music', 'sounds', 'keys', 'utils', 'vendor/fullscree
               )
 
             angular.element(root.window).on 'resize', ->
-              scope.$apply((scope)->
+              scope.$apply (scope) ->
                 scope.fullscreen = FullScreen.activated()
-              )
 
           scope.$watch 'fullscreen', (fullscreen) ->
             if scope.game?
@@ -36,23 +35,33 @@ define ['angular', 'game', 'music', 'sounds', 'keys', 'utils', 'vendor/fullscree
         'lifetimeStatsContainer': '@'
       restrict: 'E'
       link: (scope, element, attrs) ->
-        scope.game = new Game(
-          angular.element(scope.container),
-          angular.element(scope.playerStatsContainer)
-        )
-        scope.music = new Music(scope.game.assetManager)
-        scope.keys = new Keys(scope.game)
+        scope.$watch 'container+playerStatsContainer', ->
+          scope.game = new Game(
+            angular.element(scope.container),
+            angular.element(scope.playerStatsContainer)
+          )
+          scope.music = new Music(scope.game.assetManager)
+          scope.keys = new Keys(scope.game)
+
         scope.renderLifetimeStats = ->
-          scope.game.playerStats.renderLifetime(angular.element(scope.lifetimeStatsContainer))
-        scope.game.subscribe('death', sounds.death)
-        scope.game.subscribe('fire', sounds.fire)
-        scope.game.subscribe('kill', sounds.kill)
-        scope.game.subscribe('hit', sounds.hit)
+          if scope.game?
+            scope.game.playerStats.renderLifetime(
+              angular.element(scope.lifetimeStatsContainer)
+            )
+
+        scope.$watch 'game', (game) ->
+          game.subscribe('death', sounds.death)
+          game.subscribe('fire', sounds.fire)
+          game.subscribe('kill', sounds.kill)
+          game.subscribe('hit', sounds.hit)
     )
     .directive('preloader', ->
       restrict: 'A'
       link: (scope, element, attrs) ->
         scope.$watch 'game', (game) ->
+          if not game?
+            return
+
           game.assetManager.preload(
             ['playership', 'laserbolt', 'missile', 'mine'],
             ['images/asteroid1.png', 'images/asteroid1_bump.png', 'images/particle.png',
@@ -99,6 +108,25 @@ define ['angular', 'game', 'music', 'sounds', 'keys', 'utils', 'vendor/fullscree
               , 500
           )
     )
+    .directive('weapons', ->
+      restrict: 'A'
+      link: (scope, element, attrs) ->
+        selectors = element.find('.selector')
+
+        # Hook up weapon selectors to game.
+        selectors.on 'click', ->
+          element.find('.selector.active').removeClass('active')
+          weapon = angular.element(this).data('weapon-selector')
+          if weapon and scope.game?
+            scope.game.emit('controls:selectWeapon', weapon)
+            $(this).addClass('active')
+
+        angular.element(root.document).on 'keypress', (event) ->
+          key = String.fromCharCode(event.charCode)
+          offset = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'].indexOf(key)
+          if offset != -1
+            selectors.eq(offset).click()
+    )
     .directive('gameMenu', ->
       restrict: 'A'
       controller: ['$scope', ($scope) ->
@@ -124,6 +152,7 @@ define ['angular', 'game', 'music', 'sounds', 'keys', 'utils', 'vendor/fullscree
 
         scope.$watch 'game', (game) ->
           # Make pausing the game show the menu
-          game.subscribe 'pause', ->
-            scope.$emit 'showAction', 'menu'
+          if game?
+            game.subscribe 'pause', ->
+              scope.$emit 'showAction', 'menu'
     )

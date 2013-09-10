@@ -24,11 +24,11 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
         else if action == 'fire'
           if @entities.player?.controllable?
             @entities.player.controllable.controlFiring = true
-        else if action == 'fullscreen'
-          $('#go-fullscreen').click()
         else if action == 'pause'
           if @container.is(':visible')
             @togglePause()
+        else if action == 'fullscreen'
+          $('[data-fullscreen]').click()
 
       @subscribe 'controls:stop', (action) =>
         if action == 'steer'
