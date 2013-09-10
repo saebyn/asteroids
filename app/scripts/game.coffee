@@ -121,9 +121,11 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
       scene.add pointLight
 
     loadLevel: (levelName) ->
+      @emit('level:unload')
       @entities.clear()
       @entities.clearDistantEntities(@scene)
       @entities.load(levelName)
+      @emit('level:load', levelName)
 
     system: (name, componentName, elapsedTime) ->
       entities = @entities.filterEntities(componentName)
