@@ -18,6 +18,31 @@
     <!-- endbuild -->
   </head>
   <body>
+    <div class="well well-small">
+      <button class="btn-link" data-ng-click="hideKeys = !hideKeys">Help</button>
+
+      <div class="pull-right">
+        <a href="https://twitter.com/share" class="twitter-share-button" data-text="Check out this game" data-related="saebyn">Tweet</a>
+        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+        <script data-gittip-username="saebyn"
+                data-gittip-widget="button"
+                src="//gttp.co/v1.js"></script>
+      </div>
+
+      <dl class="dl-horizontal" data-ng-hide="hideKeys">
+        <dt><kbd class="light">a</kbd></dt>
+        <dd>Turn Ship Left</dd>
+        <dt><kbd class="light">d</kbd></dt>
+        <dd>Turn Ship Right</dd>
+        <dt><kbd class="light">spacebar</kbd></dt>
+        <dd>Fire Weapon <small>(hold for rapid fire)</small></dd>
+        <dt><kbd class="light">p</kbd></dt>
+        <dd>Pause &amp; Unpause</dd>
+        <dt><kbd class="light">o</kbd></dt>
+        <dd>Toggle Full Screen</dd>
+      </dl>
+    </div>
     <game container="#game" player-stats-container="#player-stats" lifetime-stats-container="#stats">
       <div class="container all" data-game-menu>
         <div class="fade in" id="preloader" preloader="game">
@@ -81,9 +106,6 @@
             <li>
               <button class="menu-btn btn btn-large" data-ng-click="menu='settings'">Settings</button>
             </li>
-            <li>
-              <button class="menu-btn btn btn-large" data-ng-click="menu='keys'">Keys</button>
-            </li>
             <li data-ng-show="Modernizr.localstorage">
               <button class="menu-btn btn btn-large" data-ng-click="menu='stats'">Stats</button>
             </li>
@@ -109,28 +131,6 @@
               <th>Music</th>
               <td><input type="checkbox" data-ng-model="musicPlaying"></td>
           </table>
-
-          <div class="form-actions">
-            <button class="menu-btn btn btn-primary" data-ng-click="menu='menu'">Back</button>
-          </div>
-        </div>
-
-
-        <div class="container fade hide" id="keys">
-          <h2>Keys</h2>
-
-          <dl class="dl-horizontal">
-            <dt><kbd class="light">a</kbd></dt>
-            <dd>Turn Ship Left</dd>
-            <dt><kbd class="light">d</kbd></dt>
-            <dd>Turn Ship Right</dd>
-            <dt><kbd class="light">spacebar</kbd></dt>
-            <dd>Fire Weapon <small>(hold for rapid fire)</small></dd>
-            <dt><kbd class="light">p</kbd></dt>
-            <dd>Pause &amp; Unpause</dd>
-            <dt><kbd class="light">o</kbd></dt>
-            <dd>Toggle Full Screen</dd>
-          </dl>
 
           <div class="form-actions">
             <button class="menu-btn btn btn-primary" data-ng-click="menu='menu'">Back</button>
@@ -164,6 +164,7 @@
           <h3>Using</h3>
           <ul class="unstyled">
             <li><a href="http://threejs.org/" target="_blank">Three.js</a></li>
+            <li><a href="http://angularjs.org/" target="_blank">AngularJS</a></li>
 
             <li><a href="http://chandlerprall.github.io/Physijs/" target="_blank">Physijs</a></li>
 
@@ -236,15 +237,6 @@
         </div>
       </div>
     </game>
-
-    <div class="pull-right">
-      <a href="https://twitter.com/share" class="twitter-share-button" data-text="Check out this game" data-related="saebyn">Tweet</a>
-      <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
-
-      <script data-gittip-username="saebyn"
-              data-gittip-widget="button"
-              src="//gttp.co/v1.js"></script>
-    </div>
 
     <!--[if lt IE 7]>
         <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
