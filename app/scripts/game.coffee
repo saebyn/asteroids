@@ -57,7 +57,7 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
 
     togglePause: ->
       @paused = not @paused
-      $('#pause-continue').button('toggle')
+      $('#pause-continue').toggleClass('active')
       if @paused
         @emit('pause')
 

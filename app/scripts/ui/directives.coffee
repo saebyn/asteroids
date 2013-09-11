@@ -11,7 +11,7 @@ define ['angular', 'game', 'music', 'sounds', 'keys', 'utils', 'vendor/fullscree
             scope.fullscreen = FullScreen.activated()
             element.on 'click', ->
               scope.$apply((scope)->
-                element.button('togggle')
+                element.toggleClass('active')
                 if scope.game?.fullscreen
                   FullScreen.cancel()
                   scope.fullscreen = false
@@ -102,6 +102,7 @@ define ['angular', 'game', 'music', 'sounds', 'keys', 'utils', 'vendor/fullscree
 
                 scope.game.setup()
                 # Start the game (it defaults to being paused)
+                game.loadLevel('space')
                 scope.game.gameloop()
                 if Modernizr.audio
                   if $cookieStore.get('music') is not false
