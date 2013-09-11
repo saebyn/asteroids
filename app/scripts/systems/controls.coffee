@@ -3,8 +3,8 @@ define ['systems/base', 'THREE'], (System, THREE) ->
   sign = (x) ->
     x / Math.abs(x)
 
-  maxRotation = 5
-  steerAmount = 1.0
+  maxRotation = 20.0
+  steerAmount = 2.0
 
   applyTilt = (tiltAmount, direction, lastDirection, obj) ->
     obj.rotateX(tiltAmount * (lastDirection - direction))
@@ -21,15 +21,18 @@ define ['systems/base', 'THREE'], (System, THREE) ->
     rotation = entity.controllable.rotation
     lastDirection = entity.controllable.lastDirection
 
+    accel = 1.0 - Math.abs(rotation / maxRotation)
+
     if direction == entity.controllable.left
-      rotation += steerAmount / time
+      rotation += steerAmount / time * accel
       direction = -1
     else if direction == entity.controllable.right
-      rotation -= steerAmount / time
+      rotation -= steerAmount / time * accel
       direction = 1
     else
-      rotation += -rotation / steerAmount / time
       direction = 0
+
+    rotation += -rotation / steerAmount / time
 
     # If we have a mesh/object to operate on...
     if entity.renderable.mesh?
@@ -38,7 +41,7 @@ define ['systems/base', 'THREE'], (System, THREE) ->
         rotation = maxRotation * sign(rotation)
 
       # Tilt the ship, like it's an aircraft doing a coordinated turn :P
-      applyTilt 0.2, direction, lastDirection, entity.renderable.mesh
+      #applyTilt 0.2, direction, lastDirection, entity.renderable.mesh
 
       # Apply the rotation
       entity.renderable.mesh.setAngularVelocity({x: 0, y: 0, z: rotation})

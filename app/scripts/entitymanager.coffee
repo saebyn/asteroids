@@ -35,7 +35,7 @@ define ['utils', 'definitions', 'levels'], (utils, gameDefinitions, levels) ->
           mesh.geometry.dispose()
           mesh.material.dispose()
 
-      this[id] = null
+      delete this[id]
       @_entities.splice(@_entities.indexOf(id), 1)
 
     clearDistantEntities: (scene) ->

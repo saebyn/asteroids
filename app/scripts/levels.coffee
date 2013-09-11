@@ -1,4 +1,4 @@
-define ['utils', 'definitions'], (utils, gameDefinitions) ->
+define ['utils', 'definitions', 'THREE'], (utils, gameDefinitions, THREE) ->
   station: 
     player: utils.clone(gameDefinitions.PLAYER)
     camera:
@@ -57,6 +57,41 @@ define ['utils', 'definitions'], (utils, gameDefinitions) ->
           background: '#004400'
           backgroundAlpha: 0.5
         order: 2
+    firstAsteroid:
+      _type: 'asteroidSpawner'
+      position:
+        x: 150
+        y: 150
+        z: 0
+        direction:
+          x: Math.random() * 2.0 * Math.PI
+          y: Math.random() * 2.0 * Math.PI
+          z: Math.random() * 2.0 * Math.PI
+      movement:
+        spin: new THREE.Vector3(
+                Math.random() - 0.5,
+                Math.random() - 0.5,
+                Math.random() - 0.5).normalize().multiplyScalar(0.001)
+        direction:
+          x: -0.002
+          y: -0.002
+          z: 0
+      damagable:
+        health: 20
+        fracture:
+          chance: 0.3
+          generatable:
+            type: 'asteroid1'
+            texture: 'images/asteroid1.png'
+            bumpMap: 'images/asteroid1_bump.png'
+            bumpScale: 1.0
+      damaging:
+        health: 5
+      generatable:
+        type: 'asteroid1'
+        texture: 'images/asteroid1.png'
+        bumpMap: 'images/asteroid1_bump.png'
+        bumpScale: 1.0
     asteroidSpawner:
       spawnable:
         radius: 1000.0
@@ -80,4 +115,3 @@ define ['utils', 'definitions'], (utils, gameDefinitions) ->
             texture: 'images/asteroid1.png'
             bumpMap: 'images/asteroid1_bump.png'
             bumpScale: 1.0
-

@@ -7,6 +7,7 @@ define ['systems/base', 'underscore', 'utils', 'THREE'], (System, _, utils, THRE
   addEntity = (app, id, entity) ->
     count = _.chain(app.entities)
       .values()
+      .filter((x) -> x is not null)
       .pluck('_type')
       .filter((x) -> x == id)
       .size()
