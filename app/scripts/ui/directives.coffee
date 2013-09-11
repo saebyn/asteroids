@@ -110,17 +110,11 @@ define ['angular', 'game', 'music', 'sounds', 'keys', 'utils', 'vendor/fullscree
                 else
                   scope.musicDisabled = true
 
-                if not Modernizr.localstorage
-                  $('button[data-action="stats"]').attr(
-                    disabled: 'disabled'
-                    title: 'Requires HTML5 local storage'
-                  )
-
                 if not all
                   angular.element('#continue-without-feature').removeClass('hide')
                 else
                   $timeout ->
-                    scope.$broadcast('showAction', 'menu')
+                    scope.menu = 'menu'
                   , 500
               , 500
           )
@@ -147,29 +141,30 @@ define ['angular', 'game', 'music', 'sounds', 'keys', 'utils', 'vendor/fullscree
     .directive('gameMenu', ->
       restrict: 'A'
       controller: ['$scope', ($scope) ->
+        $scope.Modernizr = root.Modernizr
         $scope.continued = false
 
-        $scope.$on 'showAction', (scope, action) ->
-          root.mixpanel.track('Select ' + action)
+        $scope.$watch 'menu', (action) ->
+          if action?
+            root.mixpanel.track('Select ' + action)
 
-          if action is 'game'
-            $scope.continued = true
-            $scope.game.togglePause()
+            if action is 'game'
+              $scope.continued = true
+              $scope.game.togglePause()
 
-          if action is 'stats'
-            $scope.renderLifetimeStats()
+            if action is 'stats'
+              $scope.renderLifetimeStats()
       ]
       link: (scope, element, attrs) ->
-        element.find('.menu-btn').on 'click', ->
-          scope.$emit('showAction', angular.element(this).data('action'))
-
-        scope.$on 'showAction', (scope, action) ->
-          angular.element('.all > .fade.in').removeClass('in').addClass('hide')
-          angular.element('#' + action).removeClass('hide').addClass('in')
+        scope.$watch 'menu', (action) ->
+          if action?
+            element.children('.fade.in').removeClass('in').addClass('hide')
+            element.children('#' + action).removeClass('hide').addClass('in')
 
         scope.$watch 'game', (game) ->
           # Make pausing the game show the menu
           if game?
             game.subscribe 'pause', ->
-              scope.$emit 'showAction', 'menu'
+              scope.$apply (scope) ->
+                scope.menu = 'menu'
     )

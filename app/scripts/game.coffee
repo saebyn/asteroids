@@ -68,8 +68,15 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
       @eventSubscribers[event].push(callback)
 
     emit: (event, data...) ->
-      if event of @eventSubscribers
-        callback(data...) for callback in @eventSubscribers[event]
+      # Send this off so that if emit is called inside of an angular
+      # digest, the callbacks can consistently use scope.$apply.
+      # All event handlers that want to act on angular scopes and
+      # participate in the digest cycle will have to themselves
+      # call scope.$apply, etc.
+      setTimeout =>
+        if event of @eventSubscribers
+          callback(data...) for callback in @eventSubscribers[event]
+      , 0
 
     getGameWidth: ->
       if @fullscreen
