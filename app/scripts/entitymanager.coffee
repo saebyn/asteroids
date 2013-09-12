@@ -31,9 +31,12 @@ define ['utils', 'definitions', 'levels'], (utils, gameDefinitions, levels) ->
       # accumulation of junk in memory.
       if this[id]?.renderable? and not this[id].renderable.particles?
         mesh = this[id].renderable.mesh
-        if mesh? and not this[id].renderable.model?
-          mesh.geometry.dispose()
-          mesh.material.dispose()
+        if mesh?
+          (child.parent = undefined) for child in mesh.children
+
+          if not this[id].renderable.model?
+            mesh.geometry.dispose()
+            mesh.material.dispose()
 
       delete this[id]
       @_entities.splice(@_entities.indexOf(id), 1)

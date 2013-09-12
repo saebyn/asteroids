@@ -23,6 +23,7 @@ define ['utils', 'definitions', 'THREE'], (utils, gameDefinitions, THREE) ->
     camera:
       camera:
         type: 'perspective'
+        follow: 'player'
         viewAngle: 45.0
         aspect: 1.0
         nearDistance: 0.1

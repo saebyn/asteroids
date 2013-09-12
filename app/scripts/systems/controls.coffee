@@ -44,7 +44,13 @@ define ['systems/base', 'THREE'], (System, THREE) ->
       #applyTilt 0.2, direction, lastDirection, entity.renderable.mesh
 
       # Apply the rotation
-      entity.renderable.mesh.setAngularVelocity({x: 0, y: 0, z: rotation})
+      if entity.controllable.controlRotation?
+        x = entity.controllable.controlRotation[0]
+        y = entity.controllable.controlRotation[1]
+      else
+        x = y = 0
+      
+      entity.renderable.mesh.setAngularVelocity({x: x, y: y, z: rotation})
 
     # Save the current rotation amount to the component
     entity.controllable.rotation = rotation

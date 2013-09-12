@@ -30,6 +30,10 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
         else if action == 'fullscreen'
           $('[data-fullscreen]').click()
 
+      @subscribe 'controls:rotate', (x, y) =>
+        if @entities.player?.controllable?
+          @entities.player.controllable.controlRotation = [x, y, 0]
+
       @subscribe 'controls:stop', (action) =>
         if action == 'steer'
           if @entities.player?.controllable?

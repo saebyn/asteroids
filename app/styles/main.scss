@@ -59,6 +59,10 @@ canvas {
     position: relative;
 }
 
+.drag {
+    cursor: move;
+}
+
 #toolbar {
     position: absolute;
     bottom: 0;

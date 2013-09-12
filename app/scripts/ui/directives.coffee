@@ -1,6 +1,6 @@
 root = exports ? this
 
-define ['angular', 'game', 'music', 'sounds', 'keys', 'utils', 'vendor/fullscreen'], (angular, Game, Music, sounds, Keys, utils, FullScreen) ->
+define ['angular', 'game', 'music', 'sounds', 'keys', 'utils', 'vendor/fullscreen', 'underscore'], (angular, Game, Music, sounds, Keys, utils, FullScreen, _) ->
   angular.module('gameApp.directives', [])
     .directive('fullscreen', ->
       link: (scope, element, attrs) ->
@@ -46,6 +46,39 @@ define ['angular', 'game', 'music', 'sounds', 'keys', 'utils', 'vendor/fullscree
               scope.music.stop()
       ]
       link: (scope, element, attrs) ->
+        element.on 'selectstart', ->
+          false
+
+        dragging = false
+        point = false
+
+        element.on 'mousedown', ->
+          element.addClass 'drag'
+          dragging = true
+          false
+
+        element.on 'mouseup', ->
+          element.removeClass 'drag'
+          dragging = false
+          point = false
+          false
+
+        element.on 'mouseleave', ->
+          element.removeClass 'drag'
+          dragging = false
+          point = false
+          false
+
+        element.on 'mousemove', _.throttle (event) ->
+          if scope.game? and dragging
+            if point
+              x = Math.min(10, Math.max(-10, -(event.pageY - point[1]))) / 5.0
+              y = Math.min(10, Math.max(-10, -(event.pageX - point[0]))) / 5.0
+              scope.game.emit 'controls:rotate', x, y
+
+            point = [event.pageX, event.pageY]
+        , 100
+
         scope.$watch 'container+playerStatsContainer', ->
           scope.game = new Game(
             angular.element(scope.container),

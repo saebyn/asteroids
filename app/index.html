@@ -19,7 +19,7 @@
   </head>
   <body>
     <div class="well well-small">
-      <button class="btn-link" data-ng-click="hideKeys = !hideKeys">Help</button>
+      <button class="btn-link" data-ng-click="showKeys = !showKeys">Help</button>
 
       <div class="pull-right">
         <a href="https://twitter.com/share" class="twitter-share-button" data-text="Check out this game" data-related="saebyn">Tweet</a>
@@ -30,13 +30,15 @@
                 src="//gttp.co/v1.js"></script>
       </div>
 
-      <dl class="dl-horizontal" data-ng-hide="hideKeys">
+      <dl class="dl-horizontal" data-ng-show="showKeys">
         <dt><kbd class="light">a</kbd></dt>
         <dd>Turn Ship Left</dd>
         <dt><kbd class="light">d</kbd></dt>
         <dd>Turn Ship Right</dd>
         <dt><kbd class="light">spacebar</kbd></dt>
         <dd>Fire Weapon <small>(hold for rapid fire)</small></dd>
+        <dt>Mouse</dt>
+        <dd>Ship Pitch &amp; Roll</dd>
         <dt><kbd class="light">p</kbd></dt>
         <dd>Pause &amp; Unpause</dd>
         <dt><kbd class="light">o</kbd></dt>
