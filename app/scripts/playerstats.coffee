@@ -45,7 +45,7 @@ define [], ->
       @container.find('.time .value').text((@session.time / 1000.0) | 0)
       @container.find('.health .current .value').text(health)
       @container.find('.health .max .value').text(max)
-      percent = Math.round(health / max * 100.0)
+      percent = Math.round(health / max * 100.0) or 0
       @container.find('.health .progress .bar').css({width: percent + '%'})
 
       @save()

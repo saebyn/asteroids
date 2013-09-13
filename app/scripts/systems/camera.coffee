@@ -1,20 +1,19 @@
 define ['systems/base', 'THREE', 'shaders/radar'], (System, THREE, radarShader) ->
   class CameraSystem extends System
     attachCamera: (camera) ->
-      # If we have a parent, nothing to do
-      if camera.instance.parent?
-        return
-
-      # If we're supposed to follow an object, but it doesn't
-      # exist or isn't registered yet, skip registration for now.
       if camera.follow
         followEntity = @app.scene.getObjectByName(camera.follow, true)
+
+        # If we're supposed to follow an object, but it doesn't
+        # exist or isn't registered yet, skip registration for now.
         if camera.follow not of @app.entities or followEntity is undefined
           return
 
-        followEntity.add camera.instance
-      else
-        @app.scene.add camera.instance
+      if not camera.instance.parent?
+        if camera.follow
+          followEntity.add camera.instance
+        else
+          @app.scene.add camera.instance
 
     registerCamera: (id, camera) ->
       if camera.type == 'perspective'
