@@ -14,7 +14,7 @@
 		"bones"         : 0
 	},
 
-	"scale" : 0.500000,
+	"scale" : 0.700000,
 
 	"materials" : [	{
 		"DbgColor" : 15658734,
@@ -24,6 +24,7 @@
 		"colorAmbient" : [0.41682406092918, 0.0, 0.010203995579773695],
 		"colorDiffuse" : [0.41682406092918, 0.0, 0.010203995579773695],
 		"colorSpecular" : [0.5, 0.363014817237854, 0.04213052988052368],
+		"colorEmissive" : [0.9, 0.263014817237854, 0.02213052988052368],
 		"depthTest" : true,
 		"depthWrite" : true,
 		"shading" : "Lambert",

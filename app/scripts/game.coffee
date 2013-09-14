@@ -96,6 +96,7 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
     setupThree: ->
       @renderer = new THREE.WebGLRenderer(
         antialias: true
+        maxLights: 50
       )
       @renderer.setClearColor(0x000000, 1)
 
@@ -123,13 +124,10 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
       @container.append @renderer.domElement
 
     setupLighting: (scene) ->
-      pointLight = new THREE.PointLight(0xffffff, 1.0, gameDefinitions.MAX_DISTANCE * 50.0)
-
-      # set its position
-      pointLight.position.set(0, 0, 5000)
+      light = new THREE.HemisphereLight(0xffffff, 0x111111, 0.5)
 
       # add to the scene
-      scene.add pointLight
+      scene.add light
 
     loadLevel: (levelName) ->
       @emit('level:unload')

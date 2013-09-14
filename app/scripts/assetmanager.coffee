@@ -38,6 +38,8 @@ define ['THREE', 'Physijs', 'underscore'], (THREE, Physijs, _) ->
       if modelName not of @models
         @models[modelName] = true
         @loader.load 'resources/' + modelName + '.js', (geom, materials) =>
+          # You'd think that we would be able to set this in the JSON file.
+          materials[0].side = THREE.DoubleSide
           @models[modelName] =
             geom: geom
             material: new Physijs.createMaterial(materials[0], friction, restitution)

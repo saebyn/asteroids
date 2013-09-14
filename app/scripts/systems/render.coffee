@@ -1,6 +1,17 @@
 # render system
 define ['systems/base', 'THREE', 'Physijs'], (System, THREE, Physijs) ->
   class RenderSystem extends System
+    addLight: (obj, lightDef) ->
+      light = new THREE.SpotLight(lightDef.color or 0xffffff)
+      light.position.set(lightDef.x or 0, lightDef.y or 0, lightDef.z or 0)
+
+      light.distance = lightDef.distance or 0.0
+      light.intensity = lightDef.intensity or 1.0
+
+      if lightDef.direction?
+        light.lookAt(lightDef.direction.x, lightDef.direction.y, lightDef.direction.z)
+      obj.add light
+
     addModelToScene: (id, entity) ->
       if not entity.renderable.mesh?
         modelName = entity.renderable.model
@@ -26,6 +37,9 @@ define ['systems/base', 'THREE', 'Physijs'], (System, THREE, Physijs) ->
           meshType = Physijs.ConvexMesh
   
         obj = new meshType(model.geom, model.material, mass)
+
+        if entity.renderable.receiveShadow?
+          obj.receiveShadow = true
   
         entity.renderable.mesh = obj
       else
@@ -34,7 +48,10 @@ define ['systems/base', 'THREE', 'Physijs'], (System, THREE, Physijs) ->
       obj.name = id
       entity.renderable.meshLoaded = true
       @app.scene.add obj
-      
+
+      if entity.renderable.lights?
+        @addLight(obj, light) for light in entity.renderable.lights
+
       # Lock all objects on the game plane
       if obj.setLinearFactor?
         obj.setLinearFactor(new THREE.Vector3(1, 1, 0))
@@ -57,11 +74,6 @@ define ['systems/base', 'THREE', 'Physijs'], (System, THREE, Physijs) ->
   
       if entity.renderable.static?
         mesh.setLinearFactor(new THREE.Vector3(0, 0, 0))
-        @app.scene.add new Physijs.HingeConstraint(
-          mesh,
-          new THREE.Vector3(0, 0, 0),
-          new THREE.Vector3(0, 0, 1)
-        )
  
     syncPhysicsPosition: (components) ->
       if components.position?

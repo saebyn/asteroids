@@ -53,6 +53,32 @@ define ['utils'], (utils) ->
   PLAYER =
     position: {x: 0, y: 0, direction: {x: 0, y: 0, z: 0}}
     renderable:
+      lights: [
+        {
+          color: 0xff0000
+          distance: 30.0
+          intensity: 1
+          x: 0.1
+          y: 0.0
+          z: 0.0
+          direction:
+            x: 1.0
+            y: 0
+            z: 0
+        }
+        {
+          color: 0xff0000
+          distance: 40.0
+          intensity: 1
+          x: -0.26
+          y: 0.0
+          z: 0.0
+          direction:
+            x: -1.0
+            y: 0
+            z: 0
+        }
+      ]
       model: 'playership'
       static: true
       convexCollision: true
