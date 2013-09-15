@@ -9,7 +9,7 @@ define ['angular', 'game', 'music', 'sounds', 'keys', 'utils', 'vendor/fullscree
 
         if scope.supportsFullscreen
             scope.fullscreen = FullScreen.activated()
-            element.on 'click', ->
+            angular.element(element).on 'click', ->
               scope.$apply((scope)->
                 element.toggleClass('active')
                 if scope.game?.fullscreen
@@ -158,7 +158,7 @@ define ['angular', 'game', 'music', 'sounds', 'keys', 'utils', 'vendor/fullscree
         selectors = element.find('.selector')
 
         # Hook up weapon selectors to game.
-        selectors.on 'click', ->
+        angular.element(selectors).on 'click', ->
           element.find('.selector.active').removeClass('active')
           weapon = angular.element(this).data('weapon-selector')
           if weapon and scope.game?
