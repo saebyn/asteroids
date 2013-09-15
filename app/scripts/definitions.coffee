@@ -85,7 +85,13 @@ define ['utils'], (utils) ->
     damagable:
       health: 30
       maxHealth: 30
-    controllable: {left: 'left', right: 'right'}
+    controllable:
+      left: 'left'
+      right: 'right'
+      up: 'up'
+      down: 'down'
+      tiltLeft: 'tiltLeft'
+      tiltRight: 'tiltRight'
     fireable: utils.clone(WEAPONS.plasma)
 
   PLAYER: PLAYER

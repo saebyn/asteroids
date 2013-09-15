@@ -20,23 +20,21 @@ define ['systems/base', 'underscore', 'utils', 'THREE'], (System, _, utils, THRE
     radius = entity.spawnable.radius
 
     # Spawn radius distance from the origin
-    sourceRotation = Math.PI * 2.0 * Math.random()
-    x = Math.cos(sourceRotation) * radius
-    y = Math.sin(sourceRotation) * radius
+    position = utils.randomVectorOnSphere(radius)
 
     speed = Math.random() * 0.05 + 0.01
 
     rotationSpeed = Math.random() * 0.01
 
     # TODO add some jitter to the direction?
-    direction = new THREE.Vector2(-x, -y).normalize().multiplyScalar(speed)
+    direction = new THREE.Vector3(-position.x, -position.y, -position.z).normalize().multiplyScalar(speed)
 
     spawn =
       _type: id
       position:
-        x: x
-        y: y
-        z: 0
+        x: position.x
+        y: position.y
+        z: position.z
         direction:
           x: Math.random() * 2.0 * Math.PI
           y: Math.random() * 2.0 * Math.PI
@@ -49,7 +47,7 @@ define ['systems/base', 'underscore', 'utils', 'THREE'], (System, _, utils, THRE
         direction:
           x: direction.x
           y: direction.y
-          z: 0
+          z: direction.z
 
     app.entities.addEntity(_.defaults(spawn, utils.clone(entity.spawnable.extraComponents)))
 

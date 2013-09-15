@@ -31,8 +31,17 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
           $('[data-fullscreen]').click()
 
       @subscribe 'controls:rotate', (x, y) =>
-        if @entities.player?.controllable?
-          @entities.player.controllable.controlRotation = [x, y, 0]
+        xStep = Math.PI / 48
+        yStep = Math.PI / 24
+        if @entities.camera?.follow?
+          position = new THREE.Vector3(
+            @entities.camera.follow.x,
+            @entities.camera.follow.y,
+            @entities.camera.follow.z)
+          position.applyEuler(new THREE.Euler(xStep * x, yStep * y, 0))
+          @entities.camera.follow.x = position.x
+          @entities.camera.follow.y = position.y
+          @entities.camera.follow.z = position.z
 
       @subscribe 'controls:stop', (action) =>
         if action == 'steer'
@@ -179,6 +188,7 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
         # systems.
         @system('movement', 'movement', elapsedTime)
         @system('targeting', 'targeting', elapsedTime)
+        @system('follow', 'follow', elapsedTime)
 
         @scene.simulate(elapsedTime / 1000.0)
 

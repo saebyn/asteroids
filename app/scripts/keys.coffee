@@ -1,8 +1,12 @@
 define [], () ->
   class Keys
     keyMap:
+      W: ['steer', 'down']
       A: ['steer', 'left']
+      S: ['steer', 'up']
       D: ['steer', 'right']
+      Q: ['steer', 'tiltLeft']
+      E: ['steer', 'tiltRight']
       ' ': ['fire']
       O: ['fullscreen']
       P: ['pause']

@@ -6,56 +6,61 @@ define ['systems/base', 'THREE'], (System, THREE) ->
   maxRotation = 20.0
   steerAmount = 2.0
 
-  applyTilt = (tiltAmount, direction, lastDirection, obj) ->
-    obj.rotateX(tiltAmount * (lastDirection - direction))
-    obj.__dirtyRotation = true
+  tampRotation = (entity, steerAmount, time) ->
+    # reduce rotating over time for all axes
+    entity.controllable.rotation[axis] += -entity.controllable.rotation[axis] / steerAmount / time for axis in ['x', 'y', 'z']
 
-
-  controlEntity = (time, entity) ->
-    if not entity.controllable.rotation?
-      entity.controllable.rotation = 0
-
-    direction = entity.controllable.controlDirection
-
-    # Keep this local for calculation
-    rotation = entity.controllable.rotation
-    lastDirection = entity.controllable.lastDirection
-
-    accel = 1.0 - Math.abs(rotation / maxRotation)
-
-    if direction == entity.controllable.left
-      rotation += steerAmount / time * accel
-      direction = -1
-    else if direction == entity.controllable.right
-      rotation -= steerAmount / time * accel
-      direction = 1
-    else
-      direction = 0
-
-    rotation += -rotation / steerAmount / time
-
-    # If we have a mesh/object to operate on...
-    if entity.renderable.mesh?
-      # Limit the range of rotation speed
-      if Math.abs(rotation) > maxRotation
-        rotation = maxRotation * sign(rotation)
-
-      # Tilt the ship, like it's an aircraft doing a coordinated turn :P
-      #applyTilt 0.2, direction, lastDirection, entity.renderable.mesh
-
-      # Apply the rotation
-      if entity.controllable.controlRotation?
-        x = entity.controllable.controlRotation[0]
-        y = entity.controllable.controlRotation[1]
-      else
-        x = y = 0
-      
-      entity.renderable.mesh.setAngularVelocity({x: x, y: y, z: rotation})
-
-    # Save the current rotation amount to the component
-    entity.controllable.rotation = rotation
-    entity.controllable.lastDirection = direction
 
   class ControlSystem extends System
-    processOurEntities: (entities, elapsedTime) ->
-      controlEntity(elapsedTime, components) for [id, components] in entities when components?.position
+    process: (entity, time) ->
+      if not entity.position
+        return
+
+      if not entity.controllable.rotation?
+        entity.controllable.rotation = {x: 0, y: 0, z: 0}
+
+      direction = entity.controllable.controlDirection
+      # is direction + or -
+      sign = 0
+      if direction in [entity.controllable.left, entity.controllable.down, entity.controllable.tiltRight]
+        sign = -1.0
+      else if direction in [entity.controllable.right, entity.controllable.up, entity.controllable.tiltLeft]
+        sign = 1.0
+
+      # which axis is direction?
+      if direction in [entity.controllable.left, entity.controllable.right]
+        axis = 'z'
+      else if direction in [entity.controllable.up, entity.controllable.down]
+        axis = 'y'
+      else
+        axis = 'x'
+
+      # Keep this local for calculation
+      rotation = entity.controllable.rotation[axis]
+
+      accel = 1.0 - Math.abs(rotation / maxRotation)
+
+      # apply steering
+      if sign != 0
+        rotation -= sign * steerAmount / time * accel
+
+      tampRotation(entity, steerAmount, time)
+
+      # Save the current rotation amount to the component
+      entity.controllable.rotation[axis] = rotation
+
+      # If we have a mesh/object to operate on...
+      if entity.renderable.mesh?.quaternion?
+        # Limit the range of rotation speed
+        if Math.abs(rotation) > maxRotation
+          rotation = maxRotation * sign(rotation)
+
+        velocity = new THREE.Vector3(
+          entity.controllable.rotation.x,
+          entity.controllable.rotation.y,
+          entity.controllable.rotation.z)
+
+        velocity.applyQuaternion(entity.renderable.mesh.quaternion)
+
+        entity.renderable.mesh.setAngularVelocity(velocity)
+

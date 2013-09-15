@@ -23,7 +23,6 @@ define ['utils', 'definitions', 'THREE'], (utils, gameDefinitions, THREE) ->
     camera:
       camera:
         type: 'perspective'
-        follow: 'player'
         viewAngle: 45.0
         aspect: 1.0
         nearDistance: 0.1
@@ -38,10 +37,14 @@ define ['utils', 'definitions', 'THREE'], (utils, gameDefinitions, THREE) ->
           width: 1
           height: 1
         order: 1
+      follow:
+        entity: 'player'
+        x: 0
+        y: 0
+        z: 500
     altcamera:
       camera:
         type: 'perspective'
-        follow: 'player'
         viewAngle: 45.0
         aspect: 1.0
         nearDistance: 0.1

@@ -3,8 +3,9 @@ define(['systems/render', 'systems/controls',
         'systems/expire', 'systems/spawners',
         'systems/generator', 'systems/damage',
         'systems/explosion', 'systems/camera',
-        'systems/debris', 'systems/targeting'],
-       (render, controls, weapons, movement, expire, spawners, generator, damage, explosion, camera, debris, targeting) ->
+        'systems/debris', 'systems/targeting',
+        'systems/follow'],
+       (render, controls, weapons, movement, expire, spawners, generator, damage, explosion, camera, debris, targeting, follow) ->
          register: (app) ->
            render: new render(app)
            controls: new controls(app)
@@ -18,4 +19,5 @@ define(['systems/render', 'systems/controls',
            camera: new camera(app)
            debris: new debris(app)
            targeting: new targeting(app)
+           follow: new follow(app)
 )

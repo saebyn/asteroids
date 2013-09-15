@@ -22,7 +22,7 @@ define ['systems/base', 'THREE', 'utils'], (System, THREE, utils) ->
       point:
         x: origin.x + Math.cos(angle * i) * spacingRadius
         y: origin.y + Math.sin(angle * i) * spacingRadius
-        z: 0
+        z: origin.z
       dir:
         x: Math.cos(angle * i)
         y: Math.sin(angle * i)
