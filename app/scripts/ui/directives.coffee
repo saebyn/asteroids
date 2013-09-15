@@ -101,7 +101,7 @@ define ['angular', 'game', 'music', 'sounds', 'keys', 'utils', 'vendor/fullscree
           game.subscribe('kill', sounds.kill)
           game.subscribe('hit', sounds.hit)
     )
-    .directive('preloader', ($timeout, $cookieStore) ->
+    .directive('preloader', ['$timeout', '$cookieStore', ($timeout, $cookieStore) ->
       restrict: 'A'
       link: (scope, element, attrs) ->
         scope.$watch 'game', (game) ->
@@ -151,7 +151,7 @@ define ['angular', 'game', 'music', 'sounds', 'keys', 'utils', 'vendor/fullscree
                   , 500
               , 500
           )
-    )
+    ])
     .directive('weapons', ->
       restrict: 'A'
       link: (scope, element, attrs) ->
