@@ -27,7 +27,7 @@ require.config(
 
 window.name = 'NG_DEFER_BOOTSTRAP!'
 
-require ['jquery', 'angular', 'app', 'Physijs', 'angularCookies'], (angular, app, Physijs) ->
+require ['jquery', 'angular', 'app', 'Physijs', 'angularCookies'], ($, angular, app, Physijs) ->
   root.mixpanel.track('Game load')
 
   Physijs.scripts.worker = 'bower_components/Physijs/physijs_worker.js'
