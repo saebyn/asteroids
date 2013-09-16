@@ -33,15 +33,10 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
       @subscribe 'controls:rotate', (x, y) =>
         xStep = Math.PI / 48
         yStep = Math.PI / 24
-        if @entities.camera?.follow?
-          position = new THREE.Vector3(
-            @entities.camera.follow.x,
-            @entities.camera.follow.y,
-            @entities.camera.follow.z)
-          position.applyEuler(new THREE.Euler(xStep * x, yStep * y, 0))
-          @entities.camera.follow.x = position.x
-          @entities.camera.follow.y = position.y
-          @entities.camera.follow.z = position.z
+        if @entities.camera?.follow?.quaternion?
+          rot = new THREE.Quaternion()
+          rot.setFromEuler(new THREE.Euler(xStep * x, yStep * y, 0))
+          @entities.camera.follow.quaternion.multiply(rot)
 
       @subscribe 'controls:stop', (action) =>
         if action == 'steer'

@@ -4,7 +4,7 @@ define ['systems/base', 'THREE'], (System, THREE) ->
     x / Math.abs(x)
 
   maxRotation = 20.0
-  steerAmount = 2.0
+  steerAmount = 1.2
 
   tampRotation = (entity, steerAmount, time) ->
     # reduce rotating over time for all axes

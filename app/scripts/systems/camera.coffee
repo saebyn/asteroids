@@ -2,7 +2,7 @@ define ['systems/base', 'THREE', 'shaders/radar'], (System, THREE, radarShader) 
   class CameraSystem extends System
     attachCamera: (camera) ->
       if not camera.instance.parent?
-          @app.scene.add camera.instance
+        @app.scene.add camera.instance
 
     registerCamera: (id, camera) ->
       if camera.type == 'perspective'

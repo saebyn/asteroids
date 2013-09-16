@@ -51,7 +51,7 @@ define ['utils'], (utils) ->
           stop: true
 
   PLAYER =
-    position: {x: 0, y: 0, direction: {x: 0, y: 0, z: 0}}
+    position: {x: 0, y: 0, z: 0, direction: {x: -Math.PI / 2, y: 0, z: Math.PI / 2}}
     renderable:
       lights: [
         {
