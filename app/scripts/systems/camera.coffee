@@ -75,7 +75,11 @@ define ['systems/base', 'THREE', 'shaders/radar'], (System, THREE, radarShader) 
       else
         @app.scene.overrideMaterial = undefined
 
-      @app.renderer.render(@app.scene, camera.instance)
+      if camera.composer?
+        @app.renderPass.camera = camera.instance
+        @app.composer.render()
+      else
+        @app.renderer.render(@app.scene, camera.instance)
     
     processOurEntities: (entities, elapsed) ->
       @registerCamera(id, components.camera) for [id, components] in entities when not components.camera.registered?

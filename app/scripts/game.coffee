@@ -1,4 +1,4 @@
-define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions', 'background', 'THREE', 'Physijs', 'jquery', 'underscore', 'utils'], (systems, PlayerStats, AssetManager, EntityManager, gameDefinitions, createBackground, THREE, Physijs, $, _, utils) ->
+define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions', 'background', 'THREE', 'Physijs', 'jquery', 'underscore', 'utils', 'THREE.EffectComposer', 'THREE.RenderPass', 'THREE.ShaderPass', 'THREE.VignetteShader', 'THREE.RGBShiftShader', 'THREE.FilmShader'], (systems, PlayerStats, AssetManager, EntityManager, gameDefinitions, createBackground, THREE, Physijs, $, _, utils) ->
   class Game
     fullscreen: false
     paused: true
@@ -114,6 +114,39 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
       @setupLighting @scene
       @renderer.setSize @getGameWidth(), @getGameHeight()
 
+      @composer = new THREE.EffectComposer(@renderer)
+      @composer.setSize @getGameWidth(), @getGameHeight()
+
+      @renderPass = new THREE.RenderPass(@scene, null)
+      copyPass = new THREE.ShaderPass(THREE.CopyShader)
+      @composer.addPass(@renderPass)
+
+      filmEffect = new THREE.ShaderPass(THREE.FilmShader)
+      filmEffect.enabled = true
+      filmEffect.uniforms['grayscale'].value = 0
+      filmEffect.uniforms['sIntensity'].value = 0.6
+      @composer.addPass(filmEffect)
+
+      rgbShiftEffect = new THREE.ShaderPass(THREE.RGBShiftShader)
+      rgbShiftEffect.enabled = false
+      @composer.addPass(rgbShiftEffect)
+
+      vignetteEffect = new THREE.ShaderPass(THREE.VignetteShader)
+      vignetteEffect.uniforms['darkness'].value = 1.3
+      @composer.addPass(vignetteEffect)
+
+      @subscribe 'death', ->
+        filmEffect.uniforms['sIntensity'].value = 0.8
+        rgbShiftEffect.enabled = true
+        setTimeout ->
+          filmEffect.uniforms['sIntensity'].value = 0.6
+          rgbShiftEffect.enabled = false
+        , 2200
+
+
+      @composer.addPass(copyPass)
+      copyPass.renderToScreen = true
+
       createBackground(@assetManager, @scene)
 
       # On container size change, redo renderer.setSize
@@ -127,6 +160,7 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
         # its previous size.
         @container.find('canvas').hide()
         @renderer.setSize @getGameWidth(), @getGameHeight()
+        @composer.setSize @getGameWidth(), @getGameHeight()
         @container.find('canvas').show()
       , 500))
 

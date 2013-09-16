@@ -93,8 +93,6 @@ define ['systems/base', 'underscore', 'utils', 'THREE'], (System, _, utils, THRE
 
       fireable.rendered = new THREE.Line(geometry, material, THREE.LinePieces)
 
-      fireable.rendered.rotation.x = Math.PI / 8.0
-
       player.renderable.mesh.add fireable.rendered
       player.renderable.mesh.addEventListener 'removed', ->
         if fireable.rendered?

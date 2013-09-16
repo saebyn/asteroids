@@ -22,6 +22,7 @@ define ['utils', 'definitions', 'THREE'], (utils, gameDefinitions, THREE) ->
     player: utils.clone(gameDefinitions.PLAYER)
     camera:
       camera:
+        composer: true
         type: 'perspective'
         viewAngle: 45.0
         aspect: 1.0
