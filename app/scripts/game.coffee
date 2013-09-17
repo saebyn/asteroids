@@ -171,9 +171,12 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
 
     setupLighting: (scene) ->
       light = new THREE.HemisphereLight(0xffffff, 0x111111, 0.5)
+      
+      ambient = new THREE.AmbientLight(0x404040)
 
       # add to the scene
       scene.add light
+      scene.add ambient
 
     loadLevel: (levelName) ->
       @emit('level:unload')

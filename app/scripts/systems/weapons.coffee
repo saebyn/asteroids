@@ -51,8 +51,10 @@ define ['systems/base', 'underscore', 'utils', 'THREE'], (System, _, utils, THRE
         return
 
       material = new THREE.LineDashedMaterial(
-        color: 0xa5a5a5
-        blending: THREE.MultiplyBlending
+        color: 0xffffff
+        opacity: 0.3
+        depthTest: false
+        transparent: true
         linewidth: 1
         dashSize: 3
         gapSize: 3

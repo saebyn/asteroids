@@ -20,6 +20,19 @@ define ['utils', 'definitions', 'THREE'], (utils, gameDefinitions, THREE) ->
         order: 1
   space:
     player: utils.clone(gameDefinitions.PLAYER)
+    rangeFinder:
+      generatable:
+        type: 'ranger'
+        radius: 100
+      position:
+        x: 0
+        y: 0
+        z: 0
+      follow:
+        entity: 'player'
+        x: 0
+        y: 0
+        z: 0
     camera:
       camera:
         composer: true
@@ -103,7 +116,7 @@ define ['utils', 'definitions', 'THREE'], (utils, gameDefinitions, THREE) ->
         radius: 1000.0
         max: 30
         rate: gameDefinitions.ASTEROID_SPAWN_RATE
-        rateChange: 0.005
+        rateChange: 0.004
         extraComponents:
           damagable:
             health: 20

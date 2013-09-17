@@ -21,23 +21,23 @@ define ['systems/base', 'THREE', 'Physijs', 'SimplexNoise', 'underscore'], (Syst
       vertex.add(direction.multiplyScalar(distance))
 
   class GeneratorSystem extends System
-    generateModel: (entity) ->
-      radius = entity.generatable.radius or (Math.random() * 10.0 + 5.0)
+    asteroid1: (def, position) ->
+      radius = def.radius or (Math.random() * 10.0 + 5.0)
       geom = new THREE.IcosahedronGeometry(radius, 4)
       # deform geometry randomly
-      geom.vertices = _.map(geom.vertices, randomizeVertex(entity.position, radius))
+      geom.vertices = _.map(geom.vertices, randomizeVertex(position, radius))
       geom.verticesNeedUpdate = true
       geom.dynamic = false
 
       materialOptions = 
         shininess: 0
 
-      if entity.generatable.texture
-        materialOptions.map = @app.assetManager.getTexture(entity.generatable.texture)
+      if def.texture
+        materialOptions.map = @app.assetManager.getTexture(def.texture)
 
-      if entity.generatable.bumpMap
-        materialOptions.bumpMap = @app.assetManager.getTexture(entity.generatable.bumpMap)
-        materialOptions.bumpScale = entity.generatable.bumpScale
+      if def.bumpMap
+        materialOptions.bumpMap = @app.assetManager.getTexture(def.bumpMap)
+        materialOptions.bumpScale = def.bumpScale
 
       material = new Physijs.createMaterial(
         new THREE.MeshPhongMaterial(materialOptions),
@@ -45,10 +45,42 @@ define ['systems/base', 'THREE', 'Physijs', 'SimplexNoise', 'underscore'], (Syst
         0.4)
       mesh = new Physijs.SphereMesh(geom, material)
 
-      entity.renderable =
+      renderable:
         mesh: mesh
 
-      delete entity.generatable
+    ranger: (def, position) ->
+      perimeterSegments = 64
+      geom = new THREE.TorusGeometry(def.radius, 0.5, 6, perimeterSegments)
+      geom2 = new THREE.CircleGeometry(def.radius, perimeterSegments)
+      THREE.GeometryUtils.merge(geom, geom2, 1)
+      outerMaterial = new THREE.MeshPhongMaterial(
+        shininess: 0
+        transparent: true
+        opacity: 0.5
+        emissive: 0x222222
+        color: 0x000000
+      )
+      innerMaterial = new THREE.MeshPhongMaterial(
+        shininess: 0
+        transparent: true
+        opacity: 0.2
+        emissive: 0x222222
+        color: 0x000000
+        side: THREE.DoubleSide
+      )
 
-    processOurEntities: (entities, elapsed) ->
-      @generateModel(components) for [id, components] in entities
+      material = new THREE.MeshFaceMaterial([
+        outerMaterial,
+        innerMaterial,
+      ])
+      mesh = new THREE.Mesh(geom, material)
+      mesh.rotation.x = Math.PI / 2
+
+      renderable:
+        mesh: mesh
+
+    process: (entity, elapsed, id) ->
+      generator = this[entity.generatable.type]
+      newComponents = generator.apply(this, [entity.generatable, entity.position])
+      entity[k] = v for k, v of newComponents
+      delete entity.generatable

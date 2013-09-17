@@ -8,12 +8,18 @@ define ['systems/base', 'THREE'], (System, THREE) ->
       followedObj = @app.scene.getObjectByName(entity.follow.entity)
       thisObj = @app.scene.getObjectByName(id)
       if followedObj? and thisObj?
+        doRotate = true
+        if entity.follow.x == 0 and entity.follow.y == 0 and entity.follow.z == 0
+          doRotate = false
+
+        # TODO save some math if the follow distance is 0,0,0
         # move this object to a position relative to it
         position = new THREE.Vector3(
           entity.follow.x, entity.follow.y, entity.follow.z)
 
         position.add(followedObj.position)
-        position.applyQuaternion(entity.follow.quaternion)
+        if doRotate
+          position.applyQuaternion(entity.follow.quaternion)
 
         # Make the movement of the following smooth
         # by transitioning between the current position and the desired
@@ -21,5 +27,6 @@ define ['systems/base', 'THREE'], (System, THREE) ->
         position.sub(thisObj.position).divideScalar(elapsed)
 
         thisObj.position.add(position)
-        # look at the entity
-        thisObj.lookAt(followedObj.position)
+        if doRotate
+          # look at the entity
+          thisObj.lookAt(followedObj.position)
