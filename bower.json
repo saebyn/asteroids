@@ -15,5 +15,8 @@
     "angular": "~1.0.8",
     "angular-cookies": "~1.0.8"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "resolutions": {
+    "sass-bootstrap": "~2.3.0"
+  }
 }
