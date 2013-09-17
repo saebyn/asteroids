@@ -119,7 +119,7 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
       filmEffect = new THREE.ShaderPass(THREE.FilmShader)
       filmEffect.enabled = true
       filmEffect.uniforms['grayscale'].value = 0
-      filmEffect.uniforms['sIntensity'].value = 0.6
+      filmEffect.uniforms['sIntensity'].value = 0.1
       @composer.addPass(filmEffect)
 
       rgbShiftEffect = new THREE.ShaderPass(THREE.RGBShiftShader)
@@ -130,14 +130,22 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
       vignetteEffect.uniforms['darkness'].value = 1.3
       @composer.addPass(vignetteEffect)
 
+      @subscribe 'hit', (target) =>
+        if target == 'player'
+          if @entities.camera
+            @entities.camera.camera.shake = 6
+          filmEffect.uniforms['sIntensity'].value = 0.8
+          setTimeout =>
+            filmEffect.uniforms['sIntensity'].value = 0.1
+            if @entities.camera
+              @entities.camera.camera.shake = false
+          , 900
+
       @subscribe 'death', ->
-        filmEffect.uniforms['sIntensity'].value = 0.8
         rgbShiftEffect.enabled = true
         setTimeout ->
-          filmEffect.uniforms['sIntensity'].value = 0.6
           rgbShiftEffect.enabled = false
         , 2200
-
 
       @composer.addPass(copyPass)
       copyPass.renderToScreen = true

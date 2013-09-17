@@ -8,7 +8,7 @@ define ['systems/base', 'THREE'], (System, THREE) ->
 
   tampRotation = (entity, steerAmount, time) ->
     # reduce rotating over time for all axes
-    entity.controllable.rotation[axis] += -entity.controllable.rotation[axis] / steerAmount / time for axis in ['x', 'y', 'z']
+    (entity.controllable.rotation[axis] += -entity.controllable.rotation[axis] / steerAmount / time) for axis in ['x', 'y', 'z']
 
 
   class ControlSystem extends System
@@ -32,22 +32,25 @@ define ['systems/base', 'THREE'], (System, THREE) ->
         axis = 'z'
       else if direction in [entity.controllable.up, entity.controllable.down]
         axis = 'y'
-      else
+      else if direction in [entity.controllable.tiltLeft, entity.controllable.tiltRight]
         axis = 'x'
-
-      # Keep this local for calculation
-      rotation = entity.controllable.rotation[axis]
-
-      accel = 1.0 - Math.abs(rotation / maxRotation)
-
-      # apply steering
-      if sign != 0
-        rotation -= sign * steerAmount / time * accel
+      else
+        axis = false
 
       tampRotation(entity, steerAmount, time)
 
-      # Save the current rotation amount to the component
-      entity.controllable.rotation[axis] = rotation
+      if axis
+        # Keep this local for calculation
+        rotation = entity.controllable.rotation[axis]
+
+        accel = 1.0 - Math.abs(rotation / maxRotation)
+
+        # apply steering
+        if sign != 0
+          rotation -= sign * steerAmount / time * accel
+
+        # Save the current rotation amount to the component
+        entity.controllable.rotation[axis] = rotation
 
       # If we have a mesh/object to operate on...
       if entity.renderable.mesh?.quaternion?
@@ -63,4 +66,3 @@ define ['systems/base', 'THREE'], (System, THREE) ->
         velocity.applyQuaternion(entity.renderable.mesh.quaternion)
 
         entity.renderable.mesh.setAngularVelocity(velocity)
-

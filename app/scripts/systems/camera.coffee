@@ -80,6 +80,12 @@ define ['systems/base', 'THREE', 'shaders/radar'], (System, THREE, radarShader) 
         @app.composer.render()
       else
         @app.renderer.render(@app.scene, camera.instance)
+
+    shake: (camera, elapsed) ->
+      # queue a series of movements
+      camera.instance.position.x += (Math.random() - 0.5) * camera.shake
+      camera.instance.position.y += (Math.random() - 0.5) * camera.shake
+      camera.instance.position.z += (Math.random() - 0.5) * camera.shake
     
     processOurEntities: (entities, elapsed) ->
       @registerCamera(id, components.camera) for [id, components] in entities when not components.camera.registered?
@@ -91,6 +97,8 @@ define ['systems/base', 'THREE', 'shaders/radar'], (System, THREE, radarShader) 
       @updateAspect(components.camera) for [id, components] in registered when components.camera.instance?
 
       @updateRadarTime(components.camera, elapsed) for [id, components] in registered
+
+      @shake(components.camera, elapsed) for [id, components] in registered when components.camera.instance? and components.camera.shake?
 
       orderedCameras = _.chain(registered)
                         .filter(([id, components]) ->

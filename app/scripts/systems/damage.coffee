@@ -35,7 +35,7 @@ define ['systems/base', 'THREE', 'utils'], (System, THREE, utils) ->
       if damager.damaging?.health?
         entity.damagable.health -= damager.damaging.health
 
-      system.app.emit('hit')
+      system.app.emit('hit', entityId)
 
     if entity.damagable.health <= 0
       if entity.damagable.disappears

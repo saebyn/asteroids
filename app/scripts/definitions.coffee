@@ -83,8 +83,8 @@ define ['utils'], (utils) ->
       static: true
       convexCollision: true
     damagable:
-      health: 30
-      maxHealth: 30
+      health: 100
+      maxHealth: 100
     controllable:
       left: 'left'
       right: 'right'
