@@ -11,12 +11,12 @@ define ['THREE', 'Physijs', 'underscore', 'jquery'], (THREE, Physijs, _, $) ->
       # Inst the model loader
       @loader = new THREE.JSONLoader()
 
-    preload: (models, textures, images, misc, music, success) ->
+    preload: (assets, success) ->
       # load models and textures
       # when all are complete, call success with no args
       # always call success, even if no assets or they are
       # already loaded
-      totalAssets = models.length + textures.length + images.length + misc.length
+      totalAssets = assets.models.length + assets.textures.length + assets.images.length + assets.misc.length
       loadedAssets = 0
       callback = (type, name) ->
         loadedAssets += 1
@@ -24,15 +24,15 @@ define ['THREE', 'Physijs', 'underscore', 'jquery'], (THREE, Physijs, _, $) ->
         if loadedAssets == totalAssets
           success()
 
-      @loadTrack(path) for path in music
+      @loadTrack(path) for path in assets.music
 
       if totalAssets == 0
         success()
       else
-        @getTexture(path, callback) for path in textures
-        @loadImage(path, callback) for path in images
-        @loadModel(name, callback) for name in models
-        @loadMisc(path, callback) for path in misc
+        @getTexture(path, callback) for path in assets.textures
+        @loadImage(path, callback) for path in assets.images
+        @loadModel(name, callback) for name in assets.models
+        @loadMisc(path, callback) for path in assets.misc
 
     loadMisc: (name, callback) ->
       $.ajax(

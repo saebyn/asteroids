@@ -1,6 +1,6 @@
 root = exports ? this
 
-define ['angular', 'game', 'music', 'sounds', 'keys', 'utils', 'vendor/fullscreen', 'underscore'], (angular, Game, Music, sounds, Keys, utils, FullScreen, _) ->
+define ['angular', 'game', 'definitions', 'music', 'sounds', 'keys', 'utils', 'vendor/fullscreen', 'underscore'], (angular, Game, gameDefs, Music, sounds, Keys, utils, FullScreen, _) ->
   angular.module('gameApp.directives', [])
     .directive('fullscreen', ->
       link: (scope, element, attrs) ->
@@ -108,20 +108,7 @@ define ['angular', 'game', 'music', 'sounds', 'keys', 'utils', 'vendor/fullscree
           if not game?
             return
 
-          game.assetManager.preload(
-            ['playership', 'laserbolt', 'missile', 'mine'],
-            ['images/asteroid1.png', 'images/asteroid1_bump.png', 'images/particle.png',
-             'images/particle_debris.png', 'images/star.png',
-             'resources/missile_texture.png', 'resources/MetalBase0121_9_S.jpg'],
-            ['images/sky/backmo.png', 'images/sky/botmo.png', 'images/sky/frontmo.png',
-             'images/sky/leftmo.png', 'images/sky/rightmo.png', 'images/sky/topmo.png'],
-            ['bower_components/Physijs/physijs_worker.js'],
-            ['resources/music/allofus.mp3', 'resources/music/arpanauts.mp3',
-             'resources/music/comeandfindme.mp3', 'resources/music/digitalnative.mp3',
-             'resources/music/hhavok-intro.mp3', 'resources/music/hhavok-main.mp3',
-             'resources/music/searching.mp3', 'resources/music/underclocked.mp3',
-             'resources/music/wereallunderthestars.mp3',
-             'resources/music/weretheresistors.mp3'],
+          game.assetManager.preload(gameDefs.ASSETS,
             ->
               $('#preloader .progress').hide()
               $('#preloader .status').text('Checking for browser support...')
