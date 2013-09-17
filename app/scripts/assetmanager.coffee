@@ -1,23 +1,26 @@
-define ['THREE', 'Physijs', 'underscore'], (THREE, Physijs, _) ->
+define ['THREE', 'Physijs', 'underscore', 'jquery'], (THREE, Physijs, _, $) ->
   class AssetManager
     maxCachedModels: 10
     models: {}
     textures: {}
     tracks: {}
+    images: {}
+    misc: {}
 
     constructor: ->
       # Inst the model loader
       @loader = new THREE.JSONLoader()
 
-    preload: (models, textures, images, music, success) ->
+    preload: (models, textures, images, misc, music, success) ->
       # load models and textures
       # when all are complete, call success with no args
       # always call success, even if no assets or they are
       # already loaded
-      totalAssets = models.length + textures.length + images.length
+      totalAssets = models.length + textures.length + images.length + misc.length
       loadedAssets = 0
       callback = (type, name) ->
         loadedAssets += 1
+        console.log 'loaded', loadedAssets, 'of', totalAssets, '=', type, name
         if loadedAssets == totalAssets
           success()
 
@@ -26,13 +29,26 @@ define ['THREE', 'Physijs', 'underscore'], (THREE, Physijs, _) ->
       if totalAssets == 0
         success()
       else
-        @loadModel(name, callback) for name in models
         @getTexture(path, callback) for path in textures
-        @loadImage(name, callback) for path in images
+        @loadImage(path, callback) for path in images
+        @loadModel(name, callback) for name in models
+        @loadMisc(path, callback) for path in misc
+
+    loadMisc: (name, callback) ->
+      $.ajax(
+        url: name
+        dataType: 'text'
+        success: (data) =>
+          @misc[name] = data
+          callback('misc', name)
+      )
 
     loadImage: (name, callback) ->
-      # TODO
-      callback('image', name)
+      img = new Image()
+      img.src = name
+      img.onload = =>
+        @images[name] = img
+        callback('image', name)
 
     loadModel: (modelName, callback, friction=0.8, restitution=0.4) ->
       if modelName not of @models
