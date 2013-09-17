@@ -1,13 +1,12 @@
 {
   "name": "asteroids",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "dependencies": {
     "sass-bootstrap": "~2.3.0",
     "requirejs": "~2.1.4",
     "modernizr": "~2.6.2",
     "jquery": "~1.9.1",
     "Physijs": "saebyn/Physijs",
-    "stats.js": "*",
     "simplex-noise.js": "jwagner/simplex-noise.js",
     "jsfx": "gordlea/jsfx",
     "threeutils": "saebyn/threeutils",
