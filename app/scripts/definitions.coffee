@@ -107,7 +107,9 @@ define ['utils'], (utils) ->
     images: [
       'images/sky/backmo.png', 'images/sky/botmo.png', 'images/sky/frontmo.png',
       'images/sky/leftmo.png', 'images/sky/rightmo.png', 'images/sky/topmo.png']
-    misc: ['bower_components/Physijs/physijs_worker.js']
+    misc: [
+      'bower_components/ammo.js/builds/ammo.js',
+      'bower_components/Physijs/physijs_worker.js']
     music: [
       'resources/music/allofus.mp3', 'resources/music/arpanauts.mp3',
       'resources/music/comeandfindme.mp3', 'resources/music/digitalnative.mp3',
