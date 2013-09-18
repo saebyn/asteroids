@@ -79,6 +79,17 @@ canvas {
             left: 5px;
             bottom: 5px;
         }
+
+        .amount {
+            position: absolute;
+            right: 5px;
+            bottom: 5px;
+            font-weight: bold;
+
+            &.empty {
+                color: red;
+            }
+        }
     
         &.active {
             border: 2px dashed #268;

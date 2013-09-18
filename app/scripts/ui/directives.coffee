@@ -100,6 +100,7 @@ define ['angular', 'game', 'definitions', 'music', 'sounds', 'keys', 'utils', 'v
           game.subscribe('fire', sounds.fire)
           game.subscribe('kill', sounds.kill)
           game.subscribe('hit', sounds.hit)
+          game.subscribe('weaponEmpty', sounds.empty)
     )
     .directive('preloader', ['$timeout', '$cookieStore', ($timeout, $cookieStore) ->
       restrict: 'A'
@@ -145,6 +146,17 @@ define ['angular', 'game', 'definitions', 'music', 'sounds', 'keys', 'utils', 'v
       restrict: 'A'
       link: (scope, element, attrs) ->
         selectors = element.find('.selector')
+
+        scope.inventory = {}
+
+        scope.$watch 'game', (game) ->
+          if game?
+            game.subscribe 'start', ->
+              scope.inventory[name] = value for name, value of game.entities.player.inventory
+
+            game.subscribe 'inventory:change', (name, total) ->
+              scope.$apply (scope) ->
+                scope.inventory[name] = total
 
         # Hook up weapon selectors to game.
         angular.element(selectors).on 'click', ->

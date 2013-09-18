@@ -2,9 +2,19 @@
 define ['systems/base', 'underscore', 'utils', 'THREE'], (System, _, utils, THREE) ->
   class WeaponsSystem extends System
     constructor: (@app) ->
+      # Override fireWeapon method with throttled version.
       @fireWeapon = _.throttle(@fireWeapon, 160, {trailing: true})
 
+    # Entity should have inventory and fireable components
     fireWeapon: (entity) =>
+      if entity.fireable.inventorySource?
+        if (entity.inventory[entity.fireable.inventorySource] or 0) <= 0
+          @app.emit('weaponEmpty')
+          return
+        else
+          entity.inventory[entity.fireable.inventorySource] -= 1
+          @app.emit('inventory:change', entity.fireable.inventorySource, entity.inventory[entity.fireable.inventorySource])
+
       speed = entity.fireable.speed or 1.0
       size = entity.fireable.size or 1.0
 

@@ -1,6 +1,7 @@
 define ['utils'], (utils) ->
   WEAPONS =
     plasma:
+      inventorySource: 'energy'
       speed: 30
       size: 21 
       extraComponents:
@@ -16,6 +17,7 @@ define ['utils'], (utils) ->
           time: 2000
           destroy: true
     missile:
+      inventorySource: 'missile'
       speed: 5
       size: 21 
       extraComponents:
@@ -34,6 +36,7 @@ define ['utils'], (utils) ->
           type: 'asteroidSpawner'
           force: 20
     mine:
+      inventorySource: 'mine'
       speed: 10
       size: 21
       extraComponents:
@@ -52,6 +55,10 @@ define ['utils'], (utils) ->
 
   PLAYER =
     position: {x: 0, y: 0, z: 0, direction: {x: -Math.PI / 2, y: 0, z: Math.PI / 2}}
+    inventory:
+      energy: 1000
+      missile: 50
+      mine: 30
     renderable:
       lights: [
         {

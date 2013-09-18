@@ -56,8 +56,8 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
         # Reset asteroid spawn rate
         @entities.asteroidSpawner.spawnable.rate = gameDefinitions.ASTEROID_SPAWN_RATE
         setTimeout(=>
-          @emit('start')
           @entities.addEntity(utils.clone(gameDefinitions.PLAYER), 'player')
+          @emit('start')
           @emit('controls:selectWeapon', @currentWeapon)
         , 5000)
 

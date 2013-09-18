@@ -318,16 +318,19 @@
               <img src="images/plasma_weapon_icon.png"
                    title="Plasma Bullet" width="100" height="100">
               <kbd class="light">1</kbd>
+              <span class="amount" data-ng-class="{empty: inventory.energy == 0}">{{ inventory.energy || 0 }}</span>
             </div>
             <div data-weapon-selector="missile" class="selector">
               <img src="images/missile_weapon_icon.png"
                    title="Object-seeking Missile" width="100" height="100">
               <kbd class="light">2</kbd>
+              <span class="amount" data-ng-class="{empty: inventory.missile == 0}">{{ inventory.missile || 0 }}</span>
             </div>
             <div data-weapon-selector="mine" class="selector">
               <img src="images/mine_weapon_icon.png"
                    title="Space Mine" width="100" height="100">
               <kbd class="light">3</kbd>
+              <span class="amount" data-ng-class="{empty: inventory.mine == 0}">{{ inventory.mine || 0 }}</span>
             </div>
           </div>
         </div>
