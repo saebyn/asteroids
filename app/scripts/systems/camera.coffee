@@ -9,16 +9,17 @@ define ['systems/base', 'THREE', 'shaders/radar'], (System, THREE, radarShader) 
         cameraInst = new THREE.PerspectiveCamera(camera.viewAngle, camera.aspect, camera.nearDistance, camera.farDistance)
       else if camera.type = 'ortho'
         cameraInst = new THREE.OrthographicCamera(camera.left, camera.right, camera.top, camera.bottom, camera.nearDistance, camera.farDistance)
+      else
+        throw new Exception('Unknown camera type: ' + camera.type)
 
-      if cameraInst
-        if camera.position?
-          cameraInst.position.x = camera.position.x
-          cameraInst.position.y = camera.position.y
-          cameraInst.position.z = camera.position.z
+      if camera.position?
+        cameraInst.position.x = camera.position.x
+        cameraInst.position.y = camera.position.y
+        cameraInst.position.z = camera.position.z
 
-        cameraInst.name = id
-        camera.instance = cameraInst
-        camera.registered = true
+      cameraInst.name = id
+      camera.instance = cameraInst
+      camera.registered = true
 
       if camera.radar
         shaders = radarShader.shaders
@@ -39,13 +40,14 @@ define ['systems/base', 'THREE', 'shaders/radar'], (System, THREE, radarShader) 
         camera.radar.uniforms.resolution.value.y = @app.getGameHeight() * (camera.view?.height or 1)
 
     updateRadarTime: (camera, elapsedTime) ->
-      if camera.radar?
-        camera.radar.uniforms.time.value += elapsedTime
+      camera.radar.uniforms.time.value += elapsedTime
 
     updateAspect: (camera) ->
+      aspect = camera.instance.aspect
       camera.instance.aspect = @app.getGameWidth() / @app.getGameHeight()
-      camera.instance.updateProjectionMatrix()
-      @updateRadarSize(camera)
+      if aspect != camera.instance.aspect
+        camera.instance.updateProjectionMatrix()
+        @updateRadarSize(camera)
 
     render: (camera) ->
       windowWidth = @app.getGameWidth()
@@ -86,25 +88,30 @@ define ['systems/base', 'THREE', 'shaders/radar'], (System, THREE, radarShader) 
       camera.instance.position.x += (Math.random() - 0.5) * camera.shake
       camera.instance.position.y += (Math.random() - 0.5) * camera.shake
       camera.instance.position.z += (Math.random() - 0.5) * camera.shake
-    
+
+    process: (entity, id, elapsed) ->
+      if not entity.camera.registered?
+        @registerCamera(id, entity.camera)
+
+      @attachCamera(entity.camera)
+      @updateAspect(entity.camera)
+
+      if entity.camera.shake?
+        @shake(entity.camera, elapsed)
+
+      if camera.radar?
+        @updateRadarTime(entity.camera, elapsed)
+
     processOurEntities: (entities, elapsed) ->
-      @registerCamera(id, components.camera) for [id, components] in entities when not components.camera.registered?
+      @process(entity, id, elapsed) for [id, entity] in entities
 
-      registered = (entity for entity in entities when entity[1].camera.registered?)
-
-      @attachCamera(components.camera) for [id, components] in registered when components.camera.instance?
-
-      @updateAspect(components.camera) for [id, components] in registered when components.camera.instance?
-
-      @updateRadarTime(components.camera, elapsed) for [id, components] in registered
-
-      @shake(components.camera, elapsed) for [id, components] in registered when components.camera.instance? and components.camera.shake?
-
-      orderedCameras = _.chain(registered)
+      orderedCameras = _.chain(entities)
                         .filter(([id, components]) ->
                           components.camera.instance?
                         ).sortBy(([id, components]) ->
                           components.camera.order or Number.MAX_VALUE
                         ).value()
 
+      console.time('camera render')
       @render(components.camera) for [id, components] in orderedCameras
+      console.timeEnd('camera render')

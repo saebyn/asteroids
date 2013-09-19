@@ -186,9 +186,11 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
       @emit('level:load', levelName)
 
     system: (name, componentName, elapsedTime) ->
+      console.time('system ' + name)
       entities = @entities.filterEntities(componentName)
       if entities.length > 0
         @systems[name].processOurEntities(entities, elapsedTime)
+      console.timeEnd('system ' + name)
 
     fpsUpdate: (currentTime) ->
       elapsedTime = currentTime - @lastTime
@@ -202,6 +204,7 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
       @playerStats.render(health, max)
 
     gameloop: (currentTime=0) =>
+      console.time('gameloop')
       elapsedTime = @fpsUpdate(currentTime)
 
       if not @paused
@@ -235,4 +238,5 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
         @updatePlayerStats()
         @assetManager.maintain()
 
+      console.timeEnd('gameloop')
       window.requestAnimationFrame @gameloop

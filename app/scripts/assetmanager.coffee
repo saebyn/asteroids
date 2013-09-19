@@ -114,5 +114,7 @@ define ['THREE', 'Physijs', 'underscore', 'jquery'], (THREE, Physijs, _, $) ->
            model = @models[e.name])
  
     maintain: ->
+      console.time('asset.maintain')
       # throw away old models, we can refetch them later if we need to
       @trimModelsCache()
+      console.timeEnd('asset.maintain')
