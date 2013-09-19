@@ -9,10 +9,10 @@ define ['systems/base', 'THREE'], (System, THREE) ->
       thisObj = @app.scene.getObjectByName(id)
       if followedObj? and thisObj?
         doRotate = true
+        # save some math if the follow distance is 0,0,0
         if entity.follow.x == 0 and entity.follow.y == 0 and entity.follow.z == 0
           doRotate = false
 
-        # TODO save some math if the follow distance is 0,0,0
         # move this object to a position relative to it
         position = new THREE.Vector3(
           entity.follow.x, entity.follow.y, entity.follow.z)
@@ -24,7 +24,10 @@ define ['systems/base', 'THREE'], (System, THREE) ->
         # Make the movement of the following smooth
         # by transitioning between the current position and the desired
         # position.
-        position.sub(thisObj.position).divideScalar(elapsed)
+        segmentPortions = 1000.0 / elapsed
+        position.sub(thisObj.position)
+        if segmentPortions > 1
+          position.divideScalar(segmentPortions)
 
         thisObj.position.add(position)
         if doRotate

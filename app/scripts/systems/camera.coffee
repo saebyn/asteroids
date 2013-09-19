@@ -99,7 +99,7 @@ define ['systems/base', 'THREE', 'shaders/radar'], (System, THREE, radarShader) 
       if entity.camera.shake?
         @shake(entity.camera, elapsed)
 
-      if camera.radar?
+      if entity.camera.radar?
         @updateRadarTime(entity.camera, elapsed)
 
     processOurEntities: (entities, elapsed) ->
