@@ -32,7 +32,7 @@ define ['utils'], (utils) ->
         expirable:
           time: 3000
           destroy: true
-        targeting:
+        seeking:
           type: 'asteroidSpawner'
           force: 20
     mine:

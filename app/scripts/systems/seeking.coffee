@@ -1,8 +1,8 @@
-# targeting system
+# seeking system
 define ['systems/base', 'THREE'], (System, THREE) ->
   class TargetingSystem extends System
     # find any entities in @app.entities
-    #  that have a _type == entity.targeting.type
+    #  that have a _type == entity.seeking.type
     getEntities: (type) ->
       entity.renderable.mesh for id, entity of @app.entities when entity.renderable?.mesh? and entity._type == type
 
@@ -14,7 +14,7 @@ define ['systems/base', 'THREE'], (System, THREE) ->
       origin = new THREE.Vector3(entity.position.x, entity.position.y, entity.position.z)
 
       #  calculate the distance to each one from this entity
-      objects = @getEntities(entity.targeting.type)
+      objects = @getEntities(entity.seeking.type)
 
       if objects.length > 0
         objects.sort((a, b) ->
@@ -38,7 +38,7 @@ define ['systems/base', 'THREE'], (System, THREE) ->
         force.normalize()
 
         # Multiply in the force we can apply in the desired direction.
-        force.multiplyScalar(entity.targeting.force)
+        force.multiplyScalar(entity.seeking.force)
 
         entity.renderable.mesh.applyCentralForce(force)
 

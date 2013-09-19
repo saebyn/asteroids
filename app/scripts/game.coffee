@@ -230,7 +230,7 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
         # Note that movements need to be applied after the spawner and generator
         # systems.
         @system('movement', 'movement', elapsedTime)
-        @system('targeting', 'targeting', elapsedTime)
+        @system('seeking', 'seeking', elapsedTime)
         @system('follow', 'follow', elapsedTime)
 
         @scene.simulate(elapsedTime / 1000.0)
