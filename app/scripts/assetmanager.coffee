@@ -11,7 +11,7 @@ define ['THREE', 'Physijs', 'underscore', 'jquery'], (THREE, Physijs, _, $) ->
       # Inst the model loader
       @loader = new THREE.JSONLoader()
 
-    preload: (assets, success) ->
+    preload: (assets, progress, success) ->
       # load models and textures
       # when all are complete, call success with no args
       # always call success, even if no assets or they are
@@ -21,6 +21,7 @@ define ['THREE', 'Physijs', 'underscore', 'jquery'], (THREE, Physijs, _, $) ->
       callback = (type, name) ->
         loadedAssets += 1
         console.log 'loaded', loadedAssets, 'of', totalAssets, '=', type, name
+        progress(loadedAssets / (totalAssets or 1) * 100.0)
         if loadedAssets == totalAssets
           success()
 

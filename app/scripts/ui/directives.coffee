@@ -1,6 +1,6 @@
 root = exports ? this
 
-define ['angular', 'game', 'definitions', 'music', 'sounds', 'keys', 'utils', 'vendor/fullscreen', 'underscore'], (angular, Game, gameDefs, Music, sounds, Keys, utils, FullScreen, _) ->
+define ['angular', 'game', 'definitions', 'music', 'sounds', 'keys', 'utils', 'vendor/fullscreen', 'underscore', 'jquery'], (angular, Game, gameDefs, Music, sounds, Keys, utils, FullScreen, _) ->
   angular.module('gameApp.directives', [])
     .directive('fullscreen', ->
       link: (scope, element, attrs) ->
@@ -109,10 +109,15 @@ define ['angular', 'game', 'definitions', 'music', 'sounds', 'keys', 'utils', 'v
           if not game?
             return
 
+          element.find('.progress .bar').css({width: '0%'})
+
           game.assetManager.preload(gameDefs.ASSETS,
+            (percent) ->
+              element.find('.progress .bar').css({width: percent + '%'})
+          ,
             ->
-              $('#preloader .progress').hide()
-              $('#preloader .status').text('Checking for browser support...')
+              element.find('.progress').hide()
+              element.find('.status').text('Checking for browser support...')
 
               # check for support via modernizr
               $timeout ->
@@ -123,10 +128,10 @@ define ['angular', 'game', 'definitions', 'music', 'sounds', 'keys', 'utils', 'v
                 all = utils.checkFeatures [Modernizr.audio, '.check-audio'],
                                           [Modernizr.localstorage, '.check-localstorage']
 
-                scope.game.setup()
+                game.setup()
                 # Start the game (it defaults to being paused)
                 game.loadLevel('space')
-                scope.game.gameloop()
+                game.gameloop()
                 if Modernizr.audio
                   if $cookieStore.get('music') is not false
                     scope.musicPlaying = true
