@@ -192,6 +192,20 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
         @systems[name].processOurEntities(entities, elapsedTime)
       console.timeEnd('system ' + name)
 
+    registerEntity: (entity, id) ->
+      for systemName of @systems
+        entity = @systems[systemName].registerEntity(entity, id)
+
+      entity
+
+    unregisterEntity: (entity, id) ->
+      system.unregisterEntity(entity, id) for system in _.values(@systems)
+      null
+
+    toggleUnrenderableEntities: (visible) ->
+      unrenderables = (@scene.getObjectByName(id) for id, entity of @entities when not entity.renderable?)
+      object.visible = visible for object in unrenderables when object
+
     fpsUpdate: (currentTime) ->
       elapsedTime = currentTime - @lastTime
       @lastTime = currentTime
@@ -226,6 +240,9 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
         @system('debris', 'debris', elapsedTime)
         @system('render', 'renderable', elapsedTime)
         @system('expire', 'expirable', elapsedTime)
+
+        @system('targeter', 'targeter', elapsedTime)
+        @system('targeted', 'targeted', elapsedTime)
 
         # Note that movements need to be applied after the spawner and generator
         # systems.

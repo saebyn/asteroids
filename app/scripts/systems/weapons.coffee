@@ -106,9 +106,6 @@ define ['systems/base', 'underscore', 'utils', 'THREE'], (System, _, utils, THRE
       fireable.rendered = new THREE.Line(geometry, material, THREE.LinePieces)
 
       player.renderable.mesh.add fireable.rendered
-      player.renderable.mesh.addEventListener 'removed', ->
-        if fireable.rendered?
-          fireable.rendered.remove()
 
     processOurEntities: (entities, elapsedTime) =>
       @drawRange(components.fireable) for [id, components] in entities when not components.fireable.rendered?

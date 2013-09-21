@@ -113,7 +113,8 @@ define ['utils'], (utils) ->
       'resources/missile_texture.png', 'resources/MetalBase0121_9_S.jpg']
     images: [
       'images/sky/backmo.png', 'images/sky/botmo.png', 'images/sky/frontmo.png',
-      'images/sky/leftmo.png', 'images/sky/rightmo.png', 'images/sky/topmo.png']
+      'images/sky/leftmo.png', 'images/sky/rightmo.png', 'images/sky/topmo.png',
+      'images/targeting.png']
     misc: [
       'bower_components/ammo.js/builds/ammo.js',
       'bower_components/Physijs/physijs_worker.js']

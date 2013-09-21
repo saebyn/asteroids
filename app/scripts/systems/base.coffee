@@ -2,12 +2,18 @@ define [], ->
   class System
     constructor: (@app) ->
 
-    # XXX TODO
-    # the problem with this is that it only gets called for new
-    # entities, but not existing entities that have a new component
-    # added.
-    registerEntity: (entity) ->
+    # register and unregister methods must be idempotent, and must handle
+    # entities that don't contain the component(s) of interest for the system.
+    # registerEntity will be called each time a component is added
+    # to the entity.
+    # registerEntity MUST always return the entity.
+    registerEntity: (entity, id) ->
       entity
+
+    # unregisterEntity will only be called when the entity is removed,
+    # not for individual component removals.
+    unregisterEntity: (entity, id) ->
+      null
 
     processOurEntities: (entities, elapsedTime) ->
       @process(entity, elapsedTime, id) for [id, entity] in entities

@@ -89,7 +89,7 @@ define ['systems/base', 'THREE', 'shaders/radar'], (System, THREE, radarShader) 
       camera.instance.position.y += (Math.random() - 0.5) * camera.shake
       camera.instance.position.z += (Math.random() - 0.5) * camera.shake
 
-    process: (entity, id, elapsed) ->
+    process: (entity, elapsed, id) ->
       if not entity.camera.registered?
         @registerCamera(id, entity.camera)
 
@@ -103,7 +103,7 @@ define ['systems/base', 'THREE', 'shaders/radar'], (System, THREE, radarShader) 
         @updateRadarTime(entity.camera, elapsed)
 
     processOurEntities: (entities, elapsed) ->
-      @process(entity, id, elapsed) for [id, entity] in entities
+      @process(entity, elapsed, id) for [id, entity] in entities
 
       orderedCameras = _.chain(entities)
                         .filter(([id, components]) ->

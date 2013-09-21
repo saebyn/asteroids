@@ -12,7 +12,7 @@ define ['systems/base', 'THREE'], (System, THREE) ->
 
 
   class ControlSystem extends System
-    process: (entity, time) ->
+    process: (entity, time, id) ->
       if not entity.position
         return
 

@@ -118,6 +118,8 @@ define ['utils', 'definitions', 'THREE'], (utils, gameDefinitions, THREE) ->
         rate: gameDefinitions.ASTEROID_SPAWN_RATE
         rateChange: 0.004
         extraComponents:
+          targeted:
+            enabled: true
           damagable:
             health: 20
             fracture:

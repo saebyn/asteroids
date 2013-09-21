@@ -15,8 +15,8 @@ define ['utils', 'definitions', 'levels'], (utils, gameDefinitions, levels) ->
 
     # Load entities from level data object
     load: (levelName) ->
-      @_entities.push(key) for key of levels[levelName]
-      this[key] = utils.clone(value) for key, value of levels[levelName]
+      @addEntity(utils.clone(value), key) for key, value of levels[levelName]
+      null
 
     # Methods
     getNextEntityId: ->
@@ -38,6 +38,8 @@ define ['utils', 'definitions', 'levels'], (utils, gameDefinitions, levels) ->
             mesh.geometry.dispose()
             mesh.material.dispose()
 
+      @app.unregisterEntity(this[id], id)
+
       delete this[id]
       @_entities.splice(@_entities.indexOf(id), 1)
 
@@ -55,6 +57,7 @@ define ['utils', 'definitions', 'levels'], (utils, gameDefinitions, levels) ->
           stale.push obj
 
       scene.remove(obj) for obj in stale
+      null
 
     destroyEntity: (id) ->
       if id of this
@@ -93,20 +96,21 @@ define ['utils', 'definitions', 'levels'], (utils, gameDefinitions, levels) ->
 
     addEntity: (components, id=undefined) ->
       if @_entities.length < MAX_ENTITIES
-        entity = components
-
-        # TODO too much knowledge of app internals
-        for systemName of @app.systems
-          entity = @app.systems[systemName].registerEntity(entity)
-
         if not id?
           # Entity ids will always be strings.
           id = '' + @getNextEntityId()
+
+        entity = @app.registerEntity(components, id)
 
         @_entities.push(id)
         this[id] = entity
       else
         console.log 'Way too many entities. Dropping new ones on the floor.'
+
+    addComponent: (name, component, id) ->
+      components = this[id]
+      components[name] = component
+      this[id] = @app.registerEntity(components)
 
     filterEntities: (component) ->
       [id, this[id]] for id in @_entities when component of this[id]
