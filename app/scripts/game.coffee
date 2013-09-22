@@ -46,6 +46,32 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
           if @entities.player?.controllable?
             @entities.player.controllable.controlFiring = false
 
+      projector = new THREE.Projector()
+      raycaster = new THREE.Raycaster()
+
+      @subscribe 'controls:pick', (x, y) =>
+        # Don't bother if there's no camera or no player targeter component
+        if @entities.camera?.camera?.instance and @entities.player?.targeter?.queue
+          camera = @entities.camera.camera.instance
+          vector = new THREE.Vector3(x, y, 1)
+          projector.unprojectVector(vector, camera)
+          v2 = vector.clone()
+
+          raycaster.set(camera.position, vector.sub(camera.position).normalize())
+
+          intersects = raycaster.intersectObjects(@scene.children)
+
+          excludedEntities = ['player', 'rangeFinder']
+
+          # Debug code to draw lines showing where the picking happens.
+          #geom = new THREE.Geometry()
+          #geom.vertices.push(camera.position)
+          #geom.vertices.push(v2)
+          #@scene.add(new THREE.Line(geom))
+
+          # Add the target name to the player's targeter queue.
+          @entities.player.targeter.queue.push(intersect.object.name) for intersect in intersects when intersect.object.name and intersect.object.name not in excludedEntities
+
       @subscribe 'controls:selectWeapon', (weapon) =>
         @currentWeapon = weapon
         if @entities.player?

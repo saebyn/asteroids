@@ -70,11 +70,14 @@ define ['systems/base', 'THREE'], (System, THREE) ->
 
       if entity.targeted.registered
         mesh = @app.scene.getObjectById(id + ':' + TARGETING_OBJECT_NAME)
+        if not mesh
+          return
 
-        if not entity.targeted.enabled?
-          # If the targeting is disabled, remove it from the scene.
-          @app.scene.remove(mesh)
+        if not entity.targeted.enabled
+          # If the targeting is disabled, hide it from the scene.
+          mesh.visible = false
         else
+          mesh.visible = true
           # Reposition on top of target object
           mesh.position.copy(object.position)
 

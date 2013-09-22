@@ -59,6 +59,8 @@ define ['utils'], (utils) ->
       energy: 1000
       missile: 50
       mine: 30
+    targeter:
+      queue: []
     renderable:
       lights: [
         {

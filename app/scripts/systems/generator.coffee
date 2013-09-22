@@ -28,6 +28,8 @@ define ['systems/base', 'THREE', 'Physijs', 'SimplexNoise', 'underscore'], (Syst
       geom.vertices = _.map(geom.vertices, randomizeVertex(position, radius))
       geom.verticesNeedUpdate = true
       geom.dynamic = false
+      geom.computeBoundingSphere()
+      geom.computeFaceNormals()
 
       materialOptions = 
         shininess: 0

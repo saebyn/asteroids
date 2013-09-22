@@ -28,7 +28,7 @@ define ['angular', 'game', 'definitions', 'music', 'sounds', 'keys', 'utils', 'v
             if scope.game?
               scope.game.fullscreen = fullscreen
     )
-    .directive('game', ->
+    .directive('game', ['$document', ($document) ->
       scope:
         'container': '@'
         'playerStatsContainer': '@'
@@ -52,15 +52,29 @@ define ['angular', 'game', 'definitions', 'music', 'sounds', 'keys', 'utils', 'v
         dragging = false
         point = false
 
-        element.on 'mousedown', ->
-          element.addClass 'drag'
-          dragging = true
+        element.on 'mousedown', (e) ->
+          if e.which == 1
+            element.addClass 'drag'
+            dragging = true
+          else if e.which == 3
+            canvas = element.find('canvas')
+            offset = canvas.parent().offset()
+            position = canvas.position()
+            top = Math.max(offset.top, position.top)
+            [x, y] = [e.pageX - offset.left, e.pageY - top]
+            x = (x / canvas.width() - 0.5) * 2.0
+            y = (-y / canvas.height() + 0.5) * 2.0
+            scope.game.emit 'controls:pick', x, y
           false
 
-        element.on 'mouseup', ->
-          element.removeClass 'drag'
-          dragging = false
-          point = false
+        element.on 'contextmenu', ->
+          false
+
+        element.on 'mouseup', (e) ->
+          if e.which == 1
+            element.removeClass 'drag'
+            dragging = false
+            point = false
           false
 
         element.on 'mouseleave', ->
@@ -101,7 +115,7 @@ define ['angular', 'game', 'definitions', 'music', 'sounds', 'keys', 'utils', 'v
           game.subscribe('kill', sounds.kill)
           game.subscribe('hit', sounds.hit)
           game.subscribe('weaponEmpty', sounds.empty)
-    )
+    ])
     .directive('preloader', ['$timeout', '$cookieStore', ($timeout, $cookieStore) ->
       restrict: 'A'
       link: (scope, element, attrs) ->
@@ -147,7 +161,7 @@ define ['angular', 'game', 'definitions', 'music', 'sounds', 'keys', 'utils', 'v
               , 500
           )
     ])
-    .directive('weapons', ->
+    .directive('weapons', ['$document', ($document) ->
       restrict: 'A'
       link: (scope, element, attrs) ->
         selectors = element.find('.selector')
@@ -171,12 +185,12 @@ define ['angular', 'game', 'definitions', 'music', 'sounds', 'keys', 'utils', 'v
             scope.game.emit('controls:selectWeapon', weapon)
             $(this).addClass('active')
 
-        angular.element(root.document).on 'keypress', (event) ->
+        angular.element($document).on 'keypress', (event) ->
           key = String.fromCharCode(event.charCode)
           offset = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'].indexOf(key)
           if offset != -1
             selectors.eq(offset).click()
-    )
+    ])
     .directive('gameMenu', ->
       restrict: 'A'
       controller: ['$scope', ($scope) ->

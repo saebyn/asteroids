@@ -109,8 +109,9 @@ define ['utils', 'definitions', 'levels'], (utils, gameDefinitions, levels) ->
 
     addComponent: (name, component, id) ->
       components = this[id]
-      components[name] = component
-      this[id] = @app.registerEntity(components)
+      if name not of components
+        components[name] = component
+        this[id] = @app.registerEntity(components, id)
 
     filterEntities: (component) ->
       [id, this[id]] for id in @_entities when component of this[id]
