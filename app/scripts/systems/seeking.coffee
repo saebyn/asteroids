@@ -1,6 +1,6 @@
 # seeking system
 define ['systems/base', 'THREE'], (System, THREE) ->
-  class TargetingSystem extends System
+  class SeekingSystem extends System
     # find any entities in @app.entities
     #  that have a _type == entity.seeking.type
     getEntities: (type) ->
@@ -21,26 +21,38 @@ define ['systems/base', 'THREE'], (System, THREE) ->
           a.position.distanceTo(origin) - b.position.distanceTo(origin)
         )
 
-        # take the closest one
+        # Take the closest one as the target
         target = objects[0].position
-        distance = target.distanceTo(origin)
 
-        currentVector = entity.renderable.mesh.getLinearVelocity()
+        # The direction from the seeking object to the saught object.
+        targetDirection = target.clone().sub(origin).normalize()
 
-        # apply force in the direction of the closest one
-        force = target.clone().sub(origin)
-        entity.renderable.mesh.rotation.z = Math.atan2(force.y, force.x)
+        # The current direction of the seeking object's velocity.
+        currentVelocity = entity.renderable.mesh.getLinearVelocity()
+        currentDirection = currentVelocity.clone().normalize()
+
+        # Get the normal of plane that the current velocity vector and the
+        # vector of the desired direction.
+        normal = new THREE.Vector3()
+        normal.crossVectors(currentDirection, targetDirection)
+
+        # This calculated normal is the axis we want to rotate around.
+        # Because we normalize both of the direction vectors into unit
+        # vectors, the magnitude of the normal indicates the amount of
+        # rotation.
+        axis = normal.clone().normalize()
+        angle = Math.asin(normal.length())
+
+        quaternion = new THREE.Quaternion()
+        quaternion.setFromAxisAngle(axis, angle)
+
+        # Update orientation of seeking object to face target.
+        entity.renderable.mesh.quaternion.copy(quaternion)
         entity.renderable.mesh.__dirtyRotation = true
 
-        # Remove our current direction so that we will apply force
-        # in opposition to it. Then normalize to a unit-vector for
-        # the desired direction.
-        force.normalize()
-
-        # Multiply in the force we can apply in the desired direction.
-        force.multiplyScalar(entity.seeking.force)
-
-        entity.renderable.mesh.applyCentralForce(force)
+        # Rotate the currente velocity towards the target.
+        neededVelocity = currentVelocity.clone().applyQuaternion(quaternion)
+        entity.renderable.mesh.applyCentralForce(neededVelocity.sub(currentVelocity))
 
     processOurEntities: (entities, elapsedTime) ->
       @seekNearest(components, elapsedTime) for [id, components] in entities
