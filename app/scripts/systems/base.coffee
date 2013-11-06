@@ -15,6 +15,7 @@ define [], ->
     unregisterEntity: (entity, id) ->
       null
 
+    # TODO entity has the id in it, so no need to pass it around separately.
     processOurEntities: (entities, elapsedTime) ->
       @process(entity, elapsedTime, id) for [id, entity] in entities
 

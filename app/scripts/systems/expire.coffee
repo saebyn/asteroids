@@ -3,20 +3,21 @@ define ['systems/base', 'THREE'], (System, THREE) ->
   class ExpireSystem extends System
     expire: (id, entity, elapsedTime) ->
       expirable = entity.expirable
+      if not expirable
+        debugger
       expirable.time -= elapsedTime
 
       if expirable.time <= 0
         if expirable.stop
-          if entity.renderable?.mesh?
-            object = entity.renderable.mesh
-            object.setLinearVelocity(new THREE.Vector3(0, 0, 0))
-            object.setAngularVelocity(new THREE.Vector3(0, 0, 0))
+          if entity.renderable?
+            entity.setLinearVelocity(new THREE.Vector3(0, 0, 0))
+            entity.setAngularVelocity(new THREE.Vector3(0, 0, 0))
 
         if expirable.destroy
           if expirable.explodes
-            @app.entities.destroyEntity(id)
+            @app.scene.destroyEntity(id)
           else
-            @app.entities.removeEntity(id)
+            @app.scene.removeEntity(id)
 
         delete entity.expirable
 

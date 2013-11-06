@@ -39,14 +39,14 @@ define ['systems/base', 'THREE', 'utils'], (System, THREE, utils) ->
 
     if entity.damagable.health <= 0
       if entity.damagable.disappears
-        system.app.entities.removeEntity(entityId)
+        system.app.scene.removeEntity(entityId)
       else
-        system.app.entities.destroyEntity(entityId)
+        system.app.scene.destroyEntity(entityId)
 
       # If there's a chance this object will fracture rather than
       # simply being atomized...
       if entity.damagable.fracture?.chance? and entity.renderable?.mesh?
-        system.app.entities.addEntity(
+        system.app.scene.addEntity(
           debris:
             spread: 1000
             radius: entity.renderable.mesh.geometry.boundingSphere.radius
@@ -64,29 +64,28 @@ define ['systems/base', 'THREE', 'utils'], (System, THREE, utils) ->
                         entity.renderable.mesh,
                         entity.position,
                         entity._movement or entity.movement,
-                        entity._type,
+                        entity.spawned,
                         entity.damaging.health)
 
   collisionHandler = (system) ->
     (damagerMesh) ->
-      entity = system.app.entities[this.name]
+      entity = system.app.scene.getObjectById(this.id)
       if not entity?
         console.log 'got collision event on non-entity'
         return
 
-      if damagerMesh.name of system.app.entities
-        damager = system.app.entities[damagerMesh.name]
+      damager = system.app.scene.getObjectById(damagerMesh.id)
 
-      damage(system, damager, this.name, entity)
+      damage(system, damager, this.id, entity)
 
       if damager?
-        damage(system, entity, damagerMesh.name, damager)
+        damage(system, entity, damagerMesh.id, damager)
 
   class DamageSystem extends System
     constructor: (@app) ->
       @collisionHandler = collisionHandler(this)
 
-    fracture: (chance, generatable, mesh, position, movement, type, damage) ->
+    fracture: (chance, generatable, mesh, position, movement, spawnType, damage) ->
       if Math.random() < chance
         count = (Math.random() * 4 + 2) | 0
         generatable = utils.clone(generatable)
@@ -112,13 +111,13 @@ define ['systems/base', 'THREE', 'utils'], (System, THREE, utils) ->
           d.multiplyScalar(originalDirection.length() / 1000)
           {x: d.x, y: d.y, z: d.z}
 
-        @app.entities.addEntity(
-          _type: type
+        @app.scene.addEntity(
+          spawned: spawnType
           position:
             x: positions[x].point.x
             y: positions[x].point.y
             z: positions[x].point.z
-            direction: utils.clone(position.direction)
+          rotation: utils.clone(position.direction)
           movement:
             direction: getMoveDirection(positions[x].dir)
             spin: movement.spin.clone()

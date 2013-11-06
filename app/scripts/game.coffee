@@ -1,4 +1,4 @@
-define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions', 'background', 'THREE', 'Physijs', 'jquery', 'underscore', 'utils', 'THREE.EffectComposer', 'THREE.RenderPass', 'THREE.ShaderPass', 'THREE.VignetteShader', 'THREE.RGBShiftShader', 'THREE.FilmShader'], (systems, PlayerStats, AssetManager, EntityManager, gameDefinitions, createBackground, THREE, Physijs, $, _, utils) ->
+define ['systems', 'playerstats', 'assetmanager', 'scene', 'definitions', 'THREE', 'Physijs', 'jquery', 'underscore', 'utils', 'THREE.EffectComposer', 'THREE.RenderPass', 'THREE.ShaderPass', 'THREE.VignetteShader', 'THREE.RGBShiftShader', 'THREE.FilmShader'], (systems, PlayerStats, AssetManager, Scene, gameDefinitions, THREE, Physijs, $, _, utils) ->
   class Game
     fullscreen: false
     paused: true
@@ -12,18 +12,23 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
       @assetManager = new AssetManager()
       @systems = systems.register(this)
       @playerStats = new PlayerStats(statsContainer, this)
-      @entities = new EntityManager(this)
+      @scene = new Scene(this)
 
     setup: ->
       @setupThree()
 
       @subscribe 'controls:start', (action, detail) =>
+        player = @scene.getObjectById('player')
         if action == 'steer'
-          if @entities.player?.controllable?
-            @entities.player.controllable.controlDirection = detail
+          if player?.controllable?
+            player.controllable.controlDirection = detail
+        else if action == 'thrust'
+          if player?.controllable?
+            # TODO tune this
+            player.controllable.controlThrust = 100.0
         else if action == 'fire'
-          if @entities.player?.controllable?
-            @entities.player.controllable.controlFiring = true
+          if player?.controllable?
+            player.controllable.controlFiring = true
         else if action == 'pause'
           if @container.is(':visible')
             @togglePause()
@@ -33,26 +38,32 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
       @subscribe 'controls:rotate', (x, y) =>
         xStep = Math.PI / 48
         yStep = Math.PI / 24
-        if @entities.camera?.follow?.quaternion?
+        camera = @scene.getObjectById('camera')
+        if camera?.follow?.quaternion?
           rot = new THREE.Quaternion()
           rot.setFromEuler(new THREE.Euler(xStep * x, yStep * y, 0))
-          @entities.camera.follow.quaternion.multiply(rot)
+          camera.follow.quaternion.multiply(rot)
 
       @subscribe 'controls:stop', (action) =>
+        player = @scene.getObjectById('player')
         if action == 'steer'
-          if @entities.player?.controllable?
-            @entities.player.controllable.controlDirection = false
+          if player?.controllable?
+            player.controllable.controlDirection = false
+        else if action == 'thrust'
+          if player?.controllable?
+            player.controllable.controlThrust = false
         else if action == 'fire'
-          if @entities.player?.controllable?
-            @entities.player.controllable.controlFiring = false
+          if player?.controllable?
+            player.controllable.controlFiring = false
 
       projector = new THREE.Projector()
       raycaster = new THREE.Raycaster()
 
       @subscribe 'controls:pick', (x, y) =>
+        player = @scene.getObjectById('player')
+        camera = @scene.getObjectById('camera')
         # Don't bother if there's no camera or no player targeter component
-        if @entities.camera?.camera?.instance and @entities.player?.targeter?.queue
-          camera = @entities.camera.camera.instance
+        if camera? and player?.targeter?.queue
           vector = new THREE.Vector3(x, y, 1)
           projector.unprojectVector(vector, camera)
           v2 = vector.clone()
@@ -70,19 +81,21 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
           #@scene.add(new THREE.Line(geom))
 
           # Add the target name to the player's targeter queue.
-          @entities.player.targeter.queue.push(intersect.object.name) for intersect in intersects when intersect.object.name and intersect.object.name not in excludedEntities
+          player.targeter.queue.push(intersect.object.name) for intersect in intersects when intersect.object.name and intersect.object.name not in excludedEntities
 
       @subscribe 'controls:selectWeapon', (weapon) =>
         @currentWeapon = weapon
-        if @entities.player?
-          @entities.player.fireable = utils.clone(gameDefinitions.WEAPONS[weapon])
+        player = @scene.getObjectById('player')
+        if player?
+          player.fireable = utils.clone(gameDefinitions.WEAPONS[weapon])
 
       @subscribe 'death', =>
         # TODO show some death message
         # Reset asteroid spawn rate
-        @entities.asteroidSpawner.spawnable.rate = gameDefinitions.ASTEROID_SPAWN_RATE
+        asteroidSpawner = @scene.getObjectById('asteroidSpawner')
+        asteroidSpawner.spawnable.rate = gameDefinitions.ASTEROID_SPAWN_RATE
         setTimeout(=>
-          @entities.addEntity(utils.clone(gameDefinitions.PLAYER), 'player')
+          @scene.addEntity(utils.clone(gameDefinitions.PLAYER), 'player')
           @emit('start')
           @emit('controls:selectWeapon', @currentWeapon)
         , 5000)
@@ -130,10 +143,15 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
       )
       @renderer.setClearColor(0x000000, 1)
 
-      @scene = new Physijs.Scene()
+      # No gravity
+      # TODO let levels determine this
       @scene.setGravity(new THREE.Vector3(0.0, 0.0, 0.0))
       @setupLighting @scene
       @renderer.setSize @getGameWidth(), @getGameHeight()
+
+      # TODO let levels determine when these passes are used
+      #  that means that we'll need to make this work with adding
+      #  and removing passes during runtime
 
       @composer = new THREE.EffectComposer(@renderer)
       @composer.setSize @getGameWidth(), @getGameHeight()
@@ -158,13 +176,16 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
 
       @subscribe 'hit', (target) =>
         if target == 'player'
-          if @entities.camera
-            @entities.camera.camera.shake = 6
+          camera = @scene.getObjectById('camera')
+
+          if camera
+            camera.camera.shake = 6
+
           filmEffect.uniforms['sIntensity'].value = 0.8
           setTimeout =>
             filmEffect.uniforms['sIntensity'].value = 0.1
-            if @entities.camera
-              @entities.camera.camera.shake = false
+            if camera
+              camera.camera.shake = false
           , 900
 
       @subscribe 'death', ->
@@ -175,8 +196,6 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
 
       @composer.addPass(copyPass)
       copyPass.renderToScreen = true
-
-      createBackground(@assetManager, @scene)
 
       # On container size change, redo renderer.setSize
       $(window).on('resize', _.throttle(=>
@@ -196,6 +215,7 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
       @container.append @renderer.domElement
 
     setupLighting: (scene) ->
+      # TODO level determined lighting?
       light = new THREE.HemisphereLight(0xffffff, 0x111111, 0.5)
       
       ambient = new THREE.AmbientLight(0x404040)
@@ -206,14 +226,13 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
 
     loadLevel: (levelName) ->
       @emit('level:unload')
-      @entities.clear()
-      @entities.clearDistantEntities(@scene)
-      @entities.load(levelName)
+      @scene.clear()
+      @scene.load(levelName)
       @emit('level:load', levelName)
 
     system: (name, componentName, elapsedTime) ->
       console.time('system ' + name)
-      entities = @entities.filterEntities(componentName)
+      entities = @scene.filterEntities(componentName)
       if entities.length > 0
         @systems[name].processOurEntities(entities, elapsedTime)
       console.timeEnd('system ' + name)
@@ -224,13 +243,9 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
 
       entity
 
-    unregisterEntity: (entity, id) ->
-      system.unregisterEntity(entity, id) for system in _.values(@systems)
+    unregisterEntity: (entity) ->
+      system.unregisterEntity(entity, entity.id) for system in _.values(@systems)
       null
-
-    toggleUnrenderableEntities: (visible) ->
-      unrenderables = (@scene.getObjectByName(id) for id, entity of @entities when not entity.renderable?)
-      object.visible = visible for object in unrenderables when object
 
     fpsUpdate: (currentTime) ->
       elapsedTime = currentTime - @lastTime
@@ -239,8 +254,9 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
 
     updatePlayerStats: ->
       # Update stats display
-      health = @entities.player?.damagable?.health or 0
-      max = @entities.player?.damagable?.maxHealth or Math.Infinity
+      player = @scene.getObjectById('player')
+      health = player?.damagable?.health or 0
+      max = player?.damagable?.maxHealth or Math.Infinity
       @playerStats.render(health, max)
 
     gameloop: (currentTime=0) =>
@@ -249,8 +265,6 @@ define ['systems', 'playerstats', 'assetmanager', 'entitymanager', 'definitions'
 
       if not @paused
         @playerStats.session.time += elapsedTime
-
-        @entities.clearDistantEntities(@scene)
 
         # filter our entities and give them to the appropriate systems
         @system('camera', 'camera', elapsedTime)

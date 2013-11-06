@@ -19,11 +19,12 @@ define ['systems/base', 'underscore', 'utils', 'THREE'], (System, _, utils, THRE
       size = entity.fireable.size or 1.0
 
       # Can't do anything if this stuff doesn't exist
-      if not @app.entities.player?.renderable?.mesh?
+      player = @app.scene.getObjectById('player')
+
+      if not player?.renderable?
         return
 
-      rotation = @app.entities.player.renderable.mesh.rotation
-      direction = new THREE.Vector3(1, 0, 0).applyEuler(rotation)
+      direction = new THREE.Vector3(1, 0, 0).applyEuler(player.rotation)
 
       @app.emit('fire')
 
@@ -31,33 +32,24 @@ define ['systems/base', 'underscore', 'utils', 'THREE'], (System, _, utils, THRE
       #  the player mesh
 
       # From player position
-      position = new THREE.Vector3(
-        @app.entities.player.position.x,
-        @app.entities.player.position.y,
-        @app.entities.player.position.z or 0)
+      position = player.position.clone()
 
       # move away size amount
       position.add(direction.multiplyScalar(size))
 
       projectile = 
-        position:
-          x: position.x
-          y: position.y
-          z: position.z
-          direction:
-            x: rotation.x
-            y: rotation.y
-            z: rotation.z
+        position: position
+        rotation: player.rotation
         movement:
           direction: direction.multiplyScalar(speed / 1000.0)
           spin: {x: 0, y: 0, z: 0}
       
-      @app.entities.addEntity(
+      @app.scene.addEntity(
         _.defaults(projectile, utils.clone(entity.fireable.extraComponents)))
 
     drawRange: (fireable) ->
-      player = @app.entities.player
-      if not player?.renderable?.mesh?
+      player = @app.scene.getObjectById('player')
+      if not player?.renderable?
         return
 
       material = new THREE.LineDashedMaterial(
@@ -105,7 +97,7 @@ define ['systems/base', 'underscore', 'utils', 'THREE'], (System, _, utils, THRE
 
       fireable.rendered = new THREE.Line(geometry, material, THREE.LinePieces)
 
-      player.renderable.mesh.add fireable.rendered
+      player.add fireable.rendered
 
     processOurEntities: (entities, elapsedTime) =>
       @drawRange(components.fireable) for [id, components] in entities when not components.fireable.rendered?

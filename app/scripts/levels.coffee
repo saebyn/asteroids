@@ -1,4 +1,21 @@
 define ['utils', 'definitions', 'THREE'], (utils, gameDefinitions, THREE) ->
+  sleep:
+    camera:
+      camera:
+        type: 'ortho'
+        left: -10
+        right: 10
+        top: -10
+        bottom: 10
+        nearDistance: 0.1
+        farDistance: 100
+        position: new THREE.Vector3(0, 0, 50)
+        view:
+          left: 0
+          bottom: 0
+          width: 1
+          height: 1
+        order: 1
   station: 
     player: utils.clone(gameDefinitions.PLAYER)
     camera:
@@ -8,10 +25,7 @@ define ['utils', 'definitions', 'THREE'], (utils, gameDefinitions, THREE) ->
         aspect: 1.0
         nearDistance: 0.1
         farDistance: 100
-        position:
-          x: 0
-          y: 0
-          z: 50
+        position: new THREE.Vector3(0, 0, 50)
         view:
           left: 0
           bottom: 0
@@ -20,16 +34,18 @@ define ['utils', 'definitions', 'THREE'], (utils, gameDefinitions, THREE) ->
         order: 1
   space:
     player: utils.clone(gameDefinitions.PLAYER)
+    background:
+      generatable:
+        type: 'skybox'
+      position: new THREE.Vector3(0, 0, 0)
     rangeFinder:
       generatable:
         type: 'ranger'
         radius: 100
-      position:
-        x: 0
-        y: 0
-        z: 0
+      position: new THREE.Vector3(0, 0, 0)
       follow:
         entity: 'player'
+        smooth: false
         x: 0
         y: 0
         z: 0
@@ -41,10 +57,7 @@ define ['utils', 'definitions', 'THREE'], (utils, gameDefinitions, THREE) ->
         aspect: 1.0
         nearDistance: 0.1
         farDistance: 10000
-        position:
-          x: 0
-          y: 0
-          z: 500
+        position: new THREE.Vector3(0, 0, 500)
         view:
           left: 0
           bottom: 0
@@ -53,6 +66,7 @@ define ['utils', 'definitions', 'THREE'], (utils, gameDefinitions, THREE) ->
         order: 1
       follow:
         entity: 'player'
+        smooth: true
         x: 0
         y: 0
         z: 500
@@ -64,10 +78,7 @@ define ['utils', 'definitions', 'THREE'], (utils, gameDefinitions, THREE) ->
         nearDistance: 0.1
         farDistance: 1600
         radar: true
-        position:
-          x: 0
-          y: 0
-          z: 1500
+        position: new THREE.Vector3(0, 0, 1500)
         view:
           left: 0.75
           bottom: 0.75
@@ -77,24 +88,15 @@ define ['utils', 'definitions', 'THREE'], (utils, gameDefinitions, THREE) ->
           backgroundAlpha: 0.5
         order: 2
     firstAsteroid:
-      _type: 'asteroidSpawner'
-      position:
-        x: 150
-        y: 150
-        z: 0
-        direction:
-          x: Math.random() * 2.0 * Math.PI
-          y: Math.random() * 2.0 * Math.PI
-          z: Math.random() * 2.0 * Math.PI
+      spawned: 'asteroidSpawner'
+      position: new THREE.Vector3(150, 150, 0)
+      rotation: new THREE.Euler(Math.random() * 2.0 * Math.PI, Math.random() * 2.0 * Math.PI, Math.random() * 2.0 * Math.PI)
       movement:
         spin: new THREE.Vector3(
                 Math.random() - 0.5,
                 Math.random() - 0.5,
                 Math.random() - 0.5).normalize().multiplyScalar(0.001)
-        direction:
-          x: -0.002
-          y: -0.002
-          z: 0
+        direction: new THREE.Vector3(-0.002, -0.002, 0)
       damagable:
         health: 20
         fracture:

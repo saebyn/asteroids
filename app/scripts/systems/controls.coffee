@@ -13,7 +13,8 @@ define ['systems/base', 'THREE'], (System, THREE) ->
 
   class ControlSystem extends System
     process: (entity, time, id) ->
-      if not entity.position
+      # If no position or physics, can't do anything
+      if not entity.position or not entity._physijs
         return
 
       if not entity.controllable.rotation?
@@ -52,17 +53,27 @@ define ['systems/base', 'THREE'], (System, THREE) ->
         # Save the current rotation amount to the component
         entity.controllable.rotation[axis] = rotation
 
-      # If we have a mesh/object to operate on...
-      if entity.renderable.mesh?.quaternion?
+      velocity = new THREE.Vector3(
+        entity.controllable.rotation.x,
+        entity.controllable.rotation.y,
+        entity.controllable.rotation.z)
+
+      # If we have an object to operate on...
+      if entity.quaternion?
         # Limit the range of rotation speed
         if Math.abs(rotation) > maxRotation
           rotation = maxRotation * sign(rotation)
 
-        velocity = new THREE.Vector3(
-          entity.controllable.rotation.x,
-          entity.controllable.rotation.y,
-          entity.controllable.rotation.z)
+        velocity.applyQuaternion(entity.quaternion)
 
-        velocity.applyQuaternion(entity.renderable.mesh.quaternion)
+        entity.setAngularVelocity(velocity)
 
-        entity.renderable.mesh.setAngularVelocity(velocity)
+      if entity.controllable.controlThrust
+        # TODO tune this
+        force = new THREE.Vector3(
+          entity.controllable.controlThrust * 1000.0,
+          0,
+          0)
+        force.applyMatrix4(entity.matrix)
+        entity.setLinearFactor({x: 1, y: 1, z: 1})
+        entity.applyCentralForce(force)

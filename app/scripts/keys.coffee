@@ -10,14 +10,19 @@ define [], () ->
       ' ': ['fire']
       O: ['fullscreen']
       P: ['pause']
+      16: ['thrust']
 
     constructor: (app) ->
       document.addEventListener 'keydown', (event) =>
         key = String.fromCharCode(event.keyCode)
-        if key of @keyMap
+        if event.keyCode of @keyMap
+          app.emit('controls:start', @keyMap[event.keyCode]...)
+        else if key of @keyMap
           app.emit('controls:start', @keyMap[key]...)
 
       document.addEventListener 'keyup', (event) =>
         key = String.fromCharCode(event.keyCode)
-        if key of @keyMap
+        if event.keyCode of @keyMap
+          app.emit('controls:stop', @keyMap[event.keyCode]...)
+        else if key of @keyMap
           app.emit('controls:stop', @keyMap[key]...)

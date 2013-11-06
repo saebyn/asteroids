@@ -5,10 +5,9 @@ define ['systems/base', 'underscore', 'utils', 'THREE'], (System, _, utils, THRE
     rate > Math.random()
 
   addEntity = (app, id, entity) ->
-    count = _.chain(app.entities)
-      .values()
-      .filter((x) -> x is not null)
-      .pluck('_type')
+    # XXX TODO replace with something else that works with app.scene
+    count = _.chain(app.scene.children)
+      .pluck('spawned')
       .filter((x) -> x == id)
       .size()
       .value()
@@ -30,7 +29,7 @@ define ['systems/base', 'underscore', 'utils', 'THREE'], (System, _, utils, THRE
     direction = new THREE.Vector3(-position.x, -position.y, -position.z).normalize().multiplyScalar(speed)
 
     spawn =
-      _type: id
+      spawned: id
       position:
         x: position.x
         y: position.y
@@ -49,7 +48,7 @@ define ['systems/base', 'underscore', 'utils', 'THREE'], (System, _, utils, THRE
           y: direction.y
           z: direction.z
 
-    app.entities.addEntity(_.defaults(spawn, utils.clone(entity.spawnable.extraComponents)))
+    app.scene.addEntity(_.defaults(spawn, utils.clone(entity.spawnable.extraComponents)))
 
   updateRates = (entity, elapsedTime) ->
     entity.spawnable.rate += entity.spawnable.rateChange * entity.spawnable.rate * elapsedTime / 1000.0
@@ -58,7 +57,7 @@ define ['systems/base', 'underscore', 'utils', 'THREE'], (System, _, utils, THRE
     constructor: (@app) ->
       @app.subscribe 'death', =>
         # Remove all spawned entities
-        @app.entities.removeEntity(id) for id of @app.entities when @app.entities[id]._type?
+        @app.scene.removeEntity(entity) for entity in @app.scene.children when entity.spawned?
 
     processOurEntities: (entities, elapsedTime) ->
       # pick which ones we want to spawn

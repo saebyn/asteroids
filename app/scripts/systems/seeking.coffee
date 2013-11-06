@@ -1,14 +1,14 @@
 # seeking system
 define ['systems/base', 'THREE'], (System, THREE) ->
   class SeekingSystem extends System
-    # find any entities in @app.entities
-    #  that have a _type == entity.seeking.type
+    # find any entities in the scene
+    #  that have a spawned == entity.seeking.type
     getEntities: (type) ->
-      entity.renderable.mesh for id, entity of @app.entities when entity.renderable?.mesh? and entity._type == type
+      entity for entity of @app.scene.children when entity.renderable? and entity.spawned == type
 
     seekNearest: (entity, elapsedTime) ->
       # We can't target if we don't have a mesh to move or a position
-      if not entity.position? or not entity.renderable?.mesh?
+      if not entity.position? or not entity.renderable?
         return
 
       origin = new THREE.Vector3(entity.position.x, entity.position.y, entity.position.z)

@@ -12,20 +12,21 @@ define ['systems/base'], (System) ->
           return
 
         # New target doesn't exist, do nothing.
-        if newTarget not of @app.entities
+        if not @app.scene.getObjectById(newTarget)?
           return
 
         # Disable the old target, if any
-        if entity.targeter.target and entity.targeter.target of @app.entities
-          oldTargetEntity = @app.entities[entity.targeter.target]
+        oldTargetEntity = @app.scene.getObjectById(entity.targeter.target)
+        if entity.targeter.target and oldTargetEntity
           if oldTargetEntity.targeted?
             oldTargetEntity.targeted.enabled = false
 
         # Add targeted component to new target
-        if not @app.entities[newTarget].targeted
-          @app.entities.addComponent('targeted', {enabled: true}, newTarget)
+        newTargetEntity = @app.scene.getObjectById(newTarget)
+        if not newTargetEntity?.targeted
+          @app.scene.addComponent('targeted', {enabled: true}, newTarget)
         else
-          @app.entities[newTarget].targeted.enabled = true
+          newTargetEntity.targeted.enabled = true
 
         # Set the current target
         entity.targeter.target = newTarget

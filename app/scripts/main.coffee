@@ -47,6 +47,7 @@ require.config(
         deps: ['THREE']
       angular:
         exports: 'angular'
+        deps: ['jquery']
       angularCookies:
         deps: ['angular']
       underscore:

@@ -32,25 +32,27 @@
 
       <dl class="dl-horizontal" data-ng-show="showKeys">
         <dt><kbd class="light">w</kbd></dt>
-        <dd>Pitch Ship Down</dd>
+        <dd>Pitch ship down</dd>
         <dt><kbd class="light">s</kbd></dt>
-        <dd>Pitch Ship Up</dd>
+        <dd>Pitch ship up</dd>
         <dt><kbd class="light">a</kbd></dt>
-        <dd>Turn Ship Left</dd>
+        <dd>Turn ship left</dd>
         <dt><kbd class="light">d</kbd></dt>
-        <dd>Turn Ship Right</dd>
+        <dd>Turn ship right</dd>
         <dt><kbd class="light">q</kbd></dt>
-        <dd>Tilt Ship Left</dd>
+        <dd>Tilt ship left</dd>
         <dt><kbd class="light">e</kbd></dt>
-        <dd>Tilt Ship Right</dd>
+        <dd>Tilt ship right</dd>
         <dt><kbd class="light">spacebar</kbd></dt>
-        <dd>Fire Weapon <small>(hold for rapid fire)</small></dd>
+        <dd>Fire weapon <small>(hold for rapid fire)</small></dd>
+        <dt><kbd class="light">shift</kbd></dt>
+        <dd>Make ship go</dd>
         <dt>Mouse</dt>
-        <dd>Move Camera</dd>
+        <dd>Move camera</dd>
         <dt><kbd class="light">p</kbd></dt>
-        <dd>Pause &amp; Unpause</dd>
+        <dd>PauseUnpause</dd>
         <dt><kbd class="light">o</kbd></dt>
-        <dd>Toggle Full Screen</dd>
+        <dd>Toggle fullscreen</dd>
       </dl>
     </div>
     <game container="#game" player-stats-container="#player-stats" lifetime-stats-container="#stats">
@@ -125,9 +127,6 @@
             <li>
               <button class="menu-btn btn btn-large" data-ng-click="menu='credits'">Credits</button>
             </li>
-            <li>
-              <button class="menu-btn btn btn-large" data-ng-click="menu='feedback'">Feedback</button>
-            </li>
           </ol>
         </div>
 
@@ -160,94 +159,6 @@
           <div class="form-actions">
             <button class="menu-btn btn btn-primary" data-ng-click="menu='menu'">Back</button>
           </div>
-        </div>
-
-        <div class="container fade hide" id="feedback">
-          <h2>Feedback</h2>
-
-          <form method="post" target="_blank" action="https://saebyn.wufoo.com/forms/z7x4m1/#public" name="form1" enctype="multipart/form-data">
-            <table class="table table-striped table-hover">
-              <caption>What should I add next?</caption>
-              <thead>
-                <tr>
-                  <td></td>
-                  <th>Don&#039;t Want</th>
-                  <th>Meh</th>
-                  <th>Neat</th>
-                  <th>Must Have</th>
-                </tr>
-              </thead>
-              <tfoot>
-                <tr><td colspan="5"></td></tr>
-              </tfoot>
-              <tbody>
-                <tr>
-                  <th>Let you choose which keys do what</th>
-                  <td>
-                    <input type="radio" tabindex="1" value="Don&#039;t Want" name="Field1">
-                  </td>
-                  <td>
-                    <input type="radio" tabindex="2" value="Meh" name="Field1">
-                  </td>
-                  <td>
-                    <input type="radio" tabindex="3" value="Neat" name="Field1">
-                  </td>
-                  <td>
-                    <input type="radio" tabindex="4" value="Must Have" name="Field1">
-                  </td>
-                </tr>
-                <tr>
-                  <th>Planets, asteroid belts, nearby stars, etc, in the background</th>
-                  <td>
-                    <input type="radio" tabindex="5" value="Don&#039;t Want" name="Field2">
-                  </td>
-                  <td>
-                    <input type="radio" tabindex="6" value="Meh" name="Field2">
-                  </td>
-                  <td>
-                    <input type="radio" tabindex="7" value="Neat" name="Field2">
-                  </td>
-                  <td>
-                    <input type="radio" tabindex="8" value="Must Have" name="Field2">
-                  </td>
-                </tr>
-                <tr>
-                  <th>Different ships and weapons</th>
-                  <td>
-                    <input type="radio" tabindex="9" value="Don&#039;t Want" name="Field3">
-                  </td>
-                  <td>
-                    <input type="radio" tabindex="10" value="Meh" name="Field3">
-                  </td>
-                  <td>
-                    <input type="radio" tabindex="11" value="Neat" name="Field3">
-                  </td>
-                  <td>
-                    <input type="radio" tabindex="12" value="Must Have" name="Field3">
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-
-            <fieldset>
-              <label for="Field101">Email</label>
-              <input tabindex="13" type="email" spellcheck="false" class="input" name="Field101" id="Field101">
-
-              <label for="Field102">Have something you want to say?</label>
-              <textarea id="Field102" name="Field102" spellcheck="true" rows="10" cols="50" tabindex="14"></textarea>
-            </fieldset>
-
-            <div class="hide">
-              <label for="comment">Do Not Fill This Out</label>
-              <textarea name="comment" id="comment" rows="1" cols="1"></textarea>
-              <input type="hidden" id="idstamp" name="idstamp" value="35tjvu9P4g6UCQMpRP7+Rf7e0e7CKlEhCgnsodbbv0Y=">
-            </div>
-
-            <div class="form-actions">
-              <input tabindex="15" id="saveForm" name="saveForm" class="btn btn-primary" type="submit" value="Send Feedback">
-              <button class="menu-btn btn" type="button" data-ng-click="menu='menu'">Back</button>
-            </div>
-          </form>
         </div>
 
         <div class="container fade hide" id="credits">

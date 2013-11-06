@@ -64,7 +64,7 @@ define ['systems/base', 'THREE'], (System, THREE) ->
       # Find the scene object for the entity. Stop processing if
       # not found. We'll assume that the object is directly underneath the
       # scene, rather than being nested inside another object.
-      object = @app.scene.getObjectByName(id)
+      object = @app.scene.getObjectById(id)
       if not object
         return
 
@@ -88,5 +88,5 @@ define ['systems/base', 'THREE'], (System, THREE) ->
           # Draw things on canvas (distance?)
 
           # Billboard by looking at the camera.
-          if @app.entities.camera?.camera?.instance?
-            mesh.lookAt(@app.entities.camera.camera.instance.position)
+          camera = @app.scene.getObjectIdBy('camera')
+          mesh.lookAt(camera.position) if camera

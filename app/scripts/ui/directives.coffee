@@ -60,11 +60,13 @@ define ['angular', 'game', 'definitions', 'music', 'sounds', 'keys', 'utils', 'v
             canvas = element.find('canvas')
             offset = canvas.parent().offset()
             position = canvas.position()
-            top = Math.max(offset.top, position.top)
-            [x, y] = [e.pageX - offset.left, e.pageY - top]
-            x = (x / canvas.width() - 0.5) * 2.0
-            y = (-y / canvas.height() + 0.5) * 2.0
-            scope.game.emit 'controls:pick', x, y
+
+            if offset and position
+              top = Math.max(offset.top, position.top)
+              [x, y] = [e.pageX - offset.left, e.pageY - top]
+              x = (x / canvas.width() - 0.5) * 2.0
+              y = (-y / canvas.height() + 0.5) * 2.0
+              scope.game.emit 'controls:pick', x, y
           false
 
         element.on 'contextmenu', ->
@@ -171,7 +173,8 @@ define ['angular', 'game', 'definitions', 'music', 'sounds', 'keys', 'utils', 'v
         scope.$watch 'game', (game) ->
           if game?
             game.subscribe 'start', ->
-              scope.inventory[name] = value for name, value of game.entities.player.inventory
+              player = game.scene.getObjectById('player')
+              scope.inventory[name] = value for name, value of player.inventory
 
             game.subscribe 'inventory:change', (name, total) ->
               scope.$apply (scope) ->

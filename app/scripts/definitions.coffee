@@ -89,7 +89,6 @@ define ['utils'], (utils) ->
         }
       ]
       model: 'playership'
-      static: true
       convexCollision: true
     damagable:
       health: 100
