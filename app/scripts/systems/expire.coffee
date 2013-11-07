@@ -3,6 +3,7 @@ define ['systems/base', 'THREE'], (System, THREE) ->
   class ExpireSystem extends System
     expire: (id, entity, elapsedTime) ->
       expirable = entity.expirable
+      # sometimes this breaks... trying to debug it XXX
       if not expirable
         debugger
       expirable.time -= elapsedTime

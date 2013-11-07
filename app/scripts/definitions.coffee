@@ -1,4 +1,4 @@
-define ['utils'], (utils) ->
+define ['utils', 'THREE'], (utils, THREE) ->
   WEAPONS =
     plasma:
       inventorySource: 'energy'
@@ -54,7 +54,8 @@ define ['utils'], (utils) ->
           stop: true
 
   PLAYER =
-    position: {x: 0, y: 0, z: 0, direction: {x: -Math.PI / 2, y: 0, z: Math.PI / 2}}
+    position: new THREE.Vector3(0, 0, 0)
+    rotation: new THREE.Vector3(-Math.PI / 2, 0, Math.PI / 2)
     inventory:
       energy: 1000
       missile: 50

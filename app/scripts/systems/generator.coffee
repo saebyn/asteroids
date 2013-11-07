@@ -45,10 +45,7 @@ define ['systems/base', 'THREE', 'Physijs', 'SimplexNoise', 'underscore'], (Syst
         new THREE.MeshPhongMaterial(materialOptions),
         0.6,
         0.4)
-      mesh = new Physijs.SphereMesh(geom, material)
-
-      renderable:
-        mesh: mesh
+      new Physijs.SphereMesh(geom, material)
 
     skybox: (def, position) ->
       base = 'images/sky/'
@@ -74,10 +71,7 @@ define ['systems/base', 'THREE', 'Physijs', 'SimplexNoise', 'underscore'], (Syst
 
       skyboxGeom = new THREE.CubeGeometry(10000, 10000, 10000)
 
-      skybox = new THREE.Mesh(skyboxGeom, skyboxMaterial)
-
-      renderable:
-        mesh: skybox
+      new THREE.Mesh(skyboxGeom, skyboxMaterial)
 
     ranger: (def, position) ->
       perimeterSegments = 64
@@ -104,14 +98,10 @@ define ['systems/base', 'THREE', 'Physijs', 'SimplexNoise', 'underscore'], (Syst
         outerMaterial,
         innerMaterial,
       ])
-      mesh = new THREE.Mesh(geom, material)
-      mesh.rotation.x = Math.PI / 2
-
-      renderable:
-        mesh: mesh
+      new THREE.Mesh(geom, material)
 
     process: (entity, elapsed, id) ->
       generator = this[entity.generatable.type]
-      newComponents = generator.apply(this, [entity.generatable, entity.position])
-      entity[k] = v for k, v of newComponents
+      mesh = generator.apply(this, [entity.generatable, entity.position])
       delete entity.generatable
+      @app.scene.replaceEntity(entity, mesh)

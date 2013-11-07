@@ -147,7 +147,7 @@ define ['angular', 'game', 'definitions', 'music', 'sounds', 'keys', 'utils', 'v
                 game.setup()
                 # Start the game (it defaults to being paused)
                 game.loadLevel('space')
-                game.gameloop()
+                game.start()
                 if Modernizr.audio
                   if $cookieStore.get('music') is not false
                     scope.musicPlaying = true

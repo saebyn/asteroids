@@ -4,6 +4,9 @@ define ['systems/base', 'underscore', 'utils', 'THREE'], (System, _, utils, THRE
     rate = entity.spawnable.rate * elapsedTime / 1000.0
     rate > Math.random()
 
+  randomAngle = ->
+    Math.random() * 2.0 * Math.PI
+
   addEntity = (app, id, entity) ->
     # XXX TODO replace with something else that works with app.scene
     count = _.chain(app.scene.children)
@@ -30,23 +33,14 @@ define ['systems/base', 'underscore', 'utils', 'THREE'], (System, _, utils, THRE
 
     spawn =
       spawned: id
-      position:
-        x: position.x
-        y: position.y
-        z: position.z
-        direction:
-          x: Math.random() * 2.0 * Math.PI
-          y: Math.random() * 2.0 * Math.PI
-          z: Math.random() * 2.0 * Math.PI
+      position: position
+      rotation: new THREE.Vector3(randomAngle(), randomAngle(), randomAngle())
       movement:
         spin: new THREE.Vector3(
                 Math.random() - 0.5,
                 Math.random() - 0.5,
                 Math.random() - 0.5).normalize().multiplyScalar(rotationSpeed)
-        direction:
-          x: direction.x
-          y: direction.y
-          z: direction.z
+        direction: direction
 
     app.scene.addEntity(_.defaults(spawn, utils.clone(entity.spawnable.extraComponents)))
 

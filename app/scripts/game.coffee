@@ -17,89 +17,6 @@ define ['systems', 'playerstats', 'assetmanager', 'scene', 'definitions', 'THREE
     setup: ->
       @setupThree()
 
-      @subscribe 'controls:start', (action, detail) =>
-        player = @scene.getObjectById('player')
-        if action == 'steer'
-          if player?.controllable?
-            player.controllable.controlDirection = detail
-        else if action == 'thrust'
-          if player?.controllable?
-            # TODO tune this
-            player.controllable.controlThrust = 100.0
-        else if action == 'fire'
-          if player?.controllable?
-            player.controllable.controlFiring = true
-        else if action == 'pause'
-          if @container.is(':visible')
-            @togglePause()
-        else if action == 'fullscreen'
-          $('[data-fullscreen]').click()
-
-      @subscribe 'controls:rotate', (x, y) =>
-        xStep = Math.PI / 48
-        yStep = Math.PI / 24
-        camera = @scene.getObjectById('camera')
-        if camera?.follow?.quaternion?
-          rot = new THREE.Quaternion()
-          rot.setFromEuler(new THREE.Euler(xStep * x, yStep * y, 0))
-          camera.follow.quaternion.multiply(rot)
-
-      @subscribe 'controls:stop', (action) =>
-        player = @scene.getObjectById('player')
-        if action == 'steer'
-          if player?.controllable?
-            player.controllable.controlDirection = false
-        else if action == 'thrust'
-          if player?.controllable?
-            player.controllable.controlThrust = false
-        else if action == 'fire'
-          if player?.controllable?
-            player.controllable.controlFiring = false
-
-      projector = new THREE.Projector()
-      raycaster = new THREE.Raycaster()
-
-      @subscribe 'controls:pick', (x, y) =>
-        player = @scene.getObjectById('player')
-        camera = @scene.getObjectById('camera')
-        # Don't bother if there's no camera or no player targeter component
-        if camera? and player?.targeter?.queue
-          vector = new THREE.Vector3(x, y, 1)
-          projector.unprojectVector(vector, camera)
-          v2 = vector.clone()
-
-          raycaster.set(camera.position, vector.sub(camera.position).normalize())
-
-          intersects = raycaster.intersectObjects(@scene.children)
-
-          excludedEntities = ['player', 'rangeFinder']
-
-          # Debug code to draw lines showing where the picking happens.
-          #geom = new THREE.Geometry()
-          #geom.vertices.push(camera.position)
-          #geom.vertices.push(v2)
-          #@scene.add(new THREE.Line(geom))
-
-          # Add the target name to the player's targeter queue.
-          player.targeter.queue.push(intersect.object.name) for intersect in intersects when intersect.object.name and intersect.object.name not in excludedEntities
-
-      @subscribe 'controls:selectWeapon', (weapon) =>
-        @currentWeapon = weapon
-        player = @scene.getObjectById('player')
-        if player?
-          player.fireable = utils.clone(gameDefinitions.WEAPONS[weapon])
-
-      @subscribe 'death', =>
-        # TODO show some death message
-        # Reset asteroid spawn rate
-        asteroidSpawner = @scene.getObjectById('asteroidSpawner')
-        asteroidSpawner.spawnable.rate = gameDefinitions.ASTEROID_SPAWN_RATE
-        setTimeout(=>
-          @scene.addEntity(utils.clone(gameDefinitions.PLAYER), 'player')
-          @emit('start')
-          @emit('controls:selectWeapon', @currentWeapon)
-        , 5000)
-
       @emit('start')
 
     togglePause: ->
@@ -258,6 +175,97 @@ define ['systems', 'playerstats', 'assetmanager', 'scene', 'definitions', 'THREE
       health = player?.damagable?.health or 0
       max = player?.damagable?.maxHealth or Math.Infinity
       @playerStats.render(health, max)
+
+    start: ->
+      @system('camera', 'camera', 0)
+
+      @subscribe 'controls:start', (action, detail) =>
+        player = @scene.getObjectById('player')
+        if action == 'steer'
+          if player?.controllable?
+            player.controllable.controlDirection = detail
+        else if action == 'thrust'
+          if player?.controllable?
+            # TODO tune this
+            player.controllable.controlThrust = 100.0
+        else if action == 'fire'
+          if player?.controllable?
+            player.controllable.controlFiring = true
+        else if action == 'pause'
+          if @container.is(':visible')
+            @togglePause()
+        else if action == 'fullscreen'
+          $('[data-fullscreen]').click()
+
+      @subscribe 'controls:rotate', (x, y) =>
+        xStep = Math.PI / 48
+        yStep = Math.PI / 24
+        camera = @scene.getObjectById('camera')
+        if camera?.follow?.quaternion?
+          rot = new THREE.Quaternion()
+          rot.setFromEuler(new THREE.Euler(xStep * x, yStep * y, 0))
+          camera.follow.quaternion.multiply(rot)
+
+      @subscribe 'controls:stop', (action) =>
+        player = @scene.getObjectById('player')
+        if action == 'steer'
+          if player?.controllable?
+            player.controllable.controlDirection = false
+        else if action == 'thrust'
+          if player?.controllable?
+            player.controllable.controlThrust = false
+        else if action == 'fire'
+          if player?.controllable?
+            player.controllable.controlFiring = false
+
+      projector = new THREE.Projector()
+      raycaster = new THREE.Raycaster()
+
+      @subscribe 'controls:pick', (x, y) =>
+        player = @scene.getObjectById('player')
+        camera = @scene.getObjectById('camera')
+        # Don't bother if there's no camera or no player targeter component
+        if camera? and player?.targeter?.queue
+          vector = new THREE.Vector3(x, y, 1)
+          projector.unprojectVector(vector, camera)
+          v2 = vector.clone()
+
+          raycaster.set(camera.position, vector.sub(camera.position).normalize())
+
+          intersects = raycaster.intersectObjects(@scene.children)
+
+          excludedEntities = ['player', 'rangeFinder']
+
+          # Debug code to draw lines showing where the picking happens.
+          #geom = new THREE.Geometry()
+          #geom.vertices.push(camera.position)
+          #geom.vertices.push(v2)
+          #@scene.add(new THREE.Line(geom))
+
+          # Add the target name to the player's targeter queue.
+          player.targeter.queue.push(intersect.object.name) for intersect in intersects when intersect.object.name and intersect.object.name not in excludedEntities
+
+      @subscribe 'controls:selectWeapon', (weapon) =>
+        @currentWeapon = weapon
+        player = @scene.getObjectById('player')
+        if player?
+          rendered = player.fireable?.rendered
+          player.fireable = utils.clone(gameDefinitions.WEAPONS[weapon])
+          player.fireable.rendered = rendered
+
+      @subscribe 'death', =>
+        # TODO show some death message
+        # Reset asteroid spawn rate
+        asteroidSpawner = @scene.getObjectById('asteroidSpawner')
+        asteroidSpawner.spawnable.rate = gameDefinitions.ASTEROID_SPAWN_RATE
+        setTimeout(=>
+          @scene.addEntity(utils.clone(gameDefinitions.PLAYER), 'player')
+          @emit('start')
+          @emit('controls:selectWeapon', @currentWeapon)
+        , 5000)
+
+      # kick off the game loop
+      @gameloop()
 
     gameloop: (currentTime=0) =>
       console.time('gameloop')

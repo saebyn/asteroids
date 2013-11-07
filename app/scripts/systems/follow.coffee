@@ -10,12 +10,11 @@ define ['systems/base', 'THREE'], (System, THREE) ->
       if followedObj?.position? and thisObj?.position?
         doRotate = true
         # save some math if the follow distance is 0,0,0
-        if entity.follow.x == 0 and entity.follow.y == 0 and entity.follow.z == 0
+        if entity.follow.vector.x == 0 and entity.follow.vector.y == 0 and entity.follow.vector.z == 0
           doRotate = false
 
         # move this object to a position relative to what it follows
-        position = new THREE.Vector3(
-          entity.follow.x, entity.follow.y, entity.follow.z)
+        position = entity.follow.vector.clone()
 
         if doRotate
           position.applyQuaternion(entity.follow.quaternion)

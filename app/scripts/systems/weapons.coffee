@@ -21,10 +21,10 @@ define ['systems/base', 'underscore', 'utils', 'THREE'], (System, _, utils, THRE
       # Can't do anything if this stuff doesn't exist
       player = @app.scene.getObjectById('player')
 
-      if not player?.renderable?
+      if not player?.renderable?.meshLoaded?
         return
 
-      direction = new THREE.Vector3(1, 0, 0).applyEuler(player.rotation)
+      direction = new THREE.Vector3(1, 0, 0).applyQuaternion(player.quaternion)
 
       @app.emit('fire')
 
@@ -35,21 +35,22 @@ define ['systems/base', 'underscore', 'utils', 'THREE'], (System, _, utils, THRE
       position = player.position.clone()
 
       # move away size amount
-      position.add(direction.multiplyScalar(size))
+      position.add(direction.clone().multiplyScalar(size))
+      direction.multiplyScalar(speed / 1000.0)
 
-      projectile = 
+      projectile = _.defaults(
         position: position
         rotation: player.rotation
         movement:
-          direction: direction.multiplyScalar(speed / 1000.0)
-          spin: {x: 0, y: 0, z: 0}
+          direction: direction
+          spin: new THREE.Vector3(0, 0, 0)
+      , utils.clone(entity.fireable.extraComponents))
       
-      @app.scene.addEntity(
-        _.defaults(projectile, utils.clone(entity.fireable.extraComponents)))
+      @app.scene.addEntity(projectile)
 
     drawRange: (fireable) ->
       player = @app.scene.getObjectById('player')
-      if not player?.renderable?
+      if not player?.renderable?.meshLoaded?
         return
 
       material = new THREE.LineDashedMaterial(

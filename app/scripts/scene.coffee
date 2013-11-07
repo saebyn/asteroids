@@ -37,7 +37,11 @@ define ['THREE', 'Physijs', 'utils', 'levels'], (THREE, Physijs, utils, levels) 
       replacement.id = existing.id
       replacement._components = existing._components or []
       for k in replacement._components
-        replacement[k] = existing[k]
+        if existing[k] != undefined
+          replacement[k] = existing[k]
+
+      replacement.position.copy(existing.position) if existing.position
+      replacement.quaternion.copy(existing.quaternion) if existing.quaternion
 
       @remove(existing)
       @add(replacement)
@@ -45,8 +49,8 @@ define ['THREE', 'Physijs', 'utils', 'levels'], (THREE, Physijs, utils, levels) 
     addEntity: (components, id=undefined) ->
       if 'renderable' of components
         entity = new THREE.Object3D()
-        entity.position.set(components.position) if 'position' of components
-        entity.rotation.set(components.rotation) if 'rotation' of components
+        entity.position.copy(components.position) if 'position' of components
+        entity.rotation.copy(components.rotation) if 'rotation' of components
         delete components.position
         delete components.rotation
       else

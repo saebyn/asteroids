@@ -45,6 +45,8 @@ define ['systems/base', 'THREE', 'Physijs'], (System, THREE, Physijs) ->
       if entity.renderable.lights?
         @addLight(obj, light) for light in entity.renderable.lights
 
+      obj.__dirtyRotation = true
+      obj.__dirtyPosition = true
       @app.scene.replaceEntity(entity, obj)
 
     setPhysics: (entity) ->
@@ -57,7 +59,7 @@ define ['systems/base', 'THREE', 'Physijs'], (System, THREE, Physijs) ->
       @app.assetManager.loadModel(components.renderable.model) for [id, components] in entities when components.renderable.model? and not @app.assetManager.isModelLoadStarted(components.renderable.model)
 
       for [id, entity] in entities
-        if components.renderable.meshLoaded
+        if entity.renderable.meshLoaded
           @setPhysics(entity)
         else
           # if the entity has a loaded model, but it's not in the scene...

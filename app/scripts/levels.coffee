@@ -43,13 +43,15 @@ define ['utils', 'definitions', 'THREE'], (utils, gameDefinitions, THREE) ->
         type: 'ranger'
         radius: 100
       position: new THREE.Vector3(0, 0, 0)
+      rotation: new THREE.Euler(Math.PI / 2, 0, 0)
       follow:
         entity: 'player'
         smooth: false
-        x: 0
-        y: 0
-        z: 0
+        vector: new THREE.Vector3(0, 0, 0)
     camera:
+      position: new THREE.Vector3(0, 0, 500)
+      rotation: new THREE.Euler(0, 0, Math.PI / 2)
+      up: new THREE.Vector3(0, 0, 1)
       camera:
         composer: true
         type: 'perspective'
@@ -57,7 +59,6 @@ define ['utils', 'definitions', 'THREE'], (utils, gameDefinitions, THREE) ->
         aspect: 1.0
         nearDistance: 0.1
         farDistance: 10000
-        position: new THREE.Vector3(0, 0, 500)
         view:
           left: 0
           bottom: 0
@@ -67,10 +68,9 @@ define ['utils', 'definitions', 'THREE'], (utils, gameDefinitions, THREE) ->
       follow:
         entity: 'player'
         smooth: true
-        x: 0
-        y: 0
-        z: 500
+        vector: new THREE.Vector3(0, 0, 500)
     altcamera:
+      position: new THREE.Vector3(0, 0, 1500)
       camera:
         type: 'perspective'
         viewAngle: 45.0
@@ -78,7 +78,6 @@ define ['utils', 'definitions', 'THREE'], (utils, gameDefinitions, THREE) ->
         nearDistance: 0.1
         farDistance: 1600
         radar: true
-        position: new THREE.Vector3(0, 0, 1500)
         view:
           left: 0.75
           bottom: 0.75
