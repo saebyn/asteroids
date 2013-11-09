@@ -2,8 +2,8 @@ define ['utils', 'THREE'], (utils, THREE) ->
   WEAPONS =
     plasma:
       inventorySource: 'energy'
-      speed: 30
-      size: 21 
+      speed: 60
+      size: 21
       extraComponents:
         damagable:
           health: 0
@@ -18,8 +18,8 @@ define ['utils', 'THREE'], (utils, THREE) ->
           destroy: true
     missile:
       inventorySource: 'missile'
-      speed: 5
-      size: 21 
+      speed: 45
+      size: 21
       extraComponents:
         damagable:
           health: 0
@@ -30,7 +30,7 @@ define ['utils', 'THREE'], (utils, THREE) ->
           model: 'missile'
           mass: 0.1
         expirable:
-          time: 3000
+          time: 10000
           destroy: true
         seeking:
           type: 'asteroidSpawner'

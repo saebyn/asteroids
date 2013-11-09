@@ -34,7 +34,8 @@ define ['THREE', 'Physijs', 'utils', 'levels'], (THREE, Physijs, utils, levels) 
           @children.splice(index, 1)
 
     replaceEntity: (existing, replacement) ->
-      replacement.id = existing.id
+      if existing.id?
+        replacement.id = existing.id
       replacement._components = existing._components or []
       for k in replacement._components
         if existing[k] != undefined
@@ -86,7 +87,7 @@ define ['THREE', 'Physijs', 'utils', 'levels'], (THREE, Physijs, utils, levels) 
         if name not of entity
           entity[name] = component
           entity._components.push(name)
-          @children[index] = @app.registerEntity(components, id)
+          @children[index] = @app.registerEntity(entity, id)
 
     filterEntities: (component) ->
       [@children[i].id, @children[i]] for i in [0...@children.length] when component of @children[i]
@@ -110,7 +111,7 @@ define ['THREE', 'Physijs', 'utils', 'levels'], (THREE, Physijs, utils, levels) 
         @addExplosionAtEntity(entity)
         @remove(entity)
 
-        if id == 'player'
+        if entity.id == 'player'
           @app.emit('death')
         else
           @app.emit('kill')

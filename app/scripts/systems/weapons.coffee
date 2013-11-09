@@ -3,7 +3,7 @@ define ['systems/base', 'underscore', 'utils', 'THREE'], (System, _, utils, THRE
   class WeaponsSystem extends System
     constructor: (@app) ->
       # Override fireWeapon method with throttled version.
-      @fireWeapon = _.throttle(@fireWeapon, 160, {trailing: true})
+      @fireWeapon = _.throttle(@fireWeapon, 260, {trailing: false})
 
     # Entity should have inventory and fireable components
     fireWeapon: (entity) =>

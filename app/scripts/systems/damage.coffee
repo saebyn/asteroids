@@ -30,30 +30,27 @@ define ['systems/base', 'THREE', 'utils'], (System, THREE, utils) ->
         
     gen(i) for i in [0...number]
 
-  damage = (system, damager, entityId, entity) ->
+  damage = (system, damager, entity) ->
     if damager?
       if damager.damaging?.health?
         entity.damagable.health -= damager.damaging.health
 
-      system.app.emit('hit', entityId)
+      system.app.emit('hit', entity.id)
 
     if entity.damagable.health <= 0
       if entity.damagable.disappears
-        system.app.scene.removeEntity(entityId)
+        system.app.scene.removeEntity(entity.id)
       else
-        system.app.scene.destroyEntity(entityId)
+        system.app.scene.destroyEntity(entity.id)
 
       # If there's a chance this object will fracture rather than
       # simply being atomized...
-      if entity.damagable.fracture?.chance? and entity.renderable?.mesh?
+      if entity.damagable.fracture?.chance? and entity.renderable?.meshLoaded?
         system.app.scene.addEntity(
           debris:
             spread: 1000
-            radius: entity.renderable.mesh.geometry.boundingSphere.radius
-          position:
-            x: entity.position.x
-            y: entity.position.y
-            z: entity.position.z
+            radius: entity.geometry.boundingSphere.radius
+          position: entity.position.clone()
           expirable:
             time: 1500
 
@@ -61,25 +58,18 @@ define ['systems/base', 'THREE', 'utils'], (System, THREE, utils) ->
 
         system.fracture(entity.damagable.fracture.chance,
                         entity.damagable.fracture.generatable,
-                        entity.renderable.mesh,
+                        entity,
                         entity.position,
                         entity._movement or entity.movement,
                         entity.spawned,
                         entity.damaging.health)
 
   collisionHandler = (system) ->
-    (damagerMesh) ->
-      entity = system.app.scene.getObjectById(this.id)
-      if not entity?
-        console.log 'got collision event on non-entity'
-        return
-
-      damager = system.app.scene.getObjectById(damagerMesh.id)
-
-      damage(system, damager, this.id, entity)
+    (damager) ->
+      damage(system, damager, this)
 
       if damager?
-        damage(system, entity, damagerMesh.id, damager)
+        damage(system, this, damager)
 
   class DamageSystem extends System
     constructor: (@app) ->
@@ -129,15 +119,15 @@ define ['systems/base', 'THREE', 'utils'], (System, THREE, utils) ->
         ) for x in [0...count]
 
     # Hook up collision detection
-    registerCollisions: (id, entity) ->
+    registerCollisions: (entity) ->
       # listen for collisions on this mesh
-      entity.renderable.mesh.addEventListener('collision', @collisionHandler)
+      entity.addEventListener('collision', @collisionHandler)
       entity.damagable._registered = true
 
-    processOurEntities: (entities, elapsedTime) ->
+    process: (entity, elapsedTime) ->
       # XXX TODO
       # This sucks because we look over all entities that have the component on
       # each game loop.
       # Instead, we should have a way of telling the gameloop how to filter out
       # the entities we are interested in...
-      @registerCollisions(id, entity) for [id, entity] in entities when entity.renderable?.mesh? and not entity.damagable._registered?
+      @registerCollisions(entity) if entity.renderable?.meshLoaded? and not entity.damagable._registered?

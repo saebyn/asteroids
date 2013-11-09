@@ -1,6 +1,6 @@
 define ['systems/base'], (System) ->
   class TargeterSystem extends System
-    process: (entity, elapsed, id) ->
+    process: (entity, elapsed) ->
       if entity.targeter.queue.length > 0
         # Take the most recently targeted object
         newTarget = entity.targeter.queue[entity.targeter.queue.length-1]
@@ -12,7 +12,8 @@ define ['systems/base'], (System) ->
           return
 
         # New target doesn't exist, do nothing.
-        if not @app.scene.getObjectById(newTarget)?
+        newTargetEntity = @app.scene.getObjectById(newTarget)
+        if not newTargetEntity?
           return
 
         # Disable the old target, if any
@@ -22,7 +23,6 @@ define ['systems/base'], (System) ->
             oldTargetEntity.targeted.enabled = false
 
         # Add targeted component to new target
-        newTargetEntity = @app.scene.getObjectById(newTarget)
         if not newTargetEntity?.targeted
           @app.scene.addComponent('targeted', {enabled: true}, newTarget)
         else

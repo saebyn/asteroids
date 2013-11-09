@@ -6,14 +6,14 @@ define ['systems/base', 'THREE'], (System, THREE) ->
   INDICATOR_MARGIN = 10
 
   class TargetedSystem extends System
-    unregisterEntity: (entity, id) ->
+    unregisterEntity: (entity) ->
       if entity.targeted?.registered?
         entity.targeted.registered = false
-        mesh = @app.scene.getObjectById(id + ':' + TARGETING_OBJECT_NAME)
-        if mesh
-          @app.scene.remove(mesh)
+        targetingReticuleMesh = entity.getObjectById(entity.id + ':' + TARGETING_OBJECT_NAME)
+        if targetingReticuleMesh
+          entity.remove(targetingReticuleMesh)
 
-    registerEntity: (entity, id) ->
+    registerEntity: (entity) ->
       # If the entity doesn't have the targeting indicator attached, attach it.
       if entity.targeted? and not entity.targeted.registered
         # We'll need to attach the canvas to the component for later access.
@@ -42,51 +42,41 @@ define ['systems/base', 'THREE'], (System, THREE) ->
           depthTest: false
         )
 
-        # Create square geometry and mesh
+        # Create square geometry and targetingReticuleMesh
         geom = new THREE.PlaneGeometry(INDICATOR_MARGIN * 2, INDICATOR_MARGIN * 2)
 
         rotationMatrix = new THREE.Matrix4()
         rotationMatrix.makeRotationFromEuler(new THREE.Euler(0, 0, 0))
         geom.applyMatrix(rotationMatrix)
 
-        mesh = new THREE.Mesh(geom, material)
+        targetingReticuleMesh = new THREE.Mesh(geom, material)
 
-        mesh.id = id + ':' + TARGETING_OBJECT_NAME
+        targetingReticuleMesh.id = entity.id + ':' + TARGETING_OBJECT_NAME
 
-        # Attach mesh to parent entity
-        @app.scene.add(mesh)
+        # Attach targetingReticuleMesh to parent entity
+        entity.add(targetingReticuleMesh)
         texture.needsUpdate = true
         entity.targeted.registered = true
 
       entity
 
-    process: (entity, elapsed, id) ->
-      # Find the scene object for the entity. Stop processing if
-      # not found. We'll assume that the object is directly underneath the
-      # scene, rather than being nested inside another object.
-      object = @app.scene.getObjectById(id)
-      if not object
-        return
-
-      if entity.targeted.registered
-        mesh = @app.scene.getObjectById(id + ':' + TARGETING_OBJECT_NAME)
-        if not mesh
-          return
-
+    process: (entity, elapsed) ->
+      targetingReticuleMesh = entity.getObjectById(entity.id + ':' + TARGETING_OBJECT_NAME)
+      if entity.targeted.registered and targetingReticuleMesh
         if not entity.targeted.enabled
           # If the targeting is disabled, hide it from the scene.
-          mesh.visible = false
+          targetingReticuleMesh.visible = false
         else
-          mesh.visible = true
-          # Reposition on top of target object
-          mesh.position.copy(object.position)
+          targetingReticuleMesh.visible = true
+          # Reposition on top of target entity
+          targetingReticuleMesh.position.copy(entity.position)
 
-          # Scale mesh to size
-          size = object.geometry.boundingSphere.radius + INDICATOR_MARGIN * 2
-          mesh.scale = new THREE.Vector3(1, 1, 1).multiplyScalar(size / INDICATOR_MARGIN)
+          # Scale targetingReticuleMesh to size
+          size = entity.geometry.boundingSphere.radius + INDICATOR_MARGIN * 2
+          targetingReticuleMesh.scale = new THREE.Vector3(1, 1, 1).multiplyScalar(size / INDICATOR_MARGIN)
 
           # Draw things on canvas (distance?)
 
           # Billboard by looking at the camera.
-          camera = @app.scene.getObjectIdBy('camera')
-          mesh.lookAt(camera.position) if camera
+          camera = @app.scene.getObjectById('camera')
+          targetingReticuleMesh.lookAt(camera.position) if camera

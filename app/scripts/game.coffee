@@ -242,8 +242,10 @@ define ['systems', 'playerstats', 'assetmanager', 'scene', 'definitions', 'THREE
           #geom.vertices.push(v2)
           #@scene.add(new THREE.Line(geom))
 
+          console.log intersects
+
           # Add the target name to the player's targeter queue.
-          player.targeter.queue.push(intersect.object.name) for intersect in intersects when intersect.object.name and intersect.object.name not in excludedEntities
+          player.targeter.queue.push(intersect.object.id) for intersect in intersects when intersect.object.id not in excludedEntities
 
       @subscribe 'controls:selectWeapon', (weapon) =>
         @currentWeapon = weapon
