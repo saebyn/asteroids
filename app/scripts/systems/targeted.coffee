@@ -68,8 +68,6 @@ define ['systems/base', 'THREE'], (System, THREE) ->
           targetingReticuleMesh.visible = false
         else
           targetingReticuleMesh.visible = true
-          # Reposition on top of target entity
-          targetingReticuleMesh.position.copy(entity.position)
 
           # Scale targetingReticuleMesh to size
           size = entity.geometry.boundingSphere.radius + INDICATOR_MARGIN * 2
