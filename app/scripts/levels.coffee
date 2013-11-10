@@ -37,6 +37,7 @@ define ['utils', 'definitions', 'THREE'], (utils, gameDefinitions, THREE) ->
     background:
       generatable:
         type: 'skybox'
+      renderable: {}
       position: new THREE.Vector3(0, 0, 0)
     rangeFinder:
       generatable:

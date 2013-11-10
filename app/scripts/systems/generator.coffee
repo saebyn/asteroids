@@ -69,7 +69,7 @@ define ['systems/base', 'THREE', 'Physijs', 'SimplexNoise', 'underscore'], (Syst
         side: THREE.BackSide
       )
 
-      skyboxGeom = new THREE.CubeGeometry(10000, 10000, 10000)
+      skyboxGeom = new THREE.CubeGeometry(2000, 2000, 2000)
 
       new THREE.Mesh(skyboxGeom, skyboxMaterial)
 

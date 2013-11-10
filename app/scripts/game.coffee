@@ -226,7 +226,8 @@ define ['systems', 'playerstats', 'assetmanager', 'scene', 'definitions', 'THREE
         camera = @scene.getObjectById('camera')
         # Don't bother if there's no camera or no player targeter component
         if camera? and player?.targeter?.queue
-          vector = new THREE.Vector3(x, y, 1)
+          # TODO still not working quite right
+          vector = new THREE.Vector3(x, y, 0.5)
           projector.unprojectVector(vector, camera)
           v2 = vector.clone()
 
@@ -241,8 +242,6 @@ define ['systems', 'playerstats', 'assetmanager', 'scene', 'definitions', 'THREE
           #geom.vertices.push(camera.position)
           #geom.vertices.push(v2)
           #@scene.add(new THREE.Line(geom))
-
-          console.log intersects
 
           # Add the target name to the player's targeter queue.
           player.targeter.queue.push(intersect.object.id) for intersect in intersects when intersect.object.id not in excludedEntities
