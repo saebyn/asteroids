@@ -1,0 +1,136 @@
+
+* TODO *
+
+* Later *
+
+- more background objects (static)
+
+  - planets
+
+  - local star(s)
+
+  - asteroid belt
+
+
+- different ships to choose from
+
+        - ship components + health
+
+          Ships have parts that have separate HP
+
+        - ship movement is controlled by components
+
+        - ships have a computer
+
+          use dcpu in a worker :D
+
+        - new ship models
+
+        - different colors / texture stamps (insignia)
+
+        - differing components (amt. health, turn speed, etc)
+
+        - weapon turrets (aimed weapons)
+
+          - vs spinal mounted
+
+
+- make a smarter loading screen and preloader
+
+- bug on chrome 28.0.1500.95
+  - sometimes nothing moves (related to preloading issues?)
+
+
+- movement related ideas
+
+        - rotate camera via mouse
+
+        - movement
+
+        - make component with follow/tracking capability
+
+          - love the idea of a camera that stays behind the ship, or one that
+            tracks an incoming asteroid
+
+
+        - non-destructable obstacles
+
+        - multiplayer
+
+          - 3rd party sync service
+
+          - text chat?
+
+          - webrt voice chat?
+
+        - remove 2d DOF locking, allow 3d movement
+
+        - home base / station
+
+                - limit ammo
+
+                  - where does more ammo come from?
+
+
+                - ship upgrades
+
+                  - better weapons
+
+                  - faster turning
+
+
+- controls
+
+        - mobile capable
+
+          - steer by tilting
+
+          - fire by tapping
+
+          - switch weapons by sliding?
+
+          - auto fullscreen
+
+
+        - configurable keys
+
+          - make key class
+
+            - give methods that loads and saves key settings in localstorage
+
+              - UI needs to tell the user that key config can't be saved without localstorage
+
+            - scan for kbd elements, use data-keybinding there to insert correct key character/string
+
+          - add kbd elements for shortcut key text in buttons
+
+          - problematic: arrow keys
+
+
+
+- model improvements
+
+  - make auto-export workflow for blender, so that I don't have to manually export after each change
+
+  - make the laser bolt model look better (fuzzy?)
+
+  - add some shaders for effects (glow on ammo, exhaust, etc)
+
+
+- dev stuff:
+
+        - split renderable system into two parts
+
+          - one component (or more) for loading
+
+          - one that actually renders
+
+        - make systems.coffee return a list of classes
+
+          - app will inst each one, passing itself
+
+          - app will call method on inst to filter entities by
+
+          - order will determine processing order of systems in gameloop
+
+        - move physijs/threejs models out of components, into the asset manager
